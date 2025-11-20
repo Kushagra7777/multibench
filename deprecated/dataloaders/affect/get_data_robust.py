@@ -11,7 +11,14 @@ from collections import defaultdict
 
 import numpy as np
 import torch
-import torchtext as text
+try:
+    import torchtext as text
+    TORCHTEXT_AVAILABLE = True
+except (ImportError, OSError):
+    # torchtext not available or incompatible, use our replacement
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'affect'))
+    import glove_loader as text
+    TORCHTEXT_AVAILABLE = False
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd()))))
