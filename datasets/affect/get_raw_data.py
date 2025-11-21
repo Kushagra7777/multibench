@@ -6,9 +6,14 @@ import os
 import numpy as np
 import h5py
 import re
-import torchtext as text
+try:
+    import torchtext as text
+    TORCHTEXT_AVAILABLE = True
+except (ImportError, OSError):
+    # torchtext not available or incompatible, use our replacement
+    from . import glove_loader as text
+    TORCHTEXT_AVAILABLE = False
 from collections import defaultdict
-import pickle
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 

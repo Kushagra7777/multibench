@@ -12,8 +12,14 @@ from torch.nn import functional as F
 sys.path.append(os.getcwd())
 
 import torch
-import torchtext as text
 from collections import defaultdict
+try:
+    import torchtext as text
+    TORCHTEXT_AVAILABLE = True
+except (ImportError, OSError):
+    # torchtext not available or incompatible, use our replacement
+    from . import glove_loader as text
+    TORCHTEXT_AVAILABLE = False
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset
 
