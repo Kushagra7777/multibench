@@ -63,7 +63,7 @@ def train(ep=0):
     for fid in range(22):
         print("epoch "+str(ep)+" subiter "+str(fid))
         datas = torch.load(
-            '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid, weights_only=False)+'.pdt')
+            '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid)+'.pdt', weights_only=False)
         
         train_dataloader = DataLoader(
             datas, shuffle=True, batch_size=batch_size, num_workers=num_workers)

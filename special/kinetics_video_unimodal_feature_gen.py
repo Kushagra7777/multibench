@@ -23,7 +23,7 @@ with torch.no_grad():
     for i in range(24):
         print(" subiter "+str(i))
         datas = torch.load(
-            '/home/pliang/yiwei/kinetics_small/train/batch'+str(i, weights_only=False)+'.pkt')
+            '/home/pliang/yiwei/kinetics_small/train/batch'+str(i)+'.pkt', weights_only=False)
         train_dataloader = DataLoader(datas, shuffle=True, batch_size=5)
         for j in train_dataloader:
             out = model(j[0].to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))

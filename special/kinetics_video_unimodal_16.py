@@ -21,7 +21,7 @@ for ep in range(epochs):
     for i in range(24):
         print("epoch "+str(ep)+" subiter "+str(i))
         datas = torch.load(
-            '/home/pliang/yiwei/kinetics_small/train/batch'+str(i, weights_only=False)+'.pdt')
+            '/home/pliang/yiwei/kinetics_small/train/batch'+str(i)+'.pdt', weights_only=False)
         train_dataloader = DataLoader(datas, shuffle=True, batch_size=45)
         for j in train_dataloader:
             optim.zero_grad()

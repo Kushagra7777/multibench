@@ -60,10 +60,10 @@ def train(ep=0):
         print("epoch "+str(ep)+" subiter "+str(fid))
         if dataset_size == 'small':
             datas = torch.load(
-                '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid, weights_only=False)+'.pdt')
+                '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid)+'.pdt', weights_only=False)
         else:
             datas = torch.load(
-                '/home/pliang/yiwei/kinetics_medium/train/batch_medium'+str(fid, weights_only=False)+'.pdt')
+                '/home/pliang/yiwei/kinetics_medium/train/batch_medium'+str(fid)+'.pdt', weights_only=False)
         datas = [d for d in datas if d[1].shape[1] == 763]
         train_dataloader = DataLoader(
             datas, shuffle=True, batch_size=batch_size)
