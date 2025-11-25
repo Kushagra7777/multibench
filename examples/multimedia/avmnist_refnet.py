@@ -24,5 +24,5 @@ train(encoders, fusion, head, traindata, validdata, 15, [
       refiner], optimtype=torch.optim.SGD, lr=0.005, objective=RefNet_objective(0.1), objective_args_dict={'refiner': refiner})
 
 print("Testing:")
-model = torch.load('best.pt').cuda()
+model = torch.load('best.pt', weights_only=False).cuda()
 test(model, testdata, no_robust=True)

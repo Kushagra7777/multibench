@@ -49,6 +49,6 @@ train(encoders, fusion, head,
       objective=loss_state,
       lr=0.00001)
 
-model = torch.load('best.pt').cuda()
+model = torch.load('best.pt', weights_only=False).cuda()
 test(model, test_loader, dataset='gentle push',
      task='regression', criterion=loss_state)

@@ -34,6 +34,6 @@ train(encoders, fuse, head, traindata, validdata, 1000, decoders+intermediates, 
       objective_args_dict={"decoders": decoders, "intermediates": intermediates}, save=filename, optimtype=torch.optim.AdamW, lr=5e-3, weight_decay=0.01, objective=recon_loss)
 
 print("Testing:")
-model = torch.load(filename).cuda()
+model = torch.load(filename, weights_only=False).cuda()
 test(model, testdata, method_name="MFM", dataset="imdb",
      criterion=torch.nn.BCEWithLogitsLoss(), task="multilabel")

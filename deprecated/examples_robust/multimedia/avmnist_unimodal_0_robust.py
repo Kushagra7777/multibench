@@ -21,8 +21,8 @@ head = MLP(channels*8, 100, 10).cuda()
 train(encoder, head, traindata, validdata, 20, optimtype=torch.optim.SGD, lr=0.01,
       weight_decay=0.0001, modalnum=modalnum, save_encoder=filename_encoder, save_head=filename_head)
 
-encoder = torch.load(filename_encoder).cuda()
-head = torch.load(filename_head)
+encoder = torch.load(filename_encoder, weights_only=False).cuda()
+head = torch.load(filename_head, weights_only=False)
 print("Testing:")
 test(encoder, head, testdata, modalnum=modalnum)
 

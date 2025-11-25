@@ -67,7 +67,7 @@ train(encoders,fusion,head,traindata,validdata,1000,True,True, \
 '''
 
 print("Testing:")
-model = torch.load('best.pt').cuda()
+model = torch.load('best.pt', weights_only=False).cuda()
 
 
 def testprocess():

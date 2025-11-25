@@ -42,5 +42,5 @@ def trainprocess():
 all_in_one_train(trainprocess, all_modules)
 
 print("Testing:")
-model = torch.load('gb.pt').cuda()
+model = torch.load('gb.pt', weights_only=False).cuda()
 test(model, testdata)

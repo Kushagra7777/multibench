@@ -26,5 +26,5 @@ head = Linear(n_latent//2, classes).cuda()
 recon_loss = recon_weighted_sum([sigmloss1d, sigmloss1d], [1.0, 1.0])
 train_MFM(encoders, decoders, head, intermediates, fuse, recon_loss, traindata, validdata, 1000, learning_rate=5e-3,
           savedir="best_mfm.pt", task="multilabel", early_stop=True, criterion=torch.nn.BCEWithLogitsLoss())
-model = torch.load('best_mfm.pt')
+model = torch.load('best_mfm.pt', weights_only=False)
 test_MFM(model, testdata, task="multilabel")

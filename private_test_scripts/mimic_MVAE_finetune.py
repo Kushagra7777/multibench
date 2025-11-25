@@ -26,6 +26,6 @@ head = MLP(n_latent, 20, classes).to(torch.device("cuda:0" if torch.cuda.is_avai
 elbo = elbo_loss([sigmloss1d, sigmloss1d], [1.0, 1.0], 0.0)
 train_MVAE(encoders, decoders, head, fuse, traindata, validdata, elbo,
            25, 35, 5, savedirbackbone=name+'best1.pt', savedirhead=name+'back2.pt')
-mvae = torch.load(name+'best1.pt')
-head = torch.load(name+'best2.pt')
+mvae = torch.load(name+'best1.pt', weights_only=False)
+head = torch.load(name+'best2.pt', weights_only=False)
 test_MVAE(mvae, head, testdata)

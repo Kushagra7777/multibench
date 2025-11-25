@@ -12,5 +12,5 @@ sys.path.append(os.getcwd())
 traindata, validdata, testdata = get_dataloader(
     1, imputed_path='datasets/mimic/im.pk')
 
-model = torch.load('temp/best.pt').cuda()
+model = torch.load('temp/best.pt', weights_only=False).cuda()
 test(model, testdata, auprc=True)

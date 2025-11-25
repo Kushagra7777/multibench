@@ -19,8 +19,8 @@ mn = 1
 train(encoders, head, traindata, validdata, 100, optimtype=torch.optim.SGD, lr=0.1, weight_decay=0.0001,
       modalnum=mn, save_encoder='avmnist_pretraining_encoder.pt', save_head='avmnist_pretraining_head.pt')
 
-encoder = torch.load('avmnist_pretraining_encoder.pt').cuda()
-head = torch.load('avmnist_pretraining_head.pt')
+encoder = torch.load('avmnist_pretraining_encoder.pt', weights_only=False).cuda()
+head = torch.load('avmnist_pretraining_head.pt', weights_only=False)
 print("Testing:")
 test(encoder, head, testdata, modalnum=mn)
 

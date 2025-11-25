@@ -27,7 +27,7 @@ def trainprocess():
 # all_in_one_train(trainprocess,[encoders[0],encoders[1],head,fusion])
 print("Testing:")
 
-model = torch.load('best.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+model = torch.load('best.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
 
 def testprocess():

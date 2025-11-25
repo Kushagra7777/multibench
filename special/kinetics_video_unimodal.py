@@ -49,7 +49,7 @@ class ResNetLSTM(torch.nn.Module):
 
 
 model = ResNetLSTM(64, 5).cuda(device)
-# model=torch.load('best_kvu.pt').cuda(device)
+# model=torch.load('best_kvu.pt', weights_only=False).cuda(device)
 optim = torch.optim.Adam(model.parameters(), lr=0.0001)
 criterion = torch.nn.CrossEntropyLoss()
 
@@ -63,7 +63,7 @@ def train(ep=0):
     for fid in range(22):
         print("epoch "+str(ep)+" subiter "+str(fid))
         datas = torch.load(
-            '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid)+'.pdt')
+            '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid, weights_only=False)+'.pdt')
         
         train_dataloader = DataLoader(
             datas, shuffle=True, batch_size=batch_size, num_workers=num_workers)
@@ -83,10 +83,10 @@ def train(ep=0):
 
 
 epochs = 15
-datas = torch.load('/home/pliang/yiwei/kinetics_small/valid/batch_370.pdt')
+datas = torch.load('/home/pliang/yiwei/kinetics_small/valid/batch_370.pdt', weights_only=False)
 valid_dataloader0 = DataLoader(
     datas, shuffle=False, batch_size=batch_size, num_workers=num_workers)
-datas = torch.load('/home/pliang/yiwei/kinetics_small/valid/batch_371.pdt')
+datas = torch.load('/home/pliang/yiwei/kinetics_small/valid/batch_371.pdt', weights_only=False)
 valid_dataloader1 = DataLoader(
     datas, shuffle=False, batch_size=batch_size, num_workers=num_workers)
 valid_dataloaders = [valid_dataloader0, valid_dataloader1]
@@ -119,14 +119,14 @@ for ep in tqdm(range(epochs)):
 t0 = time.time()
 
 print('testing')
-model = torch.load('best_kvu.pt')
+model = torch.load('best_kvu.pt', weights_only=False)
 valid_dataloader = None
 total = 0
 correct = 0
 totalloss = 0.0
 for fid in range(3):
     datas = torch.load(
-        '/home/pliang/yiwei/kinetics_small/test/batch_37%d.pdt' % fid)
+        '/home/pliang/yiwei/kinetics_small/test/batch_37%d.pdt' % fid, weights_only=False)
     test_dataloader = DataLoader(
         datas, shuffle=False, batch_size=batch_size, num_workers=num_workers)
     with torch.no_grad():

@@ -37,7 +37,7 @@ train(encoders, fusion, head, traindata, validdata, 100, task="regression", opti
       early_stop=True, is_packed=True, lr=1e-3, save='mosi_lf_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")
-model = torch.load('mosi_lf_best.pt').cuda()
+model = torch.load('mosi_lf_best.pt', weights_only=False).cuda()
 
 test(model=model, test_dataloaders_all=test_robust, dataset='mosi', is_packed=True,
      criterion=torch.nn.L1Loss(), task='posneg-classification', no_robust=True)

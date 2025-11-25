@@ -11,5 +11,5 @@ sys.path.append(os.getcwd())
 
 traindata, validdata, testdata = get_dataloader(
     '/data/yiwei/avmnist/_MFAS/avmnist', batch_size=32)
-model = torch.load('temp/best.pt').cuda()
+model = torch.load('temp/best.pt', weights_only=False).cuda()
 test(model, testdata)

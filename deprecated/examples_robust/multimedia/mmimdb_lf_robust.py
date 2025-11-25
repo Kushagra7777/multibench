@@ -48,5 +48,5 @@ general_test(testprocess, filename, robustdata, multi_measure=True)
 #    save="best_lf.pt", optimtype=torch.optim.AdamW,lr=5e-5,weight_decay=0.01, criterion=torch.nn.BCEWithLogitsLoss())
 
 
-# model=torch.load('best_lf.pt').cuda()
+# model=torch.load('best_lf.pt', weights_only=False).cuda()
 # test(model,testdata,criterion=torch.nn.BCEWithLogitsLoss(),task="multilabel")

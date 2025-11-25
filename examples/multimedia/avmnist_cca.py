@@ -31,5 +31,5 @@ train(encoders, fusion, head, traindata, validdata, 25,
 # ,weight_decay=0.01)
 
 print("Testing:")
-model = torch.load('best_cca.pt').cuda()
+model = torch.load('best_cca.pt', weights_only=False).cuda()
 test(model, testdata, no_robust=True)

@@ -34,7 +34,7 @@ recon_loss = recon_weighted_sum([sigmloss1dcentercrop(
 train_MFM(encoders, decoders, head, intermediates, fuse,
           recon_loss, traindata, validdata, 25, savedir=filename)
 
-model = torch.load(filename)
+model = torch.load(filename, weights_only=False)
 print("Testing:")
 test_MFM(model, testdata)
 

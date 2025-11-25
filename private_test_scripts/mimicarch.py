@@ -24,6 +24,6 @@ all_in_one_train(trpr, [torch.load('pretrained/mimic/static_encoder_mortality.pt
 
 """
 print("Testing:")
-model=torch.load('best.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+model=torch.load('best.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 test(model,testdata)
 """

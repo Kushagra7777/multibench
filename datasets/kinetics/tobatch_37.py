@@ -20,7 +20,7 @@ batchcount = 0
 for name in tqdm(os.listdir('%s' % phase)):
     if name[-3:] == '.pt':
         
-        f = torch.load('%s/%s' % (phase, name))
+        f = torch.load('%s/%s' % (phase, name), weights_only=False)
         for tensors in f:
             a = tensors[1]  # 1, 152576, values btw -1 and 1
             if len(a) != 0:

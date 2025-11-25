@@ -35,7 +35,7 @@ all_in_one_train(trainprocess, allmodules)
 
 # test
 print("Testing: ")
-model = torch.load(filename).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+model = torch.load(filename, weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
 
 def testprocess():

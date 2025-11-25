@@ -45,6 +45,6 @@ train(encoders,fusion,head,traindata,validdata,1000,True,True, \
 '''
 
 print("Testing:")
-model = torch.load('mosei_ef_best.pt').cuda()
+model = torch.load('mosei_ef_best.pt', weights_only=False).cuda()
 test(model, testdata, True, torch.nn.L1Loss(), "regression")
 # test(model,testdata,True,)

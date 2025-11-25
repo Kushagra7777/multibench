@@ -26,5 +26,5 @@ train(encoders, fusion, head, traindata, validdata, 15, regularization=True,
       save="best_reg.pt", optimtype=torch.optim.AdamW, lr=0.01, weight_decay=0.01)
 
 print("Testing:")
-model = torch.load('best_cca.pt').cuda()
+model = torch.load('best_cca.pt', weights_only=False).cuda()
 test(model, testdata)

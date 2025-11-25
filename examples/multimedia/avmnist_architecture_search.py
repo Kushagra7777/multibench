@@ -20,6 +20,6 @@ s_data = train(['pretrained/avmnist/image_encoder.pt', 'pretrained/avmnist/audio
 
 """
 print("Testing:")
-model=torch.load('best.pt').cuda()
+model=torch.load('best.pt', weights_only=False).cuda()
 test(model,testdata)
 """

@@ -48,7 +48,7 @@ train(encoders, head, unimodal_heads, fusion, traindata, validdata, 100, gb_epoc
       classification=True, optimtype=torch.optim.AdamW, savedir='mosi_best_gb.pt', weight_decay=0.1)
 
 print("Testing:")
-model = torch.load('mosi_besf_gb.pt').cuda()
+model = torch.load('mosi_besf_gb.pt', weights_only=False).cuda()
 
 test(model, test_robust, dataset='mosi', auprc=False, no_robust=True)
 

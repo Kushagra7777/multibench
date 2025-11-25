@@ -21,7 +21,7 @@ fusion = MultiplicativeInteractions2Modal(
 train(encoders, fusion, head, traindata, validdata, 100, optimtype=torch.optim.SGD,
       lr=0.01, weight_decay=0.0001, save='avmnist_tensor_matrix_robust_best.pt')
 
-model = torch.load('avmnist_tensor_matrix_robust_best.pt').cuda()
+model = torch.load('avmnist_tensor_matrix_robust_best.pt', weights_only=False).cuda()
 print("Testing:")
 test(model, testdata)
 

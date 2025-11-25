@@ -22,5 +22,5 @@ train(encoders, fusion, head, refiner, traindata, validdata, 15, task='classific
       optimtype=torch.optim.SGD, lr=0.005, criterion=torch.nn.CrossEntropyLoss())
 
 print("Testing:")
-model = torch.load('best.pt').cuda()
+model = torch.load('best.pt', weights_only=False).cuda()
 test(model, testdata, criterion=torch.nn.CrossEntropyLoss(), task='classification')

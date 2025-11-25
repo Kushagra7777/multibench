@@ -63,7 +63,7 @@ def train_sampled_models(sampled_configurations, searchable_type, dataloaders,
             if not premodels:
                 sds = []
                 for i in unimodal_files:
-                    sds.append(torch.load(i,map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+                    sds.append(torch.load(i, map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"), weights_only=False))
                 for sd in sds:
                     sd.output_each_layer = True
                 rmode = searchable_type(

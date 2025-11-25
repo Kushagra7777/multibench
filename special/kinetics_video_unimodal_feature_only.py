@@ -8,7 +8,7 @@ sys.path.append(os.getcwd())
 model = MLP(400, 200, 5).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 optim = torch.optim.Adam(model.parameters(), lr=0.01)
 train_datas, valid_datas, test_datas = torch.load(
-    '/home/pliang/yiwei/features/features.pt')
+    '/home/pliang/yiwei/features/features.pt', weights_only=False)
 epochs = 30
 valid_dataloader = DataLoader(valid_datas, shuffle=False, batch_size=40)
 test_dataloader = DataLoader(test_datas, shuffle=False, batch_size=40)

@@ -35,8 +35,8 @@ def trpr():
 
 
 # all_in_one_train(trpr,[encoders[0],encoders[1],decoders[0],decoders[1],head])
-mvae = torch.load('best1.pt')
-head = torch.load('best2.pt')
+mvae = torch.load('best1.pt', weights_only=False)
+head = torch.load('best2.pt', weights_only=False)
 
 
 def tepr():

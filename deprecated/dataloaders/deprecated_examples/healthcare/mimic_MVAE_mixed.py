@@ -25,6 +25,6 @@ decoders = [MLP(n_latent, 20, 5).cuda(), TSDecoder(
 head = MLP(n_latent, 20, classes).cuda()
 elbo = elbo_loss([sigmloss1d, sigmloss1d], [1.0, 1.0], 0.0)
 train_MVAE(encoders, decoders, head, fuse, traindata, validdata, elbo, 30)
-mvae = torch.load('best1.pt')
-head = torch.load('best2.pt')
+mvae = torch.load('best1.pt', weights_only=False)
+head = torch.load('best2.pt', weights_only=False)
 test_MVAE(mvae, head, testdata)

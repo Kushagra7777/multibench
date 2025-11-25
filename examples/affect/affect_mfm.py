@@ -52,7 +52,7 @@ train(encoders, fuse, head, traindata, validdata, 200, additional_modules,
       objective=objective, objective_args_dict=argsdict, save='mosi_mfm_best.pt')
 
 print("Testing:")
-model = torch.load('mosi_mfm_best.pt').cuda()
+model = torch.load('mosi_mfm_best.pt', weights_only=False).cuda()
 
 test(model=model, test_dataloaders_all=test_robust,
      dataset='mosi', is_packed=False, no_robust=True)

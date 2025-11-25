@@ -23,5 +23,5 @@ train(encoders, fusion, head, traindata, validdata, 100,
       optimtype=torch.optim.SGD, lr=0.01, weight_decay=0.0001)
 
 print("Testing:")
-model = torch.load('best.pt').cuda()
+model = torch.load('best.pt', weights_only=False).cuda()
 test(model, testdata, no_robust=True)

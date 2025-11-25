@@ -24,8 +24,8 @@ train(encoder, head, traindata, validdata, 20, auprc=False,
       modalnum=modalnum, save_encoder=filename_encoder, save_head=filename_head)
 
 # test
-encoder = torch.load(filename_encoder).cuda()
-head = torch.load(filename_head).cuda()
+encoder = torch.load(filename_encoder, weights_only=False).cuda()
+head = torch.load(filename_head, weights_only=False).cuda()
 acc = []
 print("Robustness testing:")
 for noise_level in range(len(robustdata)):
