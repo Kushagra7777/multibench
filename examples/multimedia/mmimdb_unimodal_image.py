@@ -22,7 +22,7 @@ train(encoders, head, traindata, validdata, 1000, early_stop=True, task="multila
       save_head=headfile, optimtype=torch.optim.AdamW, lr=1e-4, weight_decay=0.01, criterion=torch.nn.BCEWithLogitsLoss())
 
 print("Testing:")
-encoder = torch.load(encoderfile).cuda()
-head = torch.load(headfile).cuda()
+encoder = torch.load(encoderfile, weights_only=False).cuda()
+head = torch.load(headfile, weights_only=False).cuda()
 test(encoder, head, testdata, "imdb",
      "unimodal_image", task="multilabel", modalnum=1)

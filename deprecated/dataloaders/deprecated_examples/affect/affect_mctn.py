@@ -47,6 +47,6 @@ def trainprocess():
 
 all_in_one_train(trainprocess, allmodules)
 
-model = torch.load('best_mctn.pt').cuda()
+model = torch.load('best_mctn.pt', weights_only=False).cuda()
 
 test(model, test_robust, max_seq_len=20)

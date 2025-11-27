@@ -19,6 +19,6 @@ train(encoders, head, traindata, validdata, 100,
       optimtype=torch.optim.SGD, lr=0.1, weight_decay=0.0001, modalnum=mn)
 
 print("Testing:")
-encoder = torch.load('encoder.pt').cuda()
-head = torch.load('head.pt')
+encoder = torch.load('encoder.pt', weights_only=False).cuda()
+head = torch.load('head.pt', weights_only=False)
 test(encoder, head, testdata, modalnum=mn)

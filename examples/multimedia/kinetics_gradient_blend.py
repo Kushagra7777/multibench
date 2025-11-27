@@ -30,5 +30,5 @@ train(encoders, mult_head, uni_head, fusion, traindata, validdata, 300,
       gb_epoch=10, optimtype=torch.optim.SGD, lr=0.01, savedir=filename)
 
 print("Testing:")
-model = torch.load(filename).cuda()
+model = torch.load(filename, weights_only=False).cuda()
 test(model, testdata)

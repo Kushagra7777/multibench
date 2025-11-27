@@ -37,5 +37,5 @@ def trainprocess():
 all_in_one_train(trainprocess, all_modules)
 
 print("Testing:")
-model = torch.load('mosi_lf_best.pt').cuda()
+model = torch.load('mosi_lf_best.pt', weights_only=False).cuda()
 test(model, testdata, 'affect', True, torch.nn.L1Loss(), "posneg-classification")

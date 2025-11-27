@@ -30,6 +30,6 @@ train(encoders, head, unimodal_heads, fusion, traindata,
 
 # test
 print("Testing: ")
-model = torch.load(filename).cuda()
+model = torch.load(filename, weights_only=False).cuda()
 # dataset = 'mimic mortality', 'mimic 1', 'mimic 7'
 test(model, testdata, dataset='mimic mortality', auprc=False)

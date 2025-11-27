@@ -32,7 +32,7 @@ all_in_one_train(trainprocess, allmodules)
 
 # test
 print("Testing: ")
-model = torch.load('best.pt').cuda()
+model = torch.load('best.pt', weights_only=False).cuda()
 
 
 def testprocess():

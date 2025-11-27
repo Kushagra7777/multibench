@@ -29,8 +29,8 @@ all_in_one_train(trainprocess, [encoder, head])
 
 # test
 print("Testing: ")
-encoder = torch.load('encoder.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-head = torch.load('head.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+encoder = torch.load('encoder.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+head = torch.load('head.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
 
 def testprocess():

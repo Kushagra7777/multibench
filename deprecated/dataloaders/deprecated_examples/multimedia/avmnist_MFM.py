@@ -31,5 +31,5 @@ recon_loss = recon_weighted_sum([sigmloss1dcentercrop(
     28, 34), sigmloss1dcentercrop(112, 130)], [1.0, 1.0])
 train_MFM(encoders, decoders, head, intermediates,
           fuse, recon_loss, traindata, validdata, 25)
-model = torch.load('best.pt')
+model = torch.load('best.pt', weights_only=False)
 test_MFM(model, testdata)

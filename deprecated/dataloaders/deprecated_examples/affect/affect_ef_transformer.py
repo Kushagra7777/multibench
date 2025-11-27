@@ -36,5 +36,5 @@ def trainprocess():
 all_in_one_train(trainprocess, all_modules)
 
 print("Testing:")
-model = torch.load('mosi_ef_best.pt').cuda()
+model = torch.load('mosi_ef_best.pt', weights_only=False).cuda()
 test(model, testdata, True, torch.nn.L1Loss(), "regression")

@@ -27,7 +27,7 @@ def trpr():
 
 all_in_one_train(trpr, [encoders[0], encoders[1], fusion, head])
 print("Testing:")
-model = torch.load(filename).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+model = torch.load(filename, weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
 
 def tepr():

@@ -30,6 +30,6 @@ argsdict = {'decoders': decoders}
 train(encoders, fuse, head, traindata, validdata, 30, decoders,
       optimtype=torch.optim.Adam, lr=0.0001, objective=elbo, objective_args_dict=argsdict)
 
-model = torch.load('best.pt')
+model = torch.load('best.pt', weights_only=False)
 # dataset = 'mimic mortality', 'mimic 1', 'mimic 7'
 test(model, testdata, dataset='mimic 7')

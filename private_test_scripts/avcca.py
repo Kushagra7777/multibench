@@ -31,7 +31,7 @@ def trpr():
     # ,weight_decay=0.01)
 all_in_one_train(trpr, encoders+[fusion, head])
 print("Testing:")
-model = torch.load('best_cca.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+model = torch.load('best_cca.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
 
 def tepr():

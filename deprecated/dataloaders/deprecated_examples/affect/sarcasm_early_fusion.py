@@ -27,6 +27,6 @@ train(encoders, fusion, head, traindata, validdata, 1000, True, True,
       weight_decay=0.01, criterion=torch.nn.MSELoss(), regularization=False)
 
 print("Testing:")
-model = torch.load('sarcasm_ef_best.pt').cuda()
+model = torch.load('sarcasm_ef_best.pt', weights_only=False).cuda()
 test(model, testdata, True, torch.nn.L1Loss(), "classification")
 # test(model,testdata,True,)

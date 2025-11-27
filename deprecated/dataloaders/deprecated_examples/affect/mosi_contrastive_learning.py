@@ -26,5 +26,5 @@ train(encoders, fusion, head, traindata, validdata, 1000, True, True,
       weight_decay=0.01)
 
 print("Testing:")
-model = torch.load('best_contrast.pt').cuda()
+model = torch.load('best_contrast.pt', weights_only=False).cuda()
 test(model, testdata, True,)

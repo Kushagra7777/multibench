@@ -19,7 +19,7 @@ def test_sl1():
     train(encoders, fusion, head, dl, dl, 1, task="regression", optimtype=torch.optim.AdamW,
       is_packed=False, lr=1e-3, save='mosi_ef_r0.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
-    model = torch.load('mosi_ef_r0.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+    model = torch.load('mosi_ef_r0.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
     test(model, {'key':[dl]}, 'affect', is_packed=False,
      criterion=torch.nn.L1Loss(), task="posneg-classification", auprc=False, no_robust=False)
 
@@ -55,7 +55,7 @@ def test_sl2():
 
   train(encoders, head, unimodal_heads, fusion, dl, dl, num_epoch=1, gb_epoch=1, lr=1e-3, AUPRC=False,
         classification=True, optimtype=torch.optim.AdamW, savedir='mosi_best_gb.pt', weight_decay=0.1, finetune_epoch=1)
-  model = torch.load('mosi_best_gb.pt')
+  model = torch.load('mosi_best_gb.pt', weights_only=False)
   test(model=model, test_dataloaders_all={'fake':[dl]}, dataset='mosi', auprc=True)
 
 def test_sl3():
@@ -78,8 +78,8 @@ def test_sl3():
         weight_decay=0.01, criterion=torch.nn.L1Loss(), save_encoder='encoder.pt', save_head='head.pt', modalnum=modality_num)
 
   print("Testing:")
-  encoder = torch.load('encoder.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-  head = torch.load('head.pt')
+  encoder = torch.load('encoder.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  head = torch.load('head.pt', weights_only=False)
   test(encoder, head, dl, 'affect', criterion=torch.nn.L1Loss(),
       task="posneg-classification", modalnum=modality_num, no_robust=True)
   test(encoder, head, {'test':[dl,dl]}, 'affect', criterion=torch.nn.L1Loss(),
@@ -128,7 +128,7 @@ def test_sl4():
 
   all_in_one_train(trainprocess, allmodules)
 
-  model = torch.load('best_mctn.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  model = torch.load('best_mctn.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
   test(model, dl_faked, 'mosi', no_robust=True)
 
@@ -145,7 +145,7 @@ def test_sl5():
   dl_faked = torch.utils.data.DataLoader(my_dataset, batch_size=32)
   s_data = train(['pretrained/avmnist/image_encoder.pt', 'pretrained/avmnist/audio_encoder.pt'], 16, 10, [(6, 12, 24), (6, 12, 24, 48, 96)],
                   dl_faked, dl_faked, surr.SimpleRecurrentSurrogate(), (3, 5, 2), epochs=1, search_iter=1, epoch_surrogate=1, num_samples=1, max_progression_levels=1)
-  model = torch.load('tests/best0.pt')
+  model = torch.load('tests/best0.pt', weights_only=False)
   
   test(model, dl_faked, 'test', no_robust=True)
 

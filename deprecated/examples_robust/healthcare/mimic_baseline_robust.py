@@ -24,7 +24,7 @@ train(encoders, fusion, head, traindata, validdata,
       20, auprc=False, save='mimic_baseline_best.pt')
 
 # test
-model = torch.load('mimic_baseline_best.pt').cuda()
+model = torch.load('mimic_baseline_best.pt', weights_only=False).cuda()
 acc = []
 print("Robustness testing:")
 for noise_level in range(len(robustdata)):

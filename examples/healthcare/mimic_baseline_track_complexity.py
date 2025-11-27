@@ -34,6 +34,6 @@ all_in_one_train(trainprocess, allmodules)
 
 # test
 print("Testing: ")
-model = torch.load('best.pt').cuda()
+model = torch.load('best.pt', weights_only=False).cuda()
 # dataset = 'mimic mortality', 'mimic 1', 'mimic 7'
 test(model, testdata, dataset='mimic 7', auprc=True)

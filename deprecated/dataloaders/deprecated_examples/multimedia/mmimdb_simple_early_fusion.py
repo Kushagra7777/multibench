@@ -21,5 +21,5 @@ train(encoders, fusion, head, traindata, validdata, 1000, early_stop=True, task=
       save="best_ef.pt", optimtype=torch.optim.AdamW, lr=4e-2, weight_decay=0.01, criterion=torch.nn.BCEWithLogitsLoss())
 
 print("Testing:")
-model = torch.load('best_ef.pt').cuda()
+model = torch.load('best_ef.pt', weights_only=False).cuda()
 test(model, testdata, criterion=torch.nn.BCEWithLogitsLoss(), task="multilabel")

@@ -25,7 +25,7 @@ train(encoders, fusion, head, traindata,
       validdata, 20, auprc=False, save=filename)
 
 # test
-model = torch.load(filename).cuda()
+model = torch.load(filename, weights_only=False).cuda()
 acc = []
 print("Robustness testing:")
 for noise_level in range(len(robustdata)):

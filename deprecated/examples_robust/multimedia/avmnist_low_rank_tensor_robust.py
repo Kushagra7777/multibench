@@ -19,7 +19,7 @@ fusion = LowRankTensorFusion([channels*8, channels*32], channels*20, 40).cuda()
 train(encoders, fusion, head, traindata, validdata, 30,
       optimtype=torch.optim.SGD, lr=0.05, weight_decay=0.0002, save=filename)
 
-model = torch.load(filename).cuda()
+model = torch.load(filename, weights_only=False).cuda()
 print("Testing:")
 test(model, testdata)
 

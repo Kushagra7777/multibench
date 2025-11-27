@@ -37,7 +37,7 @@ train(encoders,head,traindata,validdata,1000,True,True,\
 '''
 
 print("Testing:")
-encoder = torch.load('encoder.pt').cuda()
-head = torch.load('head.pt').cuda()
+encoder = torch.load('encoder.pt', weights_only=False).cuda()
+head = torch.load('head.pt', weights_only=False).cuda()
 test(encoder, head, testdata, True, "regression", 0)
 # test(encoder,head,testdata,True,modalnum=0)

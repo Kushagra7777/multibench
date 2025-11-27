@@ -28,6 +28,6 @@ train(encoders, fusion, head, traindata, validdata, 1000, is_packed=True, early_
       weight_decay=0.01, objective=torch.nn.MSELoss())
 
 print("Testing:")
-model = torch.load('humor_lf_best.pt').cuda()
+model = torch.load('humor_lf_best.pt', weights_only=False).cuda()
 test(model, testdata, True, torch.nn.L1Loss(), "regression")
 # test(model,testdata,True,)

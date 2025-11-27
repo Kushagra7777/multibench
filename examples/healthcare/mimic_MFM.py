@@ -35,6 +35,6 @@ objective = MFM_objective(2.0, [sigmloss1d, sigmloss1d], [1.0, 1.0])
 train(encoders, fuse, head, traindata, validdata, 20, additional_modules,
       objective=objective, objective_args_dict=argsdict)
 
-mvae = torch.load('best.pt')
+mvae = torch.load('best.pt', weights_only=False)
 # dataset = 'mimic mortality', 'mimic 1', 'mimic 7'
 test(mvae, testdata, dataset='mimic 7')

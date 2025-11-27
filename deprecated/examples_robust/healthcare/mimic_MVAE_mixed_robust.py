@@ -32,8 +32,8 @@ train_MVAE(encoders, decoders, head, fuse, traindata, validdata,
            elbo, 30, savedirbackbone=filename1, savedirhead=filename2)
 
 # test
-mvae = torch.load(filename1)
-head = torch.load(filename2)
+mvae = torch.load(filename1, weights_only=False)
+head = torch.load(filename2, weights_only=False)
 
 acc = []
 print("Robustness testing:")

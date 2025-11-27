@@ -25,5 +25,5 @@ train(encoders, fusion, head, traindata, validdata, 1000, early_stop=True, task=
       save="best_cca.pt", optimtype=torch.optim.AdamW, lr=1e-2, weight_decay=0.01, criterion=torch.nn.BCEWithLogitsLoss())
 
 print("Testing:")
-model = torch.load('best_cca.pt').cuda()
+model = torch.load('best_cca.pt', weights_only=False).cuda()
 test(model, testdata, criterion=torch.nn.BCEWithLogitsLoss(), task="multilabel")

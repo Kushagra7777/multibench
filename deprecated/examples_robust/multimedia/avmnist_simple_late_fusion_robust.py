@@ -19,7 +19,7 @@ fusion = Concat().cuda()
 train(encoders, fusion, head, traindata, validdata, 30, optimtype=torch.optim.SGD,
       lr=0.1, weight_decay=0.0001, save='avmnist_simple_late_fusion_best.pt')
 
-model = torch.load('avmnist_simple_late_fusion_best.pt').cuda()
+model = torch.load('avmnist_simple_late_fusion_best.pt', weights_only=False).cuda()
 print("Testing:")
 test(model, robustdata)
 

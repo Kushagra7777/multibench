@@ -16,5 +16,5 @@ traindata, validdata, testdata = get_dataloader(
 
 
 
-# model=torch.load('best.pt').cuda()
+# model=torch.load('best.pt', weights_only=False).cuda()
 # test(model,testdata)

@@ -47,8 +47,8 @@ def trainprocess():
 
 all_in_one_train(trainprocess, allmodules)
 
-encoder = torch.load('encoder.pt').cuda()
-head = torch.load('head.pt').cuda()
+encoder = torch.load('encoder.pt', weights_only=False).cuda()
+head = torch.load('head.pt', weights_only=False).cuda()
 # dataset = 'finance F&B', finance tech', finance health'
 test(encoder, head, test_loader, dataset='finance F&B',
      task='regression', criterion=nn.MSELoss())

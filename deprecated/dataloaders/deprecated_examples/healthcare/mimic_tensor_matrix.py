@@ -26,5 +26,5 @@ train(encoders, fusion, head, traindata,
 
 # test
 print("Testing: ")
-model = torch.load(filename).cuda()
+model = torch.load(filename, weights_only=False).cuda()
 test(model, testdata, auprc=True)

@@ -31,8 +31,8 @@ elbo = elbo_loss([sigmloss1dcentercrop(28, 34),
 train_MVAE(encoders, decoders, head, fuse, traindata, validdata,
            elbo, 20, savedirbackbone=filename1, savedirhead=filename2)
 
-mvae = torch.load(filename1)
-head = torch.load(filename2)
+mvae = torch.load(filename1, weights_only=False)
+head = torch.load(filename2, weights_only=False)
 print("Testing:")
 test_MVAE(mvae, head, testdata)
 

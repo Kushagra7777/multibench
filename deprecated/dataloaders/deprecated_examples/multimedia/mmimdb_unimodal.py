@@ -18,6 +18,6 @@ train(encoders, head, traindata, validdata, 1000, early_stop=True, task="multila
       save_head="head_t.pt", optimtype=torch.optim.AdamW, lr=1e-4, weight_decay=0.01, criterion=torch.nn.BCEWithLogitsLoss())
 
 print("Testing:")
-encoder = torch.load('encoder_t.pt').cuda()
-head = torch.load('head_t.pt').cuda()
+encoder = torch.load('encoder_t.pt', weights_only=False).cuda()
+head = torch.load('head_t.pt', weights_only=False).cuda()
 test(encoder, head, testdata, task="multilabel", modalnum=0)

@@ -28,7 +28,7 @@ recon_loss = recon_weighted_sum([sigmloss1d, sigmloss1d], [1.0, 1.0])
 train_MFM(encoders, decoders, head, intermediates, fuse, recon_loss,
           traindata, validdata, 25, savedir='mimic_MFM_best.pt')
 
-mvae = torch.load('mimic_MFM_best.pt')
+mvae = torch.load('mimic_MFM_best.pt', weights_only=False)
 acc = []
 print("Robustness testing:")
 for noise_level in range(len(robustdata)):

@@ -24,5 +24,5 @@ train(encoders, fusion, head, traindata, validdata, 20, lr=0.0001, auprc=True)
 
 # test
 print("Testing: ")
-model = torch.load('best.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+model = torch.load('best.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 test(model, testdata, auprc=True)

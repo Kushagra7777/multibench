@@ -28,7 +28,7 @@ train(encoder, head, traindata, validdata, 200, task="regression", optimtype=tor
       weight_decay=0.01, criterion=torch.nn.L1Loss(), save_encoder='encoder.pt', save_head='head.pt', modalnum=modality_num)
 
 print("Testing:")
-encoder = torch.load('encoder.pt').cuda()
-head = torch.load('head.pt')
+encoder = torch.load('encoder.pt', weights_only=False).cuda()
+head = torch.load('head.pt', weights_only=False)
 test(encoder, head, testdata, 'affect', criterion=torch.nn.L1Loss(),
      task="posneg-classification", modalnum=modality_num, no_robust=True)

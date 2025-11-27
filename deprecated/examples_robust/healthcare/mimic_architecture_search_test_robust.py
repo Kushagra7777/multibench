@@ -13,7 +13,7 @@ sys.path.append(os.getcwd())
 traindata, validdata, testdata, robustdata = get_dataloader(
     7, imputed_path='datasets/mimic/im.pk')
 
-model = torch.load('/home/pliang/yiwei/best_icd9_70_79.pt').cuda()
+model = torch.load('/home/pliang/yiwei/best_icd9_70_79.pt', weights_only=False).cuda()
 test(model, testdata, auprc=True)
 acc = []
 print("Robustness testing:")

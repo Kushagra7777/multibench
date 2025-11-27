@@ -32,6 +32,6 @@ fusion = ConcatEarly().cuda()
 train(encoders, fusion, head, traindata, validdata, 100, task="regression", optimtype=torch.optim.AdamW, is_packed=True, early_stop=True,lr=1e-4, save='mosi_ef_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")
-model = torch.load('mosi_ef_best.pt').cuda()
+model = torch.load('mosi_ef_best.pt', weights_only=False).cuda()
 test(model, testdata, 'affect', is_packed=True,
      criterion=torch.nn.L1Loss(), task="posneg-classification", no_robust=True)

@@ -51,6 +51,6 @@ all_in_one_train(trainprocess, all_modules)
 
 
 print("Testing:")
-encoder = torch.load('encoder.pt').cuda()
-head = torch.load('head.pt').cuda()
+encoder = torch.load('encoder.pt', weights_only=False).cuda()
+head = torch.load('head.pt', weights_only=False).cuda()
 test(encoder, head, testdata, True, "regression", criterion=torch.nn.L1Loss())

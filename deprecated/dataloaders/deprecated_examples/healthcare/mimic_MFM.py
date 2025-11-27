@@ -27,5 +27,5 @@ intermediates = [MLP(n_latent, n_latent//2, n_latent//2).cuda(), MLP(n_latent,
 head = MLP(n_latent//2, 20, classes).cuda()
 recon_loss = recon_weighted_sum([sigmloss1d, sigmloss1d], [1.0, 1.0])
 # train_MFM(encoders,decoders,head,intermediates,fuse,recon_loss,traindata,validdata,25,savedir='bestmfm.pt')
-mvae = torch.load('bestmfm.pt')
+mvae = torch.load('bestmfm.pt', weights_only=False)
 test_MFM(mvae, testdata)

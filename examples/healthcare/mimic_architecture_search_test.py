@@ -15,6 +15,6 @@ from fusions.common_fusions import Concat # noqa
 traindata, validdata, testdata = get_dataloader(
     1, imputed_path='datasets/mimic/im.pk')
 
-model = torch.load('temp/best.pt').cuda()
+model = torch.load('temp/best.pt', weights_only=False).cuda()
 # dataset = 'mimic mortality', 'mimic 1', 'mimic 7'
 test(model, testdata, dataset='mimic 1', auprc=True)

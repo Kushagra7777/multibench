@@ -22,5 +22,5 @@ train(encoders, fusion, head, traindata, validdata, 1000, True, True,
       weight_decay=0.01, criterion=torch.nn.L1Loss(), regularization=False)
 
 print("Testing:")
-model = torch.load('best_mae.pt').cuda()
+model = torch.load('best_mae.pt', weights_only=False).cuda()
 test(model, testdata, True, torch.nn.L1Loss(), "regression",)

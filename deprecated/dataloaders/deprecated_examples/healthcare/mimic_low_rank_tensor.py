@@ -23,5 +23,5 @@ train(encoders, fusion, head, traindata, validdata, 50, auprc=True)
 
 # test
 print("Testing: ")
-model = torch.load('best.pt').cuda()
+model = torch.load('best.pt', weights_only=False).cuda()
 test(model, testdata, auprc=True)
