@@ -91,6 +91,13 @@ class GloVe:
             return embedding_file
         except Exception as e:
             print(f"Error downloading GloVe embeddings: {e}")
+            # Remove potentially corrupted or partial zip file
+            if os.path.exists(zip_file):
+                try:
+                    os.remove(zip_file)
+                except OSError:
+                    # If cleanup fails, we still want to surface the original error
+                    pass
             raise
     
     def _load_embeddings(self):
