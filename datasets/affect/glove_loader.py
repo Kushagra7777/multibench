@@ -10,7 +10,6 @@ import os
 import zipfile
 import urllib.request
 from pathlib import Path
-import numpy as np
 import torch
 from typing import List, Dict
 
