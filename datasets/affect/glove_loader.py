@@ -56,7 +56,7 @@ class GloVe:
         
         self._load_embeddings()
     
-    def _get_embedding_file_name(self):
+    def _get_embedding_file_name(self) -> str:
         """Get the expected embedding file name."""
         return f"glove.{self.name}.{self.dim}d.txt"
     
