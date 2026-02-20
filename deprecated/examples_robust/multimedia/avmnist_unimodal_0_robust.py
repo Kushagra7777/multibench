@@ -1,5 +1,6 @@
 from unimodals.common_models import LeNet, MLP, Constant
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from datasets.avmnist.get_data_robust import get_dataloader
 from training_structures.unimodal import train, test
@@ -13,15 +14,15 @@ modalnum = 0
 traindata, validdata, testdata, robustdata = get_dataloader(
     '../../../../yiwei/avmnist/_MFAS/avmnist')
 channels = 3
-# encoders=[LeNet(1,channels,3).cuda(),LeNet(1,channels,5).cuda()]
-encoder = LeNet(1, channels, 3).cuda()
-head = MLP(channels*8, 100, 10).cuda()
+# encoders=[LeNet(1,channels,3).to(device),LeNet(1,channels,5).to(device)]
+encoder = LeNet(1, channels, 3).to(device)
+head = MLP(channels*8, 100, 10).to(device)
 
 
 train(encoder, head, traindata, validdata, 20, optimtype=torch.optim.SGD, lr=0.01,
       weight_decay=0.0001, modalnum=modalnum, save_encoder=filename_encoder, save_head=filename_head)
 
-encoder = torch.load(filename_encoder, weights_only=False).cuda()
+encoder = torch.load(filename_encoder, weights_only=False).to(device)
 head = torch.load(filename_head, weights_only=False)
 print("Testing:")
 test(encoder, head, testdata, modalnum=modalnum)

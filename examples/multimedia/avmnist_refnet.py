@@ -5,6 +5,7 @@ sys.path.append(os.getcwd())
 from unimodals.common_models import LeNet, MLP, Constant
 from objective_functions.objectives_for_supervised_learning import RefNet_objective
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from utils.helper_modules import Sequential2
 from torch import nn
 from datasets.avmnist.get_data import get_dataloader
@@ -15,14 +16,14 @@ traindata, validdata, testdata = get_dataloader(
     '/home/pliang/yiwei/avmnist/_MFAS/avmnist', batch_size=20)
 channels = 6
 encoders = [Sequential2(LeNet(1, channels, 3), nn.Linear(
-    channels*8, channels*32)).cuda(), LeNet(1, channels, 5).cuda()]
-head = MLP(channels*64, 100, 10).cuda()
-refiner = MLP(channels*64, 1000, 13328).cuda()
-fusion = Concat().cuda()
+    channels*8, channels*32)).to(device), LeNet(1, channels, 5).to(device)]
+head = MLP(channels*64, 100, 10).to(device)
+refiner = MLP(channels*64, 1000, 13328).to(device)
+fusion = Concat().to(device)
 
 train(encoders, fusion, head, traindata, validdata, 15, [
       refiner], optimtype=torch.optim.SGD, lr=0.005, objective=RefNet_objective(0.1), objective_args_dict={'refiner': refiner})
 
 print("Testing:")
-model = torch.load('best.pt', weights_only=False).cuda()
+model = torch.load('best.pt', weights_only=False).to(device)
 test(model, testdata, no_robust=True)

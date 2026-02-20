@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 
@@ -18,13 +19,13 @@ traindata, validdata, testdata = get_dataloader(
 outdim = 256
 encoders = [MaxOut_MLP(512, 512, 300, outdim, False),
             MaxOut_MLP(512, 1024, 4096, outdim, False)]
-head = Linear(2*outdim, 23).cuda()
-fusion = Concat().cuda()
+head = Linear(2*outdim, 23).to(device)
+fusion = Concat().to(device)
 
 train(encoders, fusion, head, traindata, validdata, 1000, early_stop=True, task="multilabel", save=filename, objective_args_dict={},
       optimtype=torch.optim.AdamW, lr=1e-2, weight_decay=0.01, objective=CCA_objective(outdim, criterion=torch.nn.BCEWithLogitsLoss()))
 
 print("Testing:")
-model = torch.load(filename, weights_only=False).cuda()
+model = torch.load(filename, weights_only=False).to(device)
 test(model, testdata, method_name="cca", dataset="imdb",
      criterion=torch.nn.BCEWithLogitsLoss(), task="multilabel")

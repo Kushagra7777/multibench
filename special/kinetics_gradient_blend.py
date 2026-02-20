@@ -2,6 +2,7 @@ from unimodals.common_models import MLP
 from fusions.common_fusions import Concat
 import copy
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import torch.nn as nn
 import torchvision
 import sys

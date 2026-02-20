@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append(os.getcwd())
@@ -18,20 +19,20 @@ traindata, validdata, testdata = get_dataloader(
     '/home/arav/MultiBench/MultiBench/mosi_raw.pkl', robust_test=False, max_pad=True, data_type='mosi', max_seq_len=50)
 
 # mosi/mosei
-encoders = [Identity().cuda(), Identity().cuda(), Identity().cuda()]
+encoders = [Identity().to(device), Identity().to(device), Identity().to(device)]
 head = Sequential(GRU(409, 512, dropout=True, has_padding=False,
-                  batch_first=True, last_only=True), MLP(512, 512, 1)).cuda()
+                  batch_first=True, last_only=True), MLP(512, 512, 1)).to(device)
 
 # humor/sarcasm
-# encoders = [Identity().cuda(),Identity().cuda(),Identity().cuda()]
-# head = Sequential(GRU(752, 1128, dropout=True, has_padding=False, batch_first=True, last_only=True), MLP(1128, 512, 1)).cuda()
+# encoders = [Identity().to(device),Identity().to(device),Identity().to(device)]
+# head = Sequential(GRU(752, 1128, dropout=True, has_padding=False, batch_first=True, last_only=True), MLP(1128, 512, 1)).to(device)
 
-fusion = ConcatEarly().cuda()
+fusion = ConcatEarly().to(device)
 
 train(encoders, fusion, head, traindata, validdata, 100, task="regression", optimtype=torch.optim.AdamW,
       is_packed=False, lr=1e-3, save='mosi_ef_r0.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")
-model = torch.load('mosi_ef_r0.pt', weights_only=False).cuda()
+model = torch.load('mosi_ef_r0.pt', weights_only=False).to(device)
 test(model, testdata, 'affect', is_packed=False,
      criterion=torch.nn.L1Loss(), task="posneg-classification", no_robust=True)

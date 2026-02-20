@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from unimodals.common_models import MLP, GRU
 from datasets.mimic.get_data_robust import get_dataloader
@@ -14,9 +15,9 @@ filename = 'mimic_tensor_matrix_best.pt'
 traindata, validdata, testdata, robustdata = get_dataloader(
     1, imputed_path='datasets/mimic/im.pk')
 # build encoders, head and fusion layer
-encoders = [MLP(5, 10, 10, dropout=False).cuda(),
-            GRU(12, 30, dropout=False).cuda()]
-head = MLP(100, 40, 2, dropout=False).cuda()
+encoders = [MLP(5, 10, 10, dropout=False).to(device),
+            GRU(12, 30, dropout=False).to(device)]
+head = MLP(100, 40, 2, dropout=False).to(device)
 fusion = MultiplicativeInteractions2Modal(
     [10, 720], 100, 'matrix', flatten=True)
 
@@ -25,7 +26,7 @@ train(encoders, fusion, head, traindata,
       validdata, 20, auprc=False, save=filename)
 
 # test
-model = torch.load(filename, weights_only=False).cuda()
+model = torch.load(filename, weights_only=False).to(device)
 acc = []
 print("Robustness testing:")
 for noise_level in range(len(robustdata)):

@@ -1,6 +1,7 @@
 import sys
 import os
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 
 sys.path.append(os.getcwd())
@@ -16,10 +17,10 @@ traindata, validdata, testdata = get_dataloader(
 
 
 s_data = train(['pretrained/mimic/static_encoder_mortality.pt', 'pretrained/mimic/ts_encoder_mortality.pt'], 16, 2, [(5, 10, 10), (288, 720, 360)],
-               traindata, validdata, surr.SimpleRecurrentSurrogate().cuda(), (3, 3, 2), epochs=6)
+               traindata, validdata, surr.SimpleRecurrentSurrogate().to(device), (3, 3, 2), epochs=6)
 
 """
 print("Testing:")
-model=torch.load('best.pt', weights_only=False).cuda()
+model=torch.load('best.pt', weights_only=False).to(device)
 test(model,testdata)
 """

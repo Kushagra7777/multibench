@@ -1,5 +1,6 @@
 from unimodals.common_models import MLP
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import torchvision
 import sys
 import os

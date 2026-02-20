@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from unimodals.common_models import MLP, GRU
 from datasets.mimic.get_data import get_dataloader
@@ -15,10 +16,10 @@ traindata, validdata, testdata = get_dataloader(
     -1, imputed_path='datasets/mimic/im.pk')
 
 # build encoders, head and fusion layer
-encoders = [MLP(5, 10, 10).cuda(), GRU(12, 30, flatten=True).cuda()]
-head = MLP(730, 40, 6).cuda()
-fusion = Concat().cuda()
-unimodal_heads = [MLP(10, 20, 6).cuda(), MLP(720, 40, 6).cuda()]
+encoders = [MLP(5, 10, 10).to(device), GRU(12, 30, flatten=True).to(device)]
+head = MLP(730, 40, 6).to(device)
+fusion = Concat().to(device)
+unimodal_heads = [MLP(10, 20, 6).to(device), MLP(720, 40, 6).to(device)]
 
 # train
 train(encoders, head, unimodal_heads, fusion, traindata,
@@ -26,5 +27,5 @@ train(encoders, head, unimodal_heads, fusion, traindata,
 
 # test
 print("Testing: ")
-model = torch.load(filename, weights_only=False).cuda()
+model = torch.load(filename, weights_only=False).to(device)
 test(model, testdata, auprc=False)

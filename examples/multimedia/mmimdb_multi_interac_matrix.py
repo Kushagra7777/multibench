@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 
@@ -17,13 +18,13 @@ traindata, validdata, testdata = get_dataloader(
 
 encoders = [MaxOut_MLP(512, 512, 300, linear_layer=False),
             MaxOut_MLP(512, 1024, 4096, 512, False)]
-head = Linear(1024, 23).cuda()
-fusion = MultiplicativeInteractions2Modal([512, 512], 1024, 'matrix').cuda()
+head = Linear(1024, 23).to(device)
+fusion = MultiplicativeInteractions2Modal([512, 512], 1024, 'matrix').to(device)
 
 train(encoders, fusion, head, traindata, validdata, 1000, early_stop=True, task="multilabel",
       save=filename, optimtype=torch.optim.AdamW, lr=8e-3, weight_decay=0.01, objective=torch.nn.BCEWithLogitsLoss())
 
 print("Testing:")
-model = torch.load(filename, weights_only=False).cuda()
+model = torch.load(filename, weights_only=False).to(device)
 test(model, testdata, method_name="MIM", dataset="imdb",
      criterion=torch.nn.BCEWithLogitsLoss(), task="multilabel")

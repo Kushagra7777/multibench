@@ -1,6 +1,7 @@
 import argparse
 import numpy as np
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import torch.nn.functional as F
 import training_structures.gradient_blend
 from torch import nn
@@ -39,12 +40,12 @@ stocks = sorted(args.input_stocks.split(' '))
 train_loader, val_loader, test_loader = get_dataloader(
     stocks, stocks, [args.target_stock], cuda=False)
 
-unimodal_models = [Identity().cuda() for x in stocks]
+unimodal_models = [Identity().to(device) for x in stocks]
 multimodal_head = IgnoreTrainingArg(nn.Sequential(
-    LSTM(len(stocks), 128, linear_layer_outdim=1), Squeeze())).cuda()
+    LSTM(len(stocks), 128, linear_layer_outdim=1), Squeeze())).to(device)
 unimodal_heads = [IgnoreTrainingArg(nn.Sequential(
-    LSTM(1, 128, linear_layer_outdim=1), Squeeze())).cuda() for x in stocks]
-fuse = Stack().cuda()
+    LSTM(1, 128, linear_layer_outdim=1), Squeeze())).to(device) for x in stocks]
+fuse = Stack().to(device)
 allmodules = [*unimodal_models, multimodal_head, *unimodal_heads, fuse]
 
 training_structures.gradient_blend.criterion = nn.MSELoss()

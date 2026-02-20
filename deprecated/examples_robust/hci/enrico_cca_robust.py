@@ -1,5 +1,6 @@
 from unimodals.common_models import VGG16, VGG16Slim, DAN, Linear, MLP, VGG11Slim, VGG11Pruned
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from memory_profiler import memory_usage
 from robustness.all_in_one import general_train, general_test
 from datasets.enrico.get_data_robust import get_dataloader_robust
@@ -15,15 +16,14 @@ sys.path.append(os.getcwd())
 dls, weights = get_dataloader('datasets/enrico/dataset')
 traindata, validdata, _ = dls
 robustdata = get_dataloader_robust('datasets/enrico/dataset')
-criterion = nn.CrossEntropyLoss(weight=torch.tensor(weights)).cuda()
-# encoders=[VGG16Slim(64).cuda(), DAN(4, 16, dropout=True, dropoutp=0.25).cuda(), DAN(28, 16, dropout=True, dropoutp=0.25).cuda()]
+criterion = nn.CrossEntropyLoss(weight=torch.tensor(weights)).to(device)
+# encoders=[VGG16Slim(64).to(device), DAN(4, 16, dropout=True, dropoutp=0.25).to(device), DAN(28, 16, dropout=True, dropoutp=0.25).to(device)]
 # head = Linear(96, 20)
-encoders = [VGG11Slim(16, dropout=True, dropoutp=0.2, freeze_features=True).cuda(
-), VGG11Slim(16, dropout=True, dropoutp=0.2, freeze_features=True).cuda()]
-# encoders = [DAN(4, 16, dropout=True, dropoutp=0.25).cuda(), DAN(28, 16, dropout=True, dropoutp=0.25).cuda()]
-head = Linear(32, 20).cuda()
+encoders = [VGG11Slim(16, dropout=True, dropoutp=0.2, freeze_features=True).to(device), VGG11Slim(16, dropout=True, dropoutp=0.2, freeze_features=True).to(device)]
+# encoders = [DAN(4, 16, dropout=True, dropoutp=0.25).to(device), DAN(28, 16, dropout=True, dropoutp=0.25).to(device)]
+head = Linear(32, 20).to(device)
 
-fusion = Concat().cuda()
+fusion = Concat().to(device)
 
 allmodules = encoders + [head, fusion]
 

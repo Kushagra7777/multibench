@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from unimodals.common_models import MaxOut_MLP, Linear
 from datasets.imdb.get_data import get_dataloader
@@ -12,13 +13,13 @@ traindata, validdata, testdata = get_dataloader(
     '../video/multimodal_imdb.hdf5', vgg=True, batch_size=128)
 encoders = [MaxOut_MLP(512, 512, 300, linear_layer=False),
             MaxOut_MLP(512, 1024, 4096, 512, False)]
-head = Linear(1024, 23).cuda()
+head = Linear(1024, 23).to(device)
 
-fusion = MultiplicativeInteractions2Modal([512, 512], 1024, 'matrix').cuda()
+fusion = MultiplicativeInteractions2Modal([512, 512], 1024, 'matrix').to(device)
 
 train(encoders, fusion, head, traindata, validdata, 1000, early_stop=True, task="multilabel", regularization=False,
       save="best_mim.pt", optimtype=torch.optim.AdamW, lr=8e-3, weight_decay=0.01, criterion=torch.nn.BCEWithLogitsLoss())
 
 print("Testing:")
-model = torch.load('best_mim.pt', weights_only=False).cuda()
+model = torch.load('best_mim.pt', weights_only=False).to(device)
 test(model, testdata, criterion=torch.nn.BCEWithLogitsLoss(), task="multilabel")

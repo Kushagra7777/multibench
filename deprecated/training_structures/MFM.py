@@ -1,6 +1,7 @@
 from sklearn.metrics import accuracy_score, f1_score
 
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from utils.AUPRC import AUPRC
 
@@ -48,14 +49,14 @@ def train_MFM(
         total = 0
         for j in train_dataloader:
             optim.zero_grad()
-            trains = [x.float().cuda() for x in j[:-1]]
+            trains = [x.float().to(device) for x in j[:-1]]
             total += len(trains[0])
             mvae.train()
             recons, outs = mvae(trains)
             if type(criterion) == torch.nn.modules.loss.BCEWithLogitsLoss:
-                loss = criterion(outs, j[-1].float().cuda())*ce_weight
+                loss = criterion(outs, j[-1].float().to(device))*ce_weight
             else:
-                loss = criterion(outs, j[-1].cuda())*ce_weight
+                loss = criterion(outs, j[-1].to(device))*ce_weight
             
             loss += recon_loss_func(recons, trains)
             
@@ -69,13 +70,13 @@ def train_MFM(
                 pred = []
                 true = []
                 for j in valid_dataloader:
-                    trains = [x.float().cuda() for x in j[:-1]]
+                    trains = [x.float().to(device) for x in j[:-1]]
                     mvae.train()
                     _, outs = mvae(trains)
                     if type(criterion) == torch.nn.modules.loss.BCEWithLogitsLoss:
-                        loss = criterion(outs, j[-1].float().cuda())
+                        loss = criterion(outs, j[-1].float().to(device))
                     else:
-                        loss = criterion(outs, j[-1].cuda())
+                        loss = criterion(outs, j[-1].to(device))
                     totalloss += loss * len(j[0])
                     if task == "classification":
                         pred.append(torch.argmax(outs, 1))
@@ -119,8 +120,8 @@ def test_MFM(model, test_dataloader, auprc=False, task="classification"):
     true = []
     pts = []
     for j in test_dataloader:
-        xes = [x.float().cuda() for x in j[:-1]]
-        y_batch = j[-1].cuda()
+        xes = [x.float().to(device) for x in j[:-1]]
+        y_batch = j[-1].to(device)
         with torch.no_grad():
             model.eval()
             _, outs = model(xes)

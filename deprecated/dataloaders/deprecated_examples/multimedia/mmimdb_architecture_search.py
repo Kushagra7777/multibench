@@ -1,6 +1,7 @@
 from training_structures.architecture_search import train, test
 import utils.surrogate as surr
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from datasets.imdb.get_data import get_dataloader
 from fusions.common_fusions import Concat
 import sys
@@ -12,9 +13,9 @@ traindata, validdata, testdata = get_dataloader(
     '../video/multimodal_imdb.hdf5', vgg=True, batch_size=128)
 # Todo
 # s_data=train(['pretrained/mmimdb/encoder_t.pt','pretrained/mmimdb/encoder_i.pt'],16,23,[(6,12,24),(6,12,24,48,96)],
-#         traindata,validdata,surr.SimpleRecurrentSurrogate().cuda(),(3,5,2),epochs=6)
+#         traindata,validdata,surr.SimpleRecurrentSurrogate().to(device),(3,5,2),epochs=6)
 
 
 
-# model=torch.load('best.pt', weights_only=False).cuda()
+# model=torch.load('best.pt', weights_only=False).to(device)
 # test(model,testdata)

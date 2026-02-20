@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import pandas_datareader
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch.utils.data import DataLoader
 
 import os
@@ -46,8 +47,8 @@ def get_dataloader(stocks, input_stocks, output_stocks, batch_size=16, train_shu
     X = torch.cat(X)
 
     if cuda:
-        X = X.cuda()
-        Y = Y.cuda()
+        X = X.to(device)
+        Y = Y.to(device)
 
     class MyDataset(torch.utils.data.Dataset):
         def __init__(self, X, Y, modality_first):
@@ -98,7 +99,7 @@ def get_dataloader(stocks, input_stocks, output_stocks, batch_size=16, train_shu
         X_robust = torch.tensor(add_timeseries_noise(
             X[test_split:].cpu().numpy(), noise_level=noise_level/10), dtype=torch.float32)
         if cuda:
-            X_robust = X_robust.cuda()
+            X_robust = X_robust.to(device)
         test_ds = MyDataset(X_robust, Y[test_split:], modality_first)
         test_loader.append(torch.utils.data.DataLoader(
             test_ds, shuffle=False, batch_size=batch_size, drop_last=False))

@@ -1,5 +1,6 @@
 from sklearn.metrics import accuracy_score, f1_score
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from torch.optim.lr_scheduler import ExponentialLR
 
@@ -39,7 +40,7 @@ def train(
         criterion=nn.CrossEntropyLoss(), auprc=False, save='best.pt'):
 
     #n_data = len(train_dataloader.dataset)
-    model = MMDL(encoders, fusion, head, is_packed).cuda()
+    model = MMDL(encoders, fusion, head, is_packed).to(device)
     op = optimtype(model.parameters(), lr=lr, weight_decay=weight_decay)
     #scheduler = ExponentialLR(op, 0.9)
     cca_criterion = CCALoss(outdim, False, device=torch.device("cuda"))
@@ -61,11 +62,11 @@ def train(
             if is_packed:
                 with torch.backends.cudnn.flags(enabled=False):
                     out1, out2 = model(
-                        [[j[0][0].cuda(), j[0][2].cuda()], j[1], j[2].cuda()], training=True)
+                        [[j[0][0].to(device), j[0][2].to(device)], j[1], j[2].to(device)], training=True)
                     
                     loss = cca_criterion(out1, out2)
             else:
-                out = model([i.cuda()
+                out = model([i.to(device)
                             for i in j[:-1]], cca=True, training=True)
                 loss = cca_criterion(out[0], out[1])
             totalloss += loss * len(j[-1])
@@ -100,18 +101,18 @@ def train(
             op.zero_grad()
             if is_packed:
                 with torch.backends.cudnn.flags(enabled=False):
-                    out = model([[i.cuda()
+                    out = model([[i.to(device)
                                 for i in j[0]], j[1]], training=True)
                     
                     
-                    loss = criterion(out, j[-1].cuda())
+                    loss = criterion(out, j[-1].to(device))
             else:
-                out = model([i.cuda() for i in j[:-1]], training=True)
+                out = model([i.to(device) for i in j[:-1]], training=True)
                 
                 if type(criterion) == torch.nn.modules.loss.BCEWithLogitsLoss:
-                    loss = criterion(out, j[-1].float().cuda())
+                    loss = criterion(out, j[-1].float().to(device))
                 else:
-                    loss = criterion(out, j[-1].cuda())
+                    loss = criterion(out, j[-1].to(device))
 
             totalloss += loss * len(j[-1])
             totals += len(j[-1])
@@ -129,14 +130,14 @@ def train(
             pts = []
             for j in valid_dataloader:
                 if is_packed:
-                    out = model([[i.cuda()
+                    out = model([[i.to(device)
                                 for i in j[0]], j[1]], training=False)
                 else:
-                    out = model([i.cuda() for i in j[:-1]], training=False)
+                    out = model([i.to(device) for i in j[:-1]], training=False)
                 if type(criterion) == torch.nn.modules.loss.BCEWithLogitsLoss:
-                    loss = criterion(out, j[-1].float().cuda())
+                    loss = criterion(out, j[-1].float().to(device))
                 else:
-                    loss = criterion(out, j[-1].cuda())
+                    loss = criterion(out, j[-1].to(device))
                 totalloss += loss*len(j[-1])
                 if task == "classification":
                     pred.append(torch.argmax(out, 1))
@@ -207,13 +208,13 @@ def test(
         pts = []
         for j in test_dataloader:
             if is_packed:
-                out = model([[i.cuda() for i in j[0]], j[1]], training=False)
+                out = model([[i.to(device) for i in j[0]], j[1]], training=False)
             else:
-                out = model([i.cuda() for i in j[:-1]], training=False)
+                out = model([i.to(device) for i in j[:-1]], training=False)
             if type(criterion) == torch.nn.modules.loss.BCEWithLogitsLoss:
-                loss = criterion(out, j[-1].float().cuda())
+                loss = criterion(out, j[-1].float().to(device))
             else:
-                loss = criterion(out, j[-1].cuda())
+                loss = criterion(out, j[-1].to(device))
             
             totalloss += loss*len(j[-1])
             if task == "classification":

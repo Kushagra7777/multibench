@@ -3,6 +3,7 @@ from unimodals.MVAE import TSEncoder, TSDecoder
 from training_structures.MFM import train_MFM, test_MFM
 from datasets.mimic.get_data_robust import get_dataloader
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from unimodals.common_models import MLP
 from fusions.common_fusions import Concat
@@ -17,13 +18,13 @@ n_latent = 200
 series_dim = 12
 timestep = 24
 fuse = Concat()
-encoders = [MLP(5, 20, n_latent).cuda(), TSEncoder(
-    series_dim, 30, n_latent, timestep, returnvar=False).cuda()]
-decoders = [MLP(n_latent, 20, 5).cuda(), TSDecoder(
-    series_dim, 30, n_latent, timestep).cuda()]
-intermediates = [MLP(n_latent, n_latent//2, n_latent//2).cuda(), MLP(n_latent,
-                                                                     n_latent//2, n_latent//2).cuda(), MLP(2*n_latent, n_latent, n_latent//2).cuda()]
-head = MLP(n_latent//2, 20, classes).cuda()
+encoders = [MLP(5, 20, n_latent).to(device), TSEncoder(
+    series_dim, 30, n_latent, timestep, returnvar=False).to(device)]
+decoders = [MLP(n_latent, 20, 5).to(device), TSDecoder(
+    series_dim, 30, n_latent, timestep).to(device)]
+intermediates = [MLP(n_latent, n_latent//2, n_latent//2).to(device), MLP(n_latent,
+                                                                     n_latent//2, n_latent//2).to(device), MLP(2*n_latent, n_latent, n_latent//2).to(device)]
+head = MLP(n_latent//2, 20, classes).to(device)
 recon_loss = recon_weighted_sum([sigmloss1d, sigmloss1d], [1.0, 1.0])
 train_MFM(encoders, decoders, head, intermediates, fuse, recon_loss,
           traindata, validdata, 25, savedir='mimic_MFM_best.pt')

@@ -4,6 +4,7 @@ from unimodals.common_models import Transformer, MLP
 from datasets.affect.get_data import get_dataloader
 from fusions.common_fusions import ConcatEarly
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append(os.getcwd())
@@ -15,18 +16,18 @@ traindata, validdata, testdata = get_dataloader(
     '/home/paul/MultiBench/mosi_raw.pkl')
 
 # mosi/mosei
-encoders = [Transformer(74, 150).cuda(), Transformer(
-    35, 75).cuda(), Transformer(300, 600).cuda()]
+encoders = [Transformer(74, 150).to(device), Transformer(
+    35, 75).to(device), Transformer(300, 600).to(device)]
 
-head = MLP(825, 512, 1).cuda()
+head = MLP(825, 512, 1).to(device)
 
 # humor/sarcasm
-# encoders = [Transformer().cuda()] * 3
-# head = MLP(1368, 512, 1).cuda()
+# encoders = [Transformer().to(device)] * 3
+# head = MLP(1368, 512, 1).to(device)
 
 all_modules = [*encoders, head]
 
-fusion = ConcatEarly().cuda()
+fusion = ConcatEarly().to(device)
 
 
 def trainprocess():
@@ -37,5 +38,5 @@ def trainprocess():
 all_in_one_train(trainprocess, all_modules)
 
 print("Testing:")
-model = torch.load('mosi_lf_best.pt', weights_only=False).cuda()
+model = torch.load('mosi_lf_best.pt', weights_only=False).to(device)
 test(model, testdata, 'affect', True, torch.nn.L1Loss(), "posneg-classification")

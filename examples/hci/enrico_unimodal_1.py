@@ -1,6 +1,7 @@
 import sys
 import os
 import torch 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 
 sys.path.append(os.getcwd())
@@ -18,9 +19,9 @@ dls, weights = get_dataloader('datasets/enrico/dataset')
 traindata, validdata, testdata = dls
 modalnum = 1
 encoder = VGG11Slim(16, dropout=True, dropoutp=0.2,
-                    freeze_features=True).cuda()
-head = Linear(16, 20).cuda()
-# head = MLP(16, 32, 20, dropout=False).cuda()
+                    freeze_features=True).to(device)
+head = Linear(16, 20).to(device)
+# head = MLP(16, 32, 20, dropout=False).to(device)
 
 allmodules = [encoder, head]
 
@@ -33,5 +34,5 @@ def trainprocess():
 all_in_one_train(trainprocess, allmodules)
 
 
-model = torch.load('best.pt', weights_only=False).cuda()
+model = torch.load('best.pt', weights_only=False).to(device)
 test(encoder, head, testdata, dataset='enrico', modalnum=modalnum)

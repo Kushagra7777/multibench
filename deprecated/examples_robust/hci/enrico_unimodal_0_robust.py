@@ -1,5 +1,6 @@
 from unimodals.common_models import VGG16, VGG16Slim, DAN, Linear, MLP, VGG11Slim, VGG11Pruned, VGG16Pruned
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from memory_profiler import memory_usage
 from robustness.all_in_one import general_train, general_test
 from datasets.enrico.get_data_robust import get_dataloader_robust
@@ -18,9 +19,9 @@ robustdata = get_dataloader_robust(
     'datasets/enrico/dataset', wireframe_noise=False)
 modalnum = 0
 encoder = VGG11Slim(16, dropout=True, dropoutp=0.2,
-                    freeze_features=True).cuda()
-head = Linear(16, 20).cuda()
-# head = MLP(16, 32, 20, dropout=False).cuda()
+                    freeze_features=True).to(device)
+head = Linear(16, 20).to(device)
+# head = MLP(16, 32, 20, dropout=False).to(device)
 
 allmodules = [encoder, head]
 

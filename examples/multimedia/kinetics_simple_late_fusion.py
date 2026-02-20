@@ -3,6 +3,7 @@
 import sys
 import os
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import torchvision
 
 sys.path.append(os.getcwd())
@@ -18,15 +19,15 @@ traindata, validdata, testdata = get_dataloader(sys.argv[1])
 r50 = torchvision.models.resnet50(pretrained=True)
 r50.conv1 = torch.nn.Conv2d(
     1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-audio_encoder = torch.nn.Sequential(r50, MLP(1000, 200, 64)).cuda()
-encoders = [ResNetLSTMEnc(64).cuda(), audio_encoder.cuda()]
-head = MLP(64+64, 200, 5).cuda()
+audio_encoder = torch.nn.Sequential(r50, MLP(1000, 200, 64)).to(device)
+encoders = [ResNetLSTMEnc(64).to(device), audio_encoder.to(device)]
+head = MLP(64+64, 200, 5).to(device)
 
-fusion = Concat().cuda()
+fusion = Concat().to(device)
 
 train(encoders, fusion, head, traindata, validdata, 30,
       optimtype=torch.optim.SGD, lr=0.1, weight_decay=0.0001)
 
 print("Testing:")
-model = torch.load('best.pt', weights_only=False).cuda()
+model = torch.load('best.pt', weights_only=False).to(device)
 test(model, testdata)

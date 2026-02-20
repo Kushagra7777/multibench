@@ -4,6 +4,7 @@ from unimodals.common_models import MLP, VGG16, Linear, MaxOut_MLP
 from fusions.common_fusions import Concat
 from training_structures.Simple_Early_Fusion import train, test
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append('/home/pliang/multibench/MultiBench/datasets/imdb')
@@ -18,8 +19,8 @@ robustdata = get_dataloader_robust(
 
 encoders = None
 #encoders=[MLP(300, 512, 512), VGG16(512)]
-head = MaxOut_MLP(23, 512, 4396).cuda()
-fusion = Concat().cuda()
+head = MaxOut_MLP(23, 512, 4396).to(device)
+fusion = Concat().to(device)
 
 
 def trainprocess(filename):

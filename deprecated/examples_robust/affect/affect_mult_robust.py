@@ -5,6 +5,7 @@ from training_structures.unimodal import train, test
 from fusions.mult import MULTModel
 from torch import nn
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append(os.getcwd())
@@ -16,11 +17,11 @@ traindata, validdata, robust_text, robust_vision, robust_audio, robust_timeserie
     '../../../affect/processed/mosei_senti_data.pkl', '../../../affect/mosei', 'mosei')
 
 # mosi
-# encoders=GRU(325,512,dropout=True,has_padding=True).cuda()
-# head=MLP(512,256, 1).cuda()
+# encoders=GRU(325,512,dropout=True,has_padding=True).to(device)
+# head=MLP(512,256, 1).to(device)
 
 # mosei
-encoders = MULTModel(3).cuda()
+encoders = MULTModel(3).to(device)
 head = nn.Identity()
 
 

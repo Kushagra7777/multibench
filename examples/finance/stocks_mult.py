@@ -1,5 +1,6 @@
 from torch import nn
 import torch.nn.functional as F
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import torch
 import pmdarima
 import numpy as np
@@ -34,7 +35,7 @@ grouping = Grouping(n_modalities)
 # Get n_features for each group
 n_features = [x.size(-1) for x in grouping(next(iter(train_loader))[0])]
 
-model = nn.Sequential(grouping, MULTModel(n_modalities, n_features)).cuda()
+model = nn.Sequential(grouping, MULTModel(n_modalities, n_features)).to(device)
 identity = Identity()
 allmodules = [model, identity]
 
@@ -47,8 +48,8 @@ def trainprocess():
 
 all_in_one_train(trainprocess, allmodules)
 
-encoder = torch.load('encoder.pt', weights_only=False).cuda()
-head = torch.load('head.pt', weights_only=False).cuda()
+encoder = torch.load('encoder.pt', weights_only=False).to(device)
+head = torch.load('head.pt', weights_only=False).to(device)
 # dataset = 'finance F&B', finance tech', finance health'
 test(encoder, head, test_loader, dataset='finance F&B',
      task='regression', criterion=nn.MSELoss())

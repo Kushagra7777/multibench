@@ -4,6 +4,7 @@ from get_data_robust import get_dataloader
 from fusions.common_fusions import ConcatEarly
 from training_structures.Simple_Early_Fusion import train, test
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
@@ -16,24 +17,24 @@ traindata, validdata, robust_text, robust_vision, robust_audio, robust_timeserie
     '../../../affect/processed/mosi_data.pkl', '../../../affect/mosi', 'mosi')
 
 # mosi
-# encoders=GRU(325,512,dropout=True,has_padding=True).cuda()
-# head=MLP(512,256, 1).cuda()
+# encoders=GRU(325,512,dropout=True,has_padding=True).to(device)
+# head=MLP(512,256, 1).to(device)
 
 # mosei
-encoders = GRU(409, 800, dropout=True, has_padding=True).cuda()
-head = MLP(800, 400, 1).cuda()
-# encoders=[GRU(35,70,dropout=True,has_padding=True).cuda(), \
-#     GRU(74,150,dropout=True,has_padding=True).cuda(),\
-#     GRU(300,600,dropout=True,has_padding=True).cuda()]
-# head=MLP(820,400,1).cuda()
+encoders = GRU(409, 800, dropout=True, has_padding=True).to(device)
+head = MLP(800, 400, 1).to(device)
+# encoders=[GRU(35,70,dropout=True,has_padding=True).to(device), \
+#     GRU(74,150,dropout=True,has_padding=True).to(device),\
+#     GRU(300,600,dropout=True,has_padding=True).to(device)]
+# head=MLP(820,400,1).to(device)
 # iemocap
 '''
-encoders=[GRU(35,70,dropout=True,has_padding=True).cuda(), \
-    GRU(74,150,dropout=True,has_padding=True).cuda(),\
-    GRU(300,600,dropout=True,has_padding=True).cuda()]
-head=MLP(820,400,4).cuda()
+encoders=[GRU(35,70,dropout=True,has_padding=True).to(device), \
+    GRU(74,150,dropout=True,has_padding=True).to(device),\
+    GRU(300,600,dropout=True,has_padding=True).to(device)]
+head=MLP(820,400,4).to(device)
 '''
-fusion = ConcatEarly().cuda()
+fusion = ConcatEarly().to(device)
 
 # Support simple early_fusion and early_fusion with removing bias
 # mosi/mosei

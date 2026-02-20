@@ -4,6 +4,7 @@ from get_data_robust import get_dataloader
 from fusions.common_fusions import Concat
 from training_structures.Contrastive_Learning import train, test
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
@@ -16,14 +17,14 @@ traindata, validdata, robust_text, robust_vision, robust_audio, robust_timeserie
     '../../../affect/processed/mosi_data.pkl', '../../../affect/mosi', 'mosi', 100)
 
 '''
-encoders=[GRU(20,50,dropout=True,has_padding=True).cuda(), \
-    GRU(5,15,dropout=True,has_padding=True).cuda(),\
-    GRU(300,600,dropout=True,has_padding=True).cuda()]
+encoders=[GRU(20,50,dropout=True,has_padding=True).to(device), \
+    GRU(5,15,dropout=True,has_padding=True).to(device),\
+    GRU(300,600,dropout=True,has_padding=True).to(device)]
 '''
-encoders = [GRUWithLinear(20, 50, 200, dropout=True, has_padding=True).cuda(),
-            GRUWithLinear(300, 600, 200, dropout=True, has_padding=True).cuda()]
-head = MLP(200, 100, 1).cuda()
-fusion = Concat().cuda()
+encoders = [GRUWithLinear(20, 50, 200, dropout=True, has_padding=True).to(device),
+            GRUWithLinear(300, 600, 200, dropout=True, has_padding=True).to(device)]
+head = MLP(200, 100, 1).to(device)
+fusion = Concat().to(device)
 
 
 def trainprocess(filename):

@@ -1,6 +1,7 @@
 from unimodals.common_models import VGG16, VGG16Slim, DAN, Linear, MLP, VGG11Slim, VGG11Pruned, VGG16Pruned
 from private_test_scripts.all_in_one import all_in_one_train, all_in_one_test
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from memory_profiler import memory_usage
 from datasets.enrico.get_data import get_dataloader
 from fusions.common_fusions import Concat
@@ -15,9 +16,9 @@ dls, weights = get_dataloader('datasets/enrico/dataset')
 traindata, validdata, testdata = dls
 modalnum = 1
 encoder = VGG11Slim(16, dropout=True, dropoutp=0.2,
-                    freeze_features=True).cuda()
-head = Linear(16, 20).cuda()
-# head = MLP(16, 32, 20, dropout=False).cuda()
+                    freeze_features=True).to(device)
+head = Linear(16, 20).to(device)
+# head = MLP(16, 32, 20, dropout=False).to(device)
 
 allmodules = [encoder, head]
 
@@ -30,7 +31,7 @@ def trainprocess():
 all_in_one_train(trainprocess, allmodules)
 
 print("Testing:")
-model = torch.load('best.pt', weights_only=False).cuda()
+model = torch.load('best.pt', weights_only=False).to(device)
 
 
 def testprocess():

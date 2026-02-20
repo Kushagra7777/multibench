@@ -3,6 +3,7 @@ from robustness.all_in_one import general_train, general_test
 from get_data_robust import get_dataloader, get_dataloader_robust
 from training_structures.unimodal import train, test
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
@@ -16,9 +17,9 @@ robustdata = get_dataloader_robust(
     '../../../video/mmimdb', '../../../video/multimodal_imdb.hdf5', batch_size=128)
 
 robustdata = robustdata[1:]
-encoders = MLP(300, 512, 512).cuda()
-# encoders=MLP(4096,1024,512).cuda()
-head = MLP(512, 256, 23).cuda()
+encoders = MLP(300, 512, 512).to(device)
+# encoders=MLP(4096,1024,512).to(device)
+head = MLP(512, 256, 23).to(device)
 
 
 def trainprocess(filename_encoder, filename_head):

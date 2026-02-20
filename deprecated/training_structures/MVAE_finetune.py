@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
@@ -72,7 +73,7 @@ def train_MVAE(encoders, decoders, head, fusion_method, train_dataloader, valid_
         totaltrain = 0
         for j in train_dataloader:
             optim.zero_grad()
-            trains = [x.float().cuda() for x in j[:-1]]
+            trains = [x.float().to(device) for x in j[:-1]]
             _, reconsjoint, mujoint, varjoint = mvae(trains, training=True)
             recons = []
             mus = []
@@ -97,7 +98,7 @@ def train_MVAE(encoders, decoders, head, fusion_method, train_dataloader, valid_
             allpairs = []
             with torch.no_grad():
                 for j in train_dataloader:
-                    trains = [x.float().cuda() for x in j[:-1]]
+                    trains = [x.float().to(device) for x in j[:-1]]
                     _, recon, mu, var = mvae(trains, training=False)
                     for i in range(len(trains[0])):
                         allpairs.append((mu[i].cpu(), j[-1][i]))
@@ -107,8 +108,8 @@ def train_MVAE(encoders, decoders, head, fusion_method, train_dataloader, valid_
                 totalloss = 0.0
                 for j in finetune_dataloader:
                     hoptim.zero_grad()
-                    outs = head(j[0].cuda(), training=True)
-                    loss = criterion(outs, j[-1].cuda())
+                    outs = head(j[0].to(device), training=True)
+                    loss = criterion(outs, j[-1].to(device))
                     loss.backward()
                     hoptim.step()
                     totalloss += loss * len(j[0])
@@ -119,10 +120,10 @@ def train_MVAE(encoders, decoders, head, fusion_method, train_dataloader, valid_
                     total = 0
                     correct = 0
                     for j in valid_dataloader:
-                        trains = [x.float().cuda() for x in j[:-1]]
+                        trains = [x.float().to(device) for x in j[:-1]]
                         _, mu, var = mvae(trains, training=False)
                         outs = head(mu, training=False)
-                        loss = criterion(outs, j[-1].cuda())
+                        loss = criterion(outs, j[-1].to(device))
                         totalloss += loss * len(j[0])
                         for i in range(len(j[-1])):
                             total += 1
@@ -143,8 +144,8 @@ def test_MVAE(mvae, head, test_dataloader, auprc=False):
     correct = 0
     pts = []
     for j in test_dataloader:
-        xes = [x.float().cuda() for x in j[:-1]]
-        y_batch = j[-1].cuda()
+        xes = [x.float().to(device) for x in j[:-1]]
+        y_batch = j[-1].to(device)
         with torch.no_grad():
             _, _, mu, var = mvae(xes, training=False)
             outs = head(mu, training=False)

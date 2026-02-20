@@ -6,6 +6,7 @@ from fusions.finance.early_fusion import EarlyFusionTransformer
 from fusions.common_fusions import Stack
 from torch import nn
 import torch.nn.functional as F
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import torch
 import pmdarima
 import numpy as np
@@ -30,9 +31,9 @@ train_loader, val_loader, test_loader = get_dataloader(
     stocks, stocks, [args.target_stock])
 
 n_modalities = len(train_loader.dataset[0]) - 1
-encoders = [Identity().cuda()] * n_modalities
-fusion = Stack().cuda()
-head = EarlyFusionTransformer(n_modalities).cuda()
+encoders = [Identity().to(device)] * n_modalities
+fusion = Stack().to(device)
+head = EarlyFusionTransformer(n_modalities).to(device)
 allmodules = [*encoders, fusion, head]
 
 num_training = 5

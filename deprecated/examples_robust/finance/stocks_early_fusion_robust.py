@@ -5,6 +5,7 @@ from unimodals.common_models import LSTM, Identity
 from fusions.common_fusions import Stack
 from torch import nn
 import torch.nn.functional as F
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import torch
 import pmdarima
 import numpy as np
@@ -29,9 +30,9 @@ train_loader, val_loader, test_loader = get_dataloader(
     stocks, stocks, [args.target_stock])
 
 n_modalities = len(train_loader.dataset[0]) - 1
-encoders = [Identity().cuda()] * n_modalities
-fusion = Stack().cuda()
-head = LSTM(n_modalities, 128, linear_layer_outdim=1).cuda()
+encoders = [Identity().to(device)] * n_modalities
+fusion = Stack().to(device)
+head = LSTM(n_modalities, 128, linear_layer_outdim=1).to(device)
 allmodules = [*encoders, fusion, head]
 
 num_training = 5

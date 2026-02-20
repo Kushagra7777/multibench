@@ -8,6 +8,7 @@ This is the Python script version of Multibench_Example_Usage_Colab.ipynb
 """
 
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 
@@ -52,10 +53,10 @@ def main():
     
     # Define encoders (using Identity for simplicity - passes through raw features)
     # MOSI has 3 modalities: text, audio, vision
-    encoders = [Identity().cuda(), Identity().cuda(), Identity().cuda()]
+    encoders = [Identity().to(device), Identity().to(device), Identity().to(device)]
     
     # Define fusion paradigm (early concatenation along dimension 2)
-    fusion = ConcatEarly().cuda()
+    fusion = ConcatEarly().to(device)
     
     # Define prediction head
     # Input dimension 409 comes from concatenated modality features
@@ -63,7 +64,7 @@ def main():
     head = Sequential(
         GRU(409, 512, dropout=True, has_padding=False, batch_first=True, last_only=True), 
         MLP(512, 512, 1)
-    ).cuda()
+    ).to(device)
     
     print("Training model...")
     
@@ -84,7 +85,7 @@ def main():
     print("\nTesting:")
     
     # Load best model and test
-    model = torch.load('mosi_ef_r0.pt', weights_only=False).cuda()
+    model = torch.load('mosi_ef_r0.pt', weights_only=False).to(device)
     test(
         model, testdata, 
         dataset='affect',

@@ -5,6 +5,7 @@ from get_data_robust import get_dataloader
 from fusions.common_fusions import Concat
 from training_structures.Simple_Late_Fusion import train, test
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
@@ -24,26 +25,26 @@ traindata, validdata, robust_text, robust_vision, robust_audio, robust_timeserie
     '../../../affect/processed/mosei_senti_data.pkl', '../../../affect/mosei', 'mosei')
 
 # mosi
-# encoders=[GRU(20,50,dropout=True,has_padding=True).cuda(), \
-#     GRU(5,15,dropout=True,has_padding=True).cuda(),\
-#     GRU(300,600,dropout=True,has_padding=True).cuda()]
-# head=MLP(665,300,1).cuda()
+# encoders=[GRU(20,50,dropout=True,has_padding=True).to(device), \
+#     GRU(5,15,dropout=True,has_padding=True).to(device),\
+#     GRU(300,600,dropout=True,has_padding=True).to(device)]
+# head=MLP(665,300,1).to(device)
 
 # mosei/iemocap
 
-encoders = [GRU(35, 70, dropout=True, has_padding=True).cuda(),
-            GRU(74, 150, dropout=True, has_padding=True).cuda(),
-            GRU(300, 600, dropout=True, has_padding=True).cuda()]
-head = MLP(820, 400, 1).cuda()
+encoders = [GRU(35, 70, dropout=True, has_padding=True).to(device),
+            GRU(74, 150, dropout=True, has_padding=True).to(device),
+            GRU(300, 600, dropout=True, has_padding=True).to(device)]
+head = MLP(820, 400, 1).to(device)
 
 # iemocap
 '''
-encoders=[GRU(35,70,dropout=True,has_padding=True).cuda(), \
-    GRU(74,150,dropout=True,has_padding=True).cuda(),\
-    GRU(300,600,dropout=True,has_padding=True).cuda()]
-head=MLP(820,400,4).cuda()
+encoders=[GRU(35,70,dropout=True,has_padding=True).to(device), \
+    GRU(74,150,dropout=True,has_padding=True).to(device),\
+    GRU(300,600,dropout=True,has_padding=True).to(device)]
+head=MLP(820,400,4).to(device)
 '''
-fusion = Concat().cuda()
+fusion = Concat().to(device)
 allmodules = [encoders[0], encoders[1], encoders[2], head, fusion]
 # Support simple late_fusion and late_fusion with removing bias
 # Simply change regularization=True

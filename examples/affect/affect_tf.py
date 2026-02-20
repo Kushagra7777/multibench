@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 
@@ -19,24 +20,24 @@ traindata, validdata, test_robust = get_dataloader(
     '/home/paul/MultiBench/mosi_raw.pkl', robust_test=False)
 
 # mosi/mosei
-encoders = [GRUWithLinear(35, 64, 4, dropout=True, has_padding=True).cuda(),
-            GRUWithLinear(74, 128, 19, dropout=True, has_padding=True).cuda(),
-            GRUWithLinear(300, 512, 79, dropout=True, has_padding=True).cuda()]
-head = MLP(8000, 512, 1).cuda()
+encoders = [GRUWithLinear(35, 64, 4, dropout=True, has_padding=True).to(device),
+            GRUWithLinear(74, 128, 19, dropout=True, has_padding=True).to(device),
+            GRUWithLinear(300, 512, 79, dropout=True, has_padding=True).to(device)]
+head = MLP(8000, 512, 1).to(device)
 
 # humor/sarcasm
-# encoders=[GRUWithLinear(371,512,4,dropout=True,has_padding=True).cuda(), \
-#     GRUWithLinear(81,256,19,dropout=True,has_padding=True).cuda(),\
-#     GRUWithLinear(300,600,79,dropout=True,has_padding=True).cuda()]
-# head=MLP(8000,512,1).cuda()
+# encoders=[GRUWithLinear(371,512,4,dropout=True,has_padding=True).to(device), \
+#     GRUWithLinear(81,256,19,dropout=True,has_padding=True).to(device),\
+#     GRUWithLinear(300,600,79,dropout=True,has_padding=True).to(device)]
+# head=MLP(8000,512,1).to(device)
 
-fusion = TensorFusion().cuda()
+fusion = TensorFusion().to(device)
 
 train(encoders, fusion, head, traindata, validdata, 100, task="regression", optimtype=torch.optim.AdamW,
       early_stop=False, is_packed=True, lr=1e-3, save='mosi_tf_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")
-model = torch.load('mosi_tf_best.pt', weights_only=False).cuda()
+model = torch.load('mosi_tf_best.pt', weights_only=False).to(device)
 
 test(model=model, test_dataloaders_all=test_robust, dataset='mosi',
      is_packed=True, criterion=torch.nn.L1Loss(), task='posneg-classification', no_robust=True)

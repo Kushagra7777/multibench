@@ -4,6 +4,7 @@ from unimodals.common_models import Transformer, MLP
 from datasets.affect.get_data import get_dataloader
 from fusions.common_fusions import ConcatEarly
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import os
 impor: t sys
 sys.path.append(os.getcwd())
@@ -16,16 +17,16 @@ traindata, validdata, testdata = get_dataloader(
 
 # mosi/mosei
 
-encoders = [Transformer(409, 512).cuda()]
-head = MLP(512, 256, 1).cuda()
+encoders = [Transformer(409, 512).to(device)]
+head = MLP(512, 256, 1).to(device)
 
 # humor/sarcasm
-# encoders = [Transformer(early=True).cuda()]
-# head = MLP(1128, 512, 1).cuda()
+# encoders = [Transformer(early=True).to(device)]
+# head = MLP(1128, 512, 1).to(device)
 
 all_modules = [*encoders, head]
 
-fusion = ConcatEarly().cuda()
+fusion = ConcatEarly().to(device)
 
 
 def trainprocess():
@@ -36,5 +37,5 @@ def trainprocess():
 all_in_one_train(trainprocess, all_modules)
 
 print("Testing:")
-model = torch.load('mosi_ef_best.pt', weights_only=False).cuda()
+model = torch.load('mosi_ef_best.pt', weights_only=False).to(device)
 test(model, testdata, True, torch.nn.L1Loss(), "regression")

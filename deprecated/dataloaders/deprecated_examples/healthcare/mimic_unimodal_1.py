@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from unimodals.common_models import MLP, GRUWithLinear
 from datasets.mimic.get_data import get_dataloader
@@ -12,9 +13,9 @@ traindata, validdata, testdata = get_dataloader(
     1, imputed_path='datasets/mimic/im.pk')
 modalnum = 1
 # build encoders, head and fusion layer
-#encoders = [MLP(5, 10, 10,dropout=False).cuda(), GRU(12, 30,dropout=False).cuda()]
-encoder = GRUWithLinear(12, 30, 15, flatten=True).cuda()
-head = MLP(360, 40, 2, dropout=False).cuda()
+#encoders = [MLP(5, 10, 10,dropout=False).to(device), GRU(12, 30,dropout=False).to(device)]
+encoder = GRUWithLinear(12, 30, 15, flatten=True).to(device)
+head = MLP(360, 40, 2, dropout=False).to(device)
 
 
 # train
@@ -22,6 +23,6 @@ train(encoder, head, traindata, validdata, 20, auprc=False, modalnum=modalnum)
 
 # test
 print("Testing: ")
-encoder = torch.load('encoder.pt', weights_only=False).cuda()
-head = torch.load('head.pt', weights_only=False).cuda()
+encoder = torch.load('encoder.pt', weights_only=False).to(device)
+head = torch.load('head.pt', weights_only=False).to(device)
 test(encoder, head, testdata, auprc=False, modalnum=modalnum)

@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append(os.getcwd())
@@ -20,15 +21,15 @@ modality_num = 2
 
 # mosi/mosei
 encoder = GRU(300, 600, dropout=True, has_padding=False,
-              batch_first=True, last_only=True).cuda()
-head = MLP(600, 512, 1).cuda()
+              batch_first=True, last_only=True).to(device)
+head = MLP(600, 512, 1).to(device)
 
 
 train(encoder, head, traindata, validdata, 200, task="regression", optimtype=torch.optim.AdamW, lr=2e-3,
       weight_decay=0.01, criterion=torch.nn.L1Loss(), save_encoder='encoder.pt', save_head='head.pt', modalnum=modality_num)
 
 print("Testing:")
-encoder = torch.load('encoder.pt', weights_only=False).cuda()
+encoder = torch.load('encoder.pt', weights_only=False).to(device)
 head = torch.load('head.pt', weights_only=False)
 test(encoder, head, testdata, 'affect', criterion=torch.nn.L1Loss(),
      task="posneg-classification", modalnum=modality_num, no_robust=True)

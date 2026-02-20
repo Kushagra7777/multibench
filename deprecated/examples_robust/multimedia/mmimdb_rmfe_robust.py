@@ -4,6 +4,7 @@ from get_data_robust import get_dataloader, get_dataloader_robust
 from fusions.common_fusions import Concat
 from training_structures.Simple_Late_Fusion import train, test
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
@@ -19,8 +20,8 @@ robustdata = get_dataloader_robust(
 encoders = [MaxOut_MLP(512, 128, 300, linear_layer=False),
             MaxOut_MLP(512, 1024, 4096, 128, False)]
 #encoders=[MLP(300, 512, 512), VGG16(512)]
-head = Linear(256, 23).cuda()
-fusion = Concat().cuda()
+head = Linear(256, 23).to(device)
+fusion = Concat().to(device)
 
 
 def trainprocess(filename):

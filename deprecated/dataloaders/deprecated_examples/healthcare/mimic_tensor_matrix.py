@@ -1,4 +1,5 @@
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from unimodals.common_models import MLP, GRU
 from datasets.mimic.get_data import get_dataloader
@@ -14,9 +15,9 @@ filename = 'besttensor.pt'
 traindata, validdata, testdata = get_dataloader(
     1, imputed_path='datasets/mimic/im.pk')
 # build encoders, head and fusion layer
-encoders = [MLP(5, 10, 10, dropout=False).cuda(),
-            GRU(12, 30, dropout=False).cuda()]
-head = MLP(100, 40, 2, dropout=False).cuda()
+encoders = [MLP(5, 10, 10, dropout=False).to(device),
+            GRU(12, 30, dropout=False).to(device)]
+head = MLP(100, 40, 2, dropout=False).to(device)
 fusion = MultiplicativeInteractions2Modal(
     [10, 720], 100, 'matrix', flatten=True)
 
@@ -26,5 +27,5 @@ train(encoders, fusion, head, traindata,
 
 # test
 print("Testing: ")
-model = torch.load(filename, weights_only=False).cuda()
+model = torch.load(filename, weights_only=False).to(device)
 test(model, testdata, auprc=True)

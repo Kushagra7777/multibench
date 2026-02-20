@@ -4,6 +4,7 @@ from unimodals.common_models import MLP, VGG16, Linear, MaxOut_MLP
 from fusions.common_fusions import LowRankTensorFusion
 from training_structures.Simple_Late_Fusion import train, test
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 sys.path.append('/home/pliang/multibench/MultiBench/datasets/imdb')
@@ -18,8 +19,8 @@ robustdata = get_dataloader_robust(
 
 encoders = [MaxOut_MLP(512, 512, 300, linear_layer=False),
             MaxOut_MLP(512, 1024, 4096, 512, False)]
-head = Linear(512, 23).cuda()
-fusion = LowRankTensorFusion([512, 512], 512, 128).cuda()
+head = Linear(512, 23).to(device)
+fusion = LowRankTensorFusion([512, 512], 512, 128).to(device)
 
 
 def trainprocess(filename):

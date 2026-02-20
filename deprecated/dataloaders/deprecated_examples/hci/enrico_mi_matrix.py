@@ -1,5 +1,6 @@
 from unimodals.common_models import VGG16, VGG16Slim, DAN, Linear, MLP, VGG11Slim, VGG11Pruned
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from private_test_scripts.all_in_one import all_in_one_train, all_in_one_test
 from datasets.enrico.get_data import get_dataloader
 from fusions.common_fusions import Concat, MultiplicativeInteractions2Modal
@@ -12,16 +13,15 @@ sys.path.append(os.getcwd())
 
 dls, weights = get_dataloader('datasets/enrico/dataset')
 traindata, validdata, testdata = dls
-criterion = nn.CrossEntropyLoss(weight=torch.tensor(weights)).cuda()
-# encoders=[VGG16Slim(64).cuda(), DAN(4, 16, dropout=True, dropoutp=0.25).cuda(), DAN(28, 16, dropout=True, dropoutp=0.25).cuda()]
+criterion = nn.CrossEntropyLoss(weight=torch.tensor(weights)).to(device)
+# encoders=[VGG16Slim(64).to(device), DAN(4, 16, dropout=True, dropoutp=0.25).to(device), DAN(28, 16, dropout=True, dropoutp=0.25).to(device)]
 # head = Linear(96, 20)
-encoders = [VGG11Slim(16, dropout=True, dropoutp=0.2, freeze_features=True).cuda(
-), VGG11Slim(16, dropout=True, dropoutp=0.2, freeze_features=True).cuda()]
-# encoders = [DAN(4, 16, dropout=True, dropoutp=0.25).cuda(), DAN(28, 16, dropout=True, dropoutp=0.25).cuda()]
-head = Linear(32, 20).cuda()
+encoders = [VGG11Slim(16, dropout=True, dropoutp=0.2, freeze_features=True).to(device), VGG11Slim(16, dropout=True, dropoutp=0.2, freeze_features=True).to(device)]
+# encoders = [DAN(4, 16, dropout=True, dropoutp=0.25).to(device), DAN(28, 16, dropout=True, dropoutp=0.25).to(device)]
+head = Linear(32, 20).to(device)
 
-# fusion=Concat().cuda()
-fusion = MultiplicativeInteractions2Modal([16, 16], 32, "matrix").cuda()
+# fusion=Concat().to(device)
+fusion = MultiplicativeInteractions2Modal([16, 16], 32, "matrix").to(device)
 
 allmodules = encoders + [head, fusion]
 
@@ -34,7 +34,7 @@ def trainprocess():
 all_in_one_train(trainprocess, allmodules)
 
 print("Testing:")
-model = torch.load('best.pt', weights_only=False).cuda()
+model = torch.load('best.pt', weights_only=False).to(device)
 
 
 def testprocess():

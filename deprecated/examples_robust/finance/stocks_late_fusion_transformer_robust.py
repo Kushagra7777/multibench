@@ -6,6 +6,7 @@ from fusions.common_fusions import ConcatWithLinear
 from unimodals.common_models import Identity
 from torch import nn
 import torch.nn.functional as F
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import torch
 import pmdarima
 import numpy as np
@@ -30,10 +31,10 @@ train_loader, val_loader, test_loader = get_dataloader(
     stocks, stocks, [args.target_stock])
 
 n_modalities = len(train_loader.dataset[0]) - 1
-encoders = [LateFusionTransformer(embed_dim=9).cuda()
+encoders = [LateFusionTransformer(embed_dim=9).to(device)
             for _ in range(n_modalities)]
-fusion = ConcatWithLinear(n_modalities * 9, 1).cuda()
-head = Identity().cuda()
+fusion = ConcatWithLinear(n_modalities * 9, 1).to(device)
+head = Identity().to(device)
 allmodules = [*encoders, fusion, head]
 
 num_training = 5

@@ -1,5 +1,6 @@
 from unimodals.common_models import LeNet, MLP, Constant
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from datasets.avmnist.get_data_robust import get_dataloader
 from fusions.common_fusions import Concat
@@ -11,15 +12,15 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 traindata, validdata, testdata, robustdata = get_dataloader(
     '../../../../yiwei/avmnist/_MFAS/avmnist')
 channels = 6
-encoders = [LeNet(1, channels, 3).cuda(), LeNet(1, channels, 5).cuda()]
-head = MLP(channels*40, 100, 10).cuda()
+encoders = [LeNet(1, channels, 3).to(device), LeNet(1, channels, 5).to(device)]
+head = MLP(channels*40, 100, 10).to(device)
 
-fusion = Concat().cuda()
+fusion = Concat().to(device)
 
 train(encoders, fusion, head, traindata, validdata, 30, optimtype=torch.optim.SGD,
       lr=0.1, weight_decay=0.0001, save='avmnist_simple_late_fusion_best.pt')
 
-model = torch.load('avmnist_simple_late_fusion_best.pt', weights_only=False).cuda()
+model = torch.load('avmnist_simple_late_fusion_best.pt', weights_only=False).to(device)
 print("Testing:")
 test(model, robustdata)
 

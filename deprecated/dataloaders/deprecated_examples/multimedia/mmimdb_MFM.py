@@ -2,6 +2,7 @@ from objective_functions.recon import recon_weighted_sum, sigmloss1dcentercrop, 
 from training_structures.MFM import train_MFM, test_MFM
 from datasets.imdb.get_data import get_dataloader
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from unimodals.common_models import Linear, MLP, MaxOut_MLP
 from fusions.common_fusions import Concat
 import sys
@@ -16,13 +17,12 @@ classes = 23
 n_latent = 512
 fuse = Concat()
 
-encoders = [MaxOut_MLP(512, 512, 300, n_latent, False).cuda(
-), MaxOut_MLP(512, 1024, 4096, n_latent, False).cuda()]
-decoders = [MLP(n_latent, 600, 300).cuda(), MLP(n_latent, 2048, 4096).cuda()]
+encoders = [MaxOut_MLP(512, 512, 300, n_latent, False).to(device), MaxOut_MLP(512, 1024, 4096, n_latent, False).to(device)]
+decoders = [MLP(n_latent, 600, 300).to(device), MLP(n_latent, 2048, 4096).to(device)]
 
-intermediates = [MLP(n_latent, n_latent//2, n_latent//2).cuda(),
-                 MLP(n_latent, n_latent//2, n_latent//2).cuda(), MLP(2*n_latent, n_latent, n_latent//2).cuda()]
-head = Linear(n_latent//2, classes).cuda()
+intermediates = [MLP(n_latent, n_latent//2, n_latent//2).to(device),
+                 MLP(n_latent, n_latent//2, n_latent//2).to(device), MLP(2*n_latent, n_latent, n_latent//2).to(device)]
+head = Linear(n_latent//2, classes).to(device)
 recon_loss = recon_weighted_sum([sigmloss1d, sigmloss1d], [1.0, 1.0])
 train_MFM(encoders, decoders, head, intermediates, fuse, recon_loss, traindata, validdata, 1000, learning_rate=5e-3,
           savedir="best_mfm.pt", task="multilabel", early_stop=True, criterion=torch.nn.BCEWithLogitsLoss())

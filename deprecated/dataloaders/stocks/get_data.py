@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import pandas_datareader
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from torch.utils.data import DataLoader
 
@@ -41,8 +42,8 @@ def get_dataloader(stocks, input_stocks, output_stocks, batch_size=16, train_shu
     X = torch.cat(X)
 
     if cuda:
-        X = X.cuda()
-        Y = Y.cuda()
+        X = X.to(device)
+        Y = Y.to(device)
 
     class MyDataset(torch.utils.data.Dataset):
         def __init__(self, X, Y, modality_first):

@@ -1,6 +1,7 @@
 from private_test_scripts.all_in_one import all_in_one_train, all_in_one_test
 from memory_profiler import memory_usage
 import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from unimodals.common_models import MLP, GRU
 from datasets.mimic.get_data import get_dataloader
@@ -14,10 +15,10 @@ traindata, validdata, testdata = get_dataloader(
     7, imputed_path='datasets/mimic/im.pk')
 
 # build encoders, head and fusion layer
-encoders = [MLP(5, 10, 10, dropout=False).cuda(),
-            GRU(12, 30, dropout=False).cuda()]
-head = MLP(730, 40, 2, dropout=False).cuda()
-fusion = Concat().cuda()
+encoders = [MLP(5, 10, 10, dropout=False).to(device),
+            GRU(12, 30, dropout=False).to(device)]
+head = MLP(730, 40, 2, dropout=False).to(device)
+fusion = Concat().to(device)
 allmodules = [encoders[0], encoders[1], head, fusion]
 
 # train
@@ -32,7 +33,7 @@ all_in_one_train(trainprocess, allmodules)
 
 # test
 print("Testing: ")
-model = torch.load('best.pt', weights_only=False).cuda()
+model = torch.load('best.pt', weights_only=False).to(device)
 
 
 def testprocess():

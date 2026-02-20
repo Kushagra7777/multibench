@@ -1,6 +1,7 @@
 # From https://github.com/brentyi/multimodalfilter/blob/master/scripts/push_task/train_push.py
 import unimodals.gentle_push.layers as layers
 import torch.optim as optim
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import torch.nn as nn
 import torch
 import fannypack
@@ -50,6 +51,6 @@ train(encoders, fusion, head,
       objective=loss_state,
       lr=0.00001)
 
-model = torch.load('best.pt', weights_only=False).cuda()
+model = torch.load('best.pt', weights_only=False).to(device)
 test(model, test_loader, dataset='gentle push',
      task='regression', criterion=loss_state)
