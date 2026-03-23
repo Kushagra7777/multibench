@@ -160,7 +160,7 @@ class PushTask():
 
     @classmethod
     def get_test_trajectories(
-        cls, modalities, **dataset_args
+        cls, modalities, noise_levels=2, **dataset_args
     ):
         """Get test trajectories."""
         kloss_dataset = (
@@ -170,29 +170,30 @@ class PushTask():
             raise Exception('No test dataset for kloss')
         else:
             trajectories = dict()
+            noise_range = list(range(10))[:noise_levels]
             if modalities == None or 'image' in modalities:
                 trajectories['image'] = []
-                for i in range(10):
+                for i in noise_range:
                     trajectories['image'].append(_load_trajectories(
                         "gentle_push_300.hdf5", visual_noise=i/10, **dataset_args))
             if modalities == None or 'gripper_pos' in modalities:
                 trajectories['proprio'] = []
-                for i in range(10):
+                for i in noise_range:
                     trajectories['proprio'].append(_load_trajectories(
                         "gentle_push_300.hdf5", prop_noise=i/10, **dataset_args))
             if modalities == None or 'gripper_sensors' in modalities:
                 trajectories['haptics'] = []
-                for i in range(10):
+                for i in noise_range:
                     trajectories['haptics'].append(_load_trajectories(
                         "gentle_push_300.hdf5", haptics_noise=i/10, **dataset_args))
-            if modalities == None or 'controls' in modalities:
-                trajectories['controls'] = []
-                for i in range(10):
-                    trajectories['controls'].append(_load_trajectories(
+            if modalities == None or 'control' in modalities:
+                trajectories['control'] = []
+                for i in noise_range:
+                    trajectories['control'].append(_load_trajectories(
                         "gentle_push_300.hdf5", controls_noise=i/10, **dataset_args))
             if modalities == None:
                 trajectories['multimodal'] = []
-                for i in range(10):
+                for i in noise_range:
                     trajectories['multimodal'].append(_load_trajectories(
                         "gentle_push_300.hdf5", multimodal_noise=i/10, **dataset_args))
             return trajectories

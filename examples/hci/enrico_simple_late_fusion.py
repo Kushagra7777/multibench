@@ -29,12 +29,14 @@ allmodules = encoders + [head, fusion]
 
 
 def trainprocess():
-    train(encoders, fusion, head, traindata, validdata, 50,
-          optimtype=torch.optim.Adam, lr=0.0001, weight_decay=0)
+    train(encoders, fusion, head, traindata, validdata, 2,
+          optimtype=torch.optim.Adam, lr=0.0001, weight_decay=0,
+          save='enrico_best.pt')
 
 
 all_in_one_train(trainprocess, allmodules)
 
 
-model = torch.load('best.pt', weights_only=False).to(device)
-test(model, testdata, dataset='enrico')
+model = torch.load('enrico_best.pt', weights_only=False).to(device)
+clean_testdata = testdata[list(testdata.keys())[0]][0]
+test(model, clean_testdata, dataset='enrico', no_robust=True)

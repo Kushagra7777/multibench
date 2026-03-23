@@ -1,8 +1,8 @@
 # From https://github.com/brentyi/multimodalfilter/blob/master/scripts/push_task/train_push.py
+import torch
 import torch.optim as optim
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import torch.nn as nn
-import torch
 import fannypack
 import datetime
 import argparse
@@ -44,12 +44,14 @@ loss_state = nn.MSELoss()
 
 train(encoders, fusion, head,
       train_loader, val_loader,
-      20,
+      2,
       task='regression',
       optimtype=optimtype,
       objective=loss_state,
-      lr=0.00001)
+      lr=0.00001,
+      save='gentle_push_uctrl_best.pt')
 
-model = torch.load('best.pt', weights_only=False).to(device)
-test(model, test_loader, dataset='gentle push',
-     task='regression', criterion=loss_state)
+model = torch.load('gentle_push_uctrl_best.pt', weights_only=False).to(device)
+clean_test_loader = test_loader[list(test_loader.keys())[0]][0]
+test(model, clean_test_loader, dataset='gentle push',
+     task='regression', criterion=loss_state, no_robust=True)

@@ -157,7 +157,7 @@ def train(
                 loss = deal_with_objective(
                     objective, out, j[-1], objective_args_dict)
 
-                totalloss += loss * len(j[-1])
+                totalloss += loss.item() * len(j[-1])
                 totals += len(j[-1])
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), clip_val)
@@ -187,8 +187,8 @@ def train(
                         objective_args_dict['training'] = False
                     loss = deal_with_objective(
                         objective, out, j[-1], objective_args_dict)
-                    totalloss += loss*len(j[-1])
-                    
+                    totalloss += loss.item()*len(j[-1])
+
                     if task == "classification":
                         pred.append(torch.argmax(out, 1))
                     elif task == "multilabel":
@@ -228,7 +228,7 @@ def train(
                 else:
                     patience += 1
             elif task == "regression":
-                print("Epoch "+str(epoch)+" valid loss: "+str(valloss.item()))
+                print("Epoch "+str(epoch)+" valid loss: "+str(valloss))
                 if valloss < bestvalloss:
                     patience = 0
                     bestvalloss = valloss
@@ -269,34 +269,32 @@ def single_test(
             return inp.float()
         else:
             return inp
-    with torch.no_grad():
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    model.eval()
+    with torch.inference_mode():
         totalloss = 0.0
         pred = []
         true = []
         pts = []
         for j in test_dataloader:
-            model.eval()
             if is_packed:
-                out = model([[_processinput(i).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+                out = model([[_processinput(i).to(device)
                             for i in j[0]], j[1]])
             else:
-                out = model([_processinput(i).float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+                out = model([_processinput(i).float().to(device)
                             for i in j[:-1]])
             if type(criterion) == torch.nn.modules.loss.BCEWithLogitsLoss or type(criterion) == torch.nn.MSELoss:
-                loss = criterion(out, j[-1].float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
-
-            # elif type(criterion) == torch.nn.CrossEntropyLoss:
-            #     loss=criterion(out, j[-1].long().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+                loss = criterion(out, j[-1].float().to(device))
 
             elif type(criterion) == nn.CrossEntropyLoss:
                 if len(j[-1].size()) == len(out.size()):
                     truth1 = j[-1].squeeze(len(out.size())-1)
                 else:
                     truth1 = j[-1]
-                loss = criterion(out, truth1.long().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+                loss = criterion(out, truth1.long().to(device))
             else:
-                loss = criterion(out, j[-1].to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
-            totalloss += loss*len(j[-1])
+                loss = criterion(out, j[-1].to(device))
+            totalloss += loss.item()*len(j[-1])
             if task == "classification":
                 pred.append(torch.argmax(out, 1))
             elif task == "multilabel":
@@ -333,8 +331,8 @@ def single_test(
                   " f1_macro: "+str(f1_score(true, pred, average="macro")))
             return {'micro': f1_score(true, pred, average="micro"), 'macro': f1_score(true, pred, average="macro")}
         elif task == "regression":
-            print("mse: "+str(testloss.item()))
-            return {'MSE': testloss.item()}
+            print("mse: "+str(testloss))
+            return {'MSE': testloss}
         elif task == "posneg-classification":
             trueposneg = true
             accs = eval_affect(trueposneg, pred)

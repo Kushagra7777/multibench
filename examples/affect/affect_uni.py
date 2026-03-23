@@ -15,7 +15,7 @@ from fusions.common_fusions import ConcatEarly  # noqa
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 # traindata, validdata, testdata = get_dataloader('/home/pliang/multibench/affect/pack/mosi/mosi_raw.pkl', robust_test=False)
 traindata, validdata, testdata = get_dataloader(
-    '/home/pliang/multibench/affect/pack/mosi/mosi_raw.pkl', robust_test=False, max_pad=True, data_type='mosi', max_seq_len=50)
+    '/home/bagus/github/multibench/data/affect/mosi_raw.pkl', robust_test=False, max_pad=True, data_type='mosi', max_seq_len=50, num_workers=0)
 
 modality_num = 2
 
@@ -25,11 +25,11 @@ encoder = GRU(300, 600, dropout=True, has_padding=False,
 head = MLP(600, 512, 1).to(device)
 
 
-train(encoder, head, traindata, validdata, 200, task="regression", optimtype=torch.optim.AdamW, lr=2e-3,
-      weight_decay=0.01, criterion=torch.nn.L1Loss(), save_encoder='encoder.pt', save_head='head.pt', modalnum=modality_num)
+train(encoder, head, traindata, validdata, 2, task="regression", optimtype=torch.optim.AdamW, lr=2e-3,
+      weight_decay=0.01, criterion=torch.nn.L1Loss(), save_encoder='affect_uni_encoder.pt', save_head='affect_uni_head.pt', modalnum=modality_num)
 
 print("Testing:")
-encoder = torch.load('encoder.pt', weights_only=False).to(device)
-head = torch.load('head.pt', weights_only=False)
+encoder = torch.load('affect_uni_encoder.pt', weights_only=False).to(device)
+head = torch.load('affect_uni_head.pt', weights_only=False)
 test(encoder, head, testdata, 'affect', criterion=torch.nn.L1Loss(),
      task="posneg-classification", modalnum=modality_num, no_robust=True)

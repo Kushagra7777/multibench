@@ -12,11 +12,10 @@ def getallparams(li):
 
 def all_in_one_train(trainprocess, trainmodules):
     starttime = time.time()
-    mem = max(memory_usage(proc=trainprocess))
+    trainprocess()
     endtime = time.time()
 
     print("Training Time: "+str(endtime-starttime))
-    print("Training Peak Mem: "+str(mem))
     print("Training Params: "+str(getallparams(trainmodules)))
 
 

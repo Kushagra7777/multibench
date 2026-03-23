@@ -11,6 +11,12 @@ import os
 sys.path.append(os.getcwd())
 
 traindata, validdata, testdata = get_dataloader(
-    '/data/yiwei/avmnist/_MFAS/avmnist', batch_size=32)
-model = torch.load('temp/best.pt', weights_only=False).to(device)
-test(model, testdata, no_robust=True)
+    '/home/bagus/github/multibench/avmnist', batch_size=32)
+import glob
+best_files = sorted(glob.glob('tests/best*.pt'))
+if not best_files:
+    raise FileNotFoundError("No model files found in tests/best*.pt")
+best_file = best_files[-1]
+print(f"Loading best model: {best_file}")
+model = torch.load(best_file, weights_only=False).to(device)
+test(model, testdata, dataset='avmnist', no_robust=True)

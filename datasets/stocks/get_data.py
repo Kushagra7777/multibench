@@ -36,10 +36,11 @@ def get_dataloader(stocks, input_stocks, output_stocks, batch_size=16, train_shu
     stocks = np.array(stocks)
 
     def _fetch_finance_data(symbol, start, end):
-        url = f'https://query1.finance.yahoo.com/v7/finance/download/{symbol}?period1={start.strftime("%s")}&period2={end.strftime("%s")}&interval=1d&events=history&includeAdjustedClose=true'
-        user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        text = requests.get(url, headers={'User-Agent': user_agent}).text
-        return pd.read_csv(io.StringIO(text), encoding='utf8', parse_dates=True, index_col=0)
+        import yfinance as yf
+        ticker = yf.Ticker(symbol)
+        df = ticker.history(start=start.strftime('%Y-%m-%d'), end=end.strftime('%Y-%m-%d'))
+        df.index = df.index.tz_localize(None)
+        return df
 
     data = []
     for stock in stocks:

@@ -13,10 +13,12 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 from torch import nn
 from unimodals.common_models import MLP
 from fusions.common_fusions import Concat
+from torch.utils.data import DataLoader, Subset
 
 
 traindata, validdata, testdata = get_dataloader(
-    '/home/pliang/yiwei/avmnist/_MFAS/avmnist')
+    '/home/bagus/github/multibench/avmnist', num_workers=0)
+traindata = DataLoader(Subset(traindata.dataset, range(2000)), batch_size=40, shuffle=True, num_workers=0)
 channels = 6
 
 classes = 10
@@ -32,7 +34,8 @@ intermediates = [MLP(n_latent, n_latent//2, n_latent//2).to(device),
 head = MLP(n_latent//2, 40, classes).to(device)
 objective = MFM_objective(2.0, [sigmloss1dcentercrop(
     28, 34), sigmloss1dcentercrop(112, 130)], [1.0, 1.0])
-train(encoders, fuse, head, traindata, validdata, 25, decoders+intermediates,
-      objective=objective, objective_args_dict={'decoders': decoders, 'intermediates': intermediates})
-model = torch.load('best.pt', weights_only=False)
+train(encoders, fuse, head, traindata, validdata, 2, decoders+intermediates,
+      objective=objective, objective_args_dict={'decoders': decoders, 'intermediates': intermediates},
+      save='avmnist_mfm_best.pt')
+model = torch.load('avmnist_mfm_best.pt', weights_only=False)
 test(model, testdata, no_robust=True)

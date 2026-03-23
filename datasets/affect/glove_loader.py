@@ -24,10 +24,10 @@ class GloVe:
     
     # GloVe download URLs
     GLOVE_URLS = {
-        '840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
-        '6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
-        '42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
-        'twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
+        '840B': 'https://nlp.stanford.edu/data/glove.840B.300d.zip',
+        '6B': 'https://nlp.stanford.edu/data/glove.6B.zip',
+        '42B': 'https://nlp.stanford.edu/data/glove.42B.300d.zip',
+        'twitter.27B': 'https://nlp.stanford.edu/data/glove.twitter.27B.zip',
     }
     
     def __init__(self, name='840B', dim=300, cache_dir=None):
@@ -115,18 +115,20 @@ class GloVe:
         
         # Second pass: load embeddings
         with open(embedding_file, 'r', encoding='utf-8') as f:
-            for idx, line in enumerate(f):
+            vec_idx = 0
+            for line in f:
                 parts = line.rstrip().split(' ')
                 word = parts[0]
                 vector = [float(x) for x in parts[1:]]
-                
+
                 # Verify dimension
                 if len(vector) != self.dim:
                     continue
-                
-                self.word_to_idx[word] = idx
-                self.idx_to_word[idx] = word
+
+                self.word_to_idx[word] = vec_idx
+                self.idx_to_word[vec_idx] = word
                 vectors_list.append(vector)
+                vec_idx += 1
         
         # Convert to torch tensor
         self.vectors = torch.tensor(vectors_list, dtype=torch.float32)

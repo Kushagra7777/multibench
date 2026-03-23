@@ -31,13 +31,15 @@ allmodules = encoders + [refiner, head, fusion]
 
 
 def trainprocess():
-    train(encoders, fusion, head, traindata, validdata, 50, [refiner], optimtype=torch.optim.Adam, lr=0.0001,
-          weight_decay=0, task="classification", objective=RefNet_objective(0.1), objective_args_dict={'refiner': refiner})
+    train(encoders, fusion, head, traindata, validdata, 2, [refiner], optimtype=torch.optim.Adam, lr=0.0001,
+          weight_decay=0, task="classification", objective=RefNet_objective(0.1), objective_args_dict={'refiner': refiner},
+          save='enrico_best.pt')
 
 
 all_in_one_train(trainprocess, allmodules)
 
 print("Testing:")
-model = torch.load('best.pt', weights_only=False).to(device)
+model = torch.load('enrico_best.pt', weights_only=False).to(device)
 
-test(model, testdata, dataset='enrico')
+clean_testdata = testdata[list(testdata.keys())[0]][0]
+test(model, clean_testdata, dataset="enrico", no_robust=True)

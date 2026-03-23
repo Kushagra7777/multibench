@@ -44,11 +44,10 @@ def audio_structured_dropout(signal, p, step=10):
     :param p: Dropout probability.
     :param step: Number of time steps to drop the signal.
     """
-    res = [signal[i] for i in range(len(signal))]
+    res = np.array(signal, dtype=float)
     for i in range(len(res)-step+1):
         if (res[i] != 0) and np.random.random_sample() < p:
-            for j in range(step):
-                res[i+j] = 0
+            res[i:i+step] = 0
     return res
 
 
@@ -59,4 +58,4 @@ def audio_random_dropout(sig, p):
     :param signal: Audio signal to transform.
     :param p: Dropout probability.
     """
-    return audio_structured_dropout(sig, 1, p)
+    return audio_structured_dropout(sig, p, 1)

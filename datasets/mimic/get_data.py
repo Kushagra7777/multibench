@@ -45,10 +45,8 @@ def get_dataloader(task, batch_size=40, num_workers=1, train_shuffle=True, imput
     X_t_avg = np.average(X_t, axis=(0, 1))
     X_t_std = np.std(X_t, axis=(0, 1))
 
-    for i in range(len(X_s)):
-        X_s[i] = (X_s[i]-X_s_avg)/X_s_std
-        for j in range(len(X_t[0])):
-            X_t[i][j] = (X_t[i][j]-X_t_avg)/X_t_std
+    X_s = (X_s - X_s_avg) / X_s_std
+    X_t = (X_t - X_t_avg) / X_t_std
 
     static_dim = len(X_s[0])
     timestep = len(X_t[0])

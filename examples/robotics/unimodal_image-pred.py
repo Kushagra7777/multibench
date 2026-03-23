@@ -28,7 +28,7 @@ class selfsupervised:
         # ------------------------
         # Sets seed and cuda
         # ------------------------
-        use_cuda = True
+        use_cuda = torch.cuda.is_available()
 
         self.configs = configs
         self.device = torch.device("cuda" if use_cuda else "cpu")

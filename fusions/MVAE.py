@@ -1,7 +1,6 @@
 """Implements MVAE."""
 import torch
 from torch import nn
-from torch.autograd import Variable
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -18,7 +17,7 @@ class ProductOfExperts(nn.Module):
         """Initialize Product of Experts Object.
 
         Args:
-            size (int): Size of Product of Experts Layer
+            size (tuple): Size of Product of Experts Layer
         
         """
         super(ProductOfExperts, self).__init__()
@@ -61,7 +60,7 @@ class ProductOfExperts_Zipped(nn.Module):
         """Initialize Product of Experts Object.
 
         Args:
-            size (int): Size of Product of Experts Layer
+            size (tuple): Size of Product of Experts Layer
         
         """
         super(ProductOfExperts_Zipped, self).__init__()
@@ -100,6 +99,6 @@ def _prior_expert(size, batch_size):
     Gaussian: N(0, 1)
     """
     size = (size[0], batch_size, size[2])
-    mu = Variable(torch.zeros(size))
-    logvar = Variable(torch.log(torch.ones(size)))
+    mu = torch.zeros(size)
+    logvar = torch.log(torch.ones(size))
     return mu.to(device), logvar.to(device)

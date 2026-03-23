@@ -7,9 +7,8 @@ sys.path.append(os.getcwd())
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 
-from private_test_scripts.all_in_one import all_in_one_train # noqa
 from training_structures.Supervised_Learning import train, test # noqa
-from unimodals.common_models import GRUWithLinear, MLP # noqa
+from unimodals.common_models import GRU, MLP # noqa
 from datasets.affect.get_data import get_dataloader # noqa
 from fusions.common_fusions import Concat, LowRankTensorFusion # noqa
 
@@ -18,12 +17,13 @@ from fusions.common_fusions import Concat, LowRankTensorFusion # noqa
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 # raw_path: mosi.hdf5, mosei.hdf5, sarcasm_raw_text.pkl, humor_raw_text.pkl
 traindata, validdata, test_robust = \
-    get_dataloader('/home/paul/MultiBench/mosi_raw.pkl', robust_test=False)
+    get_dataloader('/home/bagus/github/multibench/data/affect/mosi_raw.pkl',
+                   robust_test=False, max_pad=True, num_workers=0)
 
-# mosi/mosei
-encoders = [GRUWithLinear(35, 64, 32, dropout=True, has_padding=True).to(device),
-            GRUWithLinear(74, 128, 32, dropout=True, has_padding=True).to(device),
-            GRUWithLinear(300, 512, 128, dropout=True, has_padding=True).to(device)]
+# mosi/mosei - use GRU with last_only=True to return single vectors for LowRankTensorFusion
+encoders = [GRU(35, 32, dropout=True, last_only=True).to(device),
+            GRU(74, 32, dropout=True, last_only=True).to(device),
+            GRU(300, 128, dropout=True, last_only=True).to(device)]
 head = MLP(128, 512, 1).to(device)
 
 # humor/sarcasm
@@ -34,11 +34,11 @@ head = MLP(128, 512, 1).to(device)
 
 fusion = LowRankTensorFusion([32, 32, 128], 128, 32).to(device)
 
-train(encoders, fusion, head, traindata, validdata, 100, task="regression", optimtype=torch.optim.AdamW,
-      early_stop=True, is_packed=True, lr=1e-3, save='mosi_lf_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
+train(encoders, fusion, head, traindata, validdata, 2, task="regression", optimtype=torch.optim.AdamW,
+      early_stop=False, is_packed=False, lr=1e-3, save='mosi_lf_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")
 model = torch.load('mosi_lf_best.pt', weights_only=False).to(device)
 
-test(model=model, test_dataloaders_all=test_robust, dataset='mosi', is_packed=True,
+test(model=model, test_dataloaders_all=test_robust, dataset='mosi', is_packed=False,
      criterion=torch.nn.L1Loss(), task='posneg-classification', no_robust=True)

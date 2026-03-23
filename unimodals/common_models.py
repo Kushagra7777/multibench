@@ -25,7 +25,7 @@ class Linear(torch.nn.Module):
         super(Linear, self).__init__()
         self.fc = nn.Linear(indim, outdim)
         if xavier_init:
-            nn.init.xavier_normal(self.fc.weight)
+            nn.init.xavier_normal_(self.fc.weight)
             self.fc.bias.data.fill_(0.0)
 
     def forward(self, x):

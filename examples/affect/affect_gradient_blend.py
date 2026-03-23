@@ -9,8 +9,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 
 
-from private_test_scripts.all_in_one import all_in_one_train # noqa
-import training_structures # noqa
 from training_structures.gradient_blend import train, test # noqa
 from unimodals.common_models import GRU, MLP, Transformer # noqa
 from datasets.affect.get_data import get_dataloader # noqa
@@ -21,8 +19,8 @@ from fusions.common_fusions import Concat # noqa
 # mosi_raw.pkl, mosei_senti_data.pkl, sarcasm.pkl, humor.pkl
 # raw_path: mosi.hdf5, mosei.hdf5, sarcasm_raw_text.pkl, humor_raw_text.pkl
 traindata, validdata, test_robust = \
-    get_dataloader('/home/paul/MultiBench/mosi_raw.pkl',
-                   task='classification', robust_test=False, max_pad=True)
+    get_dataloader('/home/bagus/github/multibench/data/affect/mosi_raw.pkl',
+                   task='classification', robust_test=False, max_pad=True, num_workers=0)
 
 # mosi/mosei
 encoders = [Transformer(35, 70).to(device),
@@ -45,11 +43,11 @@ fusion = Concat().to(device)
 
 # training_structures.gradient_blend.criterion = nn.L1Loss()
 
-train(encoders, head, unimodal_heads, fusion, traindata, validdata, 100, gb_epoch=20, lr=1e-3, AUPRC=False,
+train(encoders, head, unimodal_heads, fusion, traindata, validdata, 2, gb_epoch=1, lr=1e-3, AUPRC=False,
       classification=True, optimtype=torch.optim.AdamW, savedir='mosi_best_gb.pt', weight_decay=0.1)
 
 print("Testing:")
-model = torch.load('mosi_besf_gb.pt', weights_only=False).to(device)
+model = torch.load('mosi_best_gb.pt', weights_only=False).to(device)
 
 test(model, test_robust, dataset='mosi', auprc=False, no_robust=True)
 

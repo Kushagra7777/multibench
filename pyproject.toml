@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multibench"
+version = "1.0.0"
+description = "Standardized toolkit for multimodal deep learning research"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+    "memory-profiler",
+    "scikit-learn",
+    "matplotlib",
+    "h5py",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+cpu = [
+    "torch",
+    "torchvision",
+]
+cuda = [
+    "torch",
+    "torchvision",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fusions*", "unimodals*", "training_structures*", "datasets*", "robustness*", "objective_functions*", "eval_scripts*", "utils*"]

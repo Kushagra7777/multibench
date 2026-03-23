@@ -22,9 +22,13 @@ print('Input: ' + args.input_stocks)
 print('Target: ' + args.target_stock)
 
 
+import datetime
 stocks = sorted(args.input_stocks.split(' '))
-train_loader, val_loader, test_loader = get_dataloader(
-    stocks, stocks, [args.target_stock], modality_first=True)
+train_loader, val_loader, test_loader_dict = get_dataloader(
+    stocks, stocks, [args.target_stock], modality_first=True, cuda=False,
+    start_date=datetime.datetime(2010, 1, 1), end_date=datetime.datetime(2021, 1, 1),
+    window_size=50, val_split=1500, test_split=2000)
+test_loader = test_loader_dict['timeseries'][0]
 
 
 def baselines():
@@ -35,10 +39,11 @@ def baselines():
         return nn.MSELoss()(torch.cat([y_prev[-1:], y[:-1]]), y).item()
 
     def arima(y_prev, y):
-        arr = y_prev.cpu()
-        arima = pmdarima.arima.auto_arima(arr)
-        pred = arima.predict(len(y))
-        return nn.MSELoss()(torch.tensor(pred, device='cuda').reshape(y.shape), y)
+        arr = y_prev.cpu().numpy().flatten()
+        arima_model = pmdarima.arima.auto_arima(arr)
+        pred = arima_model.predict(len(y))
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        return nn.MSELoss()(torch.tensor(pred, device=device, dtype=torch.float32).reshape(y.shape), y.to(device))
 
     print('Best constant val MSE loss: ' +
           str(best_constant(train_loader.dataset.Y, val_loader.dataset.Y)))

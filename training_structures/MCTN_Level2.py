@@ -115,8 +115,8 @@ def train(
             total_loss = mu_t0 * translation_loss_0 + mu_c * \
                 cyclic_loss + mu_t1 * translation_loss_1 + reg_loss
 
-            sum_total_loss += total_loss
-            sum_reg_loss += reg_loss
+            sum_total_loss += total_loss.item()
+            sum_reg_loss += reg_loss.item()
             total_batch += 1
 
             total_loss.backward()
@@ -200,7 +200,7 @@ def single_test(model, testdata, max_seq_len=20):
         Acc1 = eval_results_include[-1]
         Acc2 = eval_results_exclude[-1]
         print('Test: MAE: {}, Acc1: {}, Acc2: {}'.format(mae, Acc1, Acc2))
-        return {'Acc:': Acc2}
+        return {'Acc': Acc2}
 
 
 def test(model, test_dataloaders_all, dataset, method_name='My method', is_packed=False, criterion=nn.CrossEntropyLoss(), task="classification", auprc=False, input_to_float=True, no_robust=True):

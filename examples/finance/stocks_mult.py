@@ -1,7 +1,7 @@
 from torch import nn
+import torch
 import torch.nn.functional as F
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-import torch
 import pmdarima
 import numpy as np
 import argparse
@@ -10,7 +10,6 @@ import os
 
 sys.path.append(os.getcwd())
 
-from private_test_scripts.all_in_one import all_in_one_train # noqa
 from training_structures.unimodal import train, test # noqa
 from datasets.stocks.get_data import get_dataloader, Grouping # noqa
 from fusions.mult import MULTModel # noqa
@@ -25,9 +24,13 @@ print('Input: ' + args.input_stocks)
 print('Target: ' + args.target_stock)
 
 
+import datetime
 stocks = sorted(args.input_stocks.split(' '))
-train_loader, val_loader, test_loader = get_dataloader(
-    stocks, stocks, [args.target_stock], modality_first=False)
+train_loader, val_loader, test_loader_dict = get_dataloader(
+    stocks, stocks, [args.target_stock], modality_first=False, cuda=False,
+    start_date=datetime.datetime(2010, 1, 1), end_date=datetime.datetime(2021, 1, 1),
+    window_size=50, val_split=1500, test_split=2000)
+test_loader = test_loader_dict['timeseries'][0]
 
 n_modalities = 3
 grouping = Grouping(n_modalities)
@@ -46,10 +49,10 @@ def trainprocess():
           optimtype=torch.optim.Adam, criterion=nn.MSELoss())
 
 
-all_in_one_train(trainprocess, allmodules)
+trainprocess()
 
 encoder = torch.load('encoder.pt', weights_only=False).to(device)
 head = torch.load('head.pt', weights_only=False).to(device)
 # dataset = 'finance F&B', finance tech', finance health'
 test(encoder, head, test_loader, dataset='finance F&B',
-     task='regression', criterion=nn.MSELoss())
+     task='regression', criterion=nn.MSELoss(), no_robust=True)

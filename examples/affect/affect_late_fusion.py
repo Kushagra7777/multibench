@@ -15,7 +15,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 # raw_path: mosi.hdf5, mosei.hdf5, sarcasm_raw_text.pkl, humor_raw_text.pkl
 traindata, validdata, test_robust = get_dataloader(
-    '/home/pliang/multibench/affect/pack/mosi/mosi_raw.pkl', robust_test=False, data_type='mosi')
+    '/home/bagus/github/multibench/data/affect/mosi_raw.pkl', robust_test=False, data_type='mosi', num_workers=0)
 
 # traindata, validdata, test_robust = \
 #     get_dataloader('/home/pliang/multibench/affect/sarcasm.pkl', robust_test=False)
@@ -39,7 +39,7 @@ head = MLP(870, 870, 1).to(device)
 
 fusion = Concat().to(device)
 
-train(encoders, fusion, head, traindata, validdata, 100, task="regression", optimtype=torch.optim.AdamW,
+train(encoders, fusion, head, traindata, validdata, 2, task="regression", optimtype=torch.optim.AdamW,
       early_stop=False, is_packed=True, lr=1e-3, save='mosi_lf_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")

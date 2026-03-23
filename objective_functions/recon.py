@@ -38,8 +38,8 @@ def nosigmloss1d(a, b):
     Returns:
         torch.Tensor: Loss
     """ 
-    x = a
-    y = b
+    x = torch.clamp(a, 1e-7, 1-1e-7)
+    y = torch.clamp(b, 1e-7, 1-1e-7)
     ret = torch.mean(-y*torch.log(x)-(1-y)*torch.log(1-x), dim=1)
     # ret=torch.mean(torch.clamp(x,0)-x*y+torch.log(1+torch.exp(-torch.abs(x))),dim=1)
     

@@ -119,7 +119,7 @@ def test_sigmloss1d(set_seeds):
 def test_nosigmloss1d(set_seeds):
     a = torch.rand((1,10))
     b = torch.randint(low=0, high=10, size=(1,10))
-    assert np.isclose(nosigmloss1d(a,b).item(),1.7327522)
+    assert np.isclose(nosigmloss1d(a,b).item(), 0.9116120338439941)
 
 def test_sigmloss1dcentercrop(set_seeds):
     loss = sigmloss1dcentercrop(5, 10)

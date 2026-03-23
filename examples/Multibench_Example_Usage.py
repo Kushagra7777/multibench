@@ -35,7 +35,7 @@ def main():
     """
     
     # Path to MOSI data - adjust this to your local path
-    data_path = 'data/mosi_raw.pkl'
+    data_path = 'data/affect/mosi_raw.pkl'
     
     print("Loading MOSI dataset...")
     print("Note: First run will download GloVe embeddings (~2GB) to ~/.cache/glove/")
@@ -72,7 +72,7 @@ def main():
     train(
         encoders, fusion, head, 
         traindata, validdata, 
-        total_epochs=100,
+        total_epochs=2,
         task="regression",
         optimtype=torch.optim.AdamW,
         is_packed=False,

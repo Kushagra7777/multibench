@@ -16,7 +16,7 @@ from fusions.common_fusions import ConcatEarly  # noqa
 # raw_path: mosi.hdf5, mosei.hdf5, sarcasm_raw_text.pkl, humor_raw_text.pkl
 # traindata, validdata, testdata = get_dataloader('/home/pliang/multibench/affect/pack/mosi/mosi_raw.pkl', robust_test=False)
 traindata, validdata, testdata = get_dataloader(
-    '/home/arav/MultiBench/MultiBench/mosi_raw.pkl', robust_test=False, max_pad=True, data_type='mosi', max_seq_len=50)
+    '/home/bagus/github/multibench/data/affect/mosi_raw.pkl', robust_test=False, max_pad=True, data_type='mosi', max_seq_len=50, num_workers=0)
 
 # mosi/mosei
 encoders = [Identity().to(device), Identity().to(device), Identity().to(device)]
@@ -29,7 +29,7 @@ head = Sequential(GRU(409, 512, dropout=True, has_padding=False,
 
 fusion = ConcatEarly().to(device)
 
-train(encoders, fusion, head, traindata, validdata, 100, task="regression", optimtype=torch.optim.AdamW,
+train(encoders, fusion, head, traindata, validdata, 2, task="regression", optimtype=torch.optim.AdamW,
       is_packed=False, lr=1e-3, save='mosi_ef_r0.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")

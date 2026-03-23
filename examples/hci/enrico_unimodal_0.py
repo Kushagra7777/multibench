@@ -27,12 +27,15 @@ allmodules = [encoder, head]
 
 
 def trainprocess():
-    train(encoder, head, traindata, validdata, 50, optimtype=torch.optim.Adam,
-          lr=0.0001, weight_decay=0, modalnum=modalnum)
+    train(encoder, head, traindata, validdata, 2, optimtype=torch.optim.Adam,
+          lr=0.0001, weight_decay=0, modalnum=modalnum,
+          save_encoder='enrico_u0_encoder.pt', save_head='enrico_u0_head.pt')
 
 
 all_in_one_train(trainprocess, allmodules)
 
 
-model = torch.load('best.pt', weights_only=False).to(device)
-test(encoder, head, testdata, dataset='enrico', modalnum=modalnum)
+encoder = torch.load('enrico_u0_encoder.pt', weights_only=False).to(device)
+head = torch.load('enrico_u0_head.pt', weights_only=False)
+clean_testdata = testdata[list(testdata.keys())[0]][0]
+test(encoder, head, clean_testdata, dataset='enrico', modalnum=modalnum, no_robust=True)

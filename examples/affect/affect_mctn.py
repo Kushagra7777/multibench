@@ -18,7 +18,8 @@ from datasets.affect.get_data import get_dataloader # noqa
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 # raw_path: mosi.hdf5, mosei.hdf5, sarcasm_raw_text.pkl, humor_raw_text.pkl
 traindata, validdata, testdata = \
-    get_dataloader('/home/paul/MultiBench/mosi_raw.pkl', robust_test=False)
+    get_dataloader('/home/bagus/github/multibench/data/affect/mosi_raw.pkl',
+                   robust_test=False, num_workers=0)
 
 max_seq = 20
 feature_dim = 300
@@ -46,7 +47,7 @@ def trainprocess():
         mu_t0=0.01, mu_c=0.01, mu_t1=0.01,
         dropout_p=0.15, early_stop=False, patience_num=15,
         lr=1e-4, weight_decay=0.01, op_type=torch.optim.AdamW,
-        epoch=200, model_save='best_mctn.pt')
+        epoch=2, model_save='best_mctn.pt')
 
 
 all_in_one_train(trainprocess, allmodules)
