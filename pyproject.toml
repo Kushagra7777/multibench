@@ -12,20 +12,13 @@ requires-python = ">=3.10"
 dependencies = [
     "memory-profiler",
     "scikit-learn",
+    "scipy<1.17",
     "matplotlib",
     "h5py",
     "tqdm",
 ]
 
 [project.optional-dependencies]
-cpu = [
-    "torch",
-    "torchvision",
-]
-cuda = [
-    "torch",
-    "torchvision",
-]
 test = [
     "pytest",
     "pytest-cov",

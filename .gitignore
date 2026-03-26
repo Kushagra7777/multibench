@@ -164,3 +164,8 @@ dmypy.json
 *.hdf5
 *.png
 .vector_cache/*
+
+# AI agent 
+CLAUDE.md
+AGENTS.md
+
