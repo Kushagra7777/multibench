@@ -46,16 +46,33 @@ Paired with **MultiZoo**, a modular collection of 20 core multimodal learning ap
 - Python >= 3.10
 - PyTorch (CPU or GPU)
 
-### Installation
+### Virtual environment  
+It is advised to use a virtual environment to manage dependencies. You can create one using `uv venv` (recommended) or `venv`:
 
 ```bash
-pip install -r requirements.txt
+uv venv
+source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
+```
+If not using uv, you can create a virtual environment using `venv`:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
+```
+And remove `uv` from the installation commands below.
+
+### Installation
+For GPU support, install using the appropriate command from the [PyTorch website](https://pytorch.org/get-started/locally/). The following command installs the latest stable version of PyTorch with CUDA latest support:
+
+```bash
+uv pip install -r requirements.txt
 ```
 
-Or install directly:
+For CPU, install directly:
 
 ```bash
-pip install memory-profiler scikit-learn scipy matplotlib h5py tqdm
+uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+uv pip install memory-profiler scikit-learn scipy matplotlib h5py tqdm
 ```
 
 ### Quick example
