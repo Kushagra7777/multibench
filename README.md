@@ -121,7 +121,7 @@ test(model, testdata, dataset='affect', is_packed=False,
 ```
 
 > [!TIP]
-> Check out the [Colab tutorials](https://drive.google.com/file/d/1PfgotUdIWQvA0mIUbncLPSRzqAPXKZV9/view?usp=sharing) for step-by-step walkthroughs covering basic early fusion, architecture search (MFAS), and cross-modal translation (MCTN).
+> Check out the [Colab tutorials](https://colab.research.google.com/drive/1PfgotUdIWQvA0mIUbncLPSRzqAPXKZV9) for step-by-step walkthroughs covering basic early fusion. You then can continue to architecture search (MFAS) and cross-modal translation (MCTN).
 
 ## Running experiments
 
