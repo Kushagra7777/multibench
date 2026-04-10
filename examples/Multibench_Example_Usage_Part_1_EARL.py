@@ -4,16 +4,26 @@ MultiBench Example: MOSI with Simple Early Fusion
 This example demonstrates basic usage of MultiBench with the affective computing 
 dataset MOSI using a simple early fusion model.
 
-This is the Python script version of Multibench_Example_Usage_Colab.ipynb
+This is the Python script version of Multibench_Example_Usage_On_Colab_Part_1_EARL.ipynb
 """
-
-import torch
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
 
-# Add repository to path (REQUIRED)
-sys.path.append(os.getcwd())
+# Add the MultiBench root directory to the path so imports resolve correctly
+repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if repo_root not in sys.path:
+    sys.path.insert(0, repo_root)
+
+print(f"Using MultiBench from: {repo_root}")
+
+# Verify data file
+data_path = os.path.join(repo_root, 'data', 'affect', 'mosi_raw.pkl')
+print(f"Data path: {data_path}")
+print(f"Data file exists: {os.path.exists(data_path)}")
+
+import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
 
 from datasets.affect.get_data import get_dataloader  # noqa
 from unimodals.common_models import GRU, MLP, Sequential, Identity  # noqa
@@ -26,19 +36,11 @@ def main():
     Train and test a simple early fusion model on MOSI dataset.
     
     Note: Download the MOSI data file first:
-    - Create a 'data' directory in the repo root
-    - Download from: https://drive.google.com/u/0/uc?id=1szKIqO0t3Be_W91xvf6aYmsVVUa7wDHU
-    - Save as 'data/mosi_raw.pkl'
-    
-    Or use gdown: pip install gdown && gdown https://drive.google.com/u/0/uc?id=1szKIqO0t3Be_W91xvf6aYmsVVUa7wDHU
-    mv mosi_raw.pkl data/mosi_raw.pkl
+    wget https://filedn.eu/lDTxyzlMbdMJJq0AvECx20X/mosi_raw.pkl
+    mv mosi_raw.pkl data/affect/mosi_raw.pkl
     """
-    
-    # Path to MOSI data - adjust this to your local path
-    data_path = 'data/affect/mosi_raw.pkl'
-    
+
     print("Loading MOSI dataset...")
-    print("Note: First run will download GloVe embeddings (~2GB) to ~/.cache/glove/")
     
     # Create the training, validation, and test-set dataloaders
     traindata, validdata, testdata = get_dataloader(
@@ -62,8 +64,13 @@ def main():
     # Input dimension 409 comes from concatenated modality features
     # Output dimension 1 for regression task (sentiment prediction)
     head = Sequential(
-        GRU(409, 512, dropout=True, has_padding=False, batch_first=True, last_only=True), 
-        MLP(512, 512, 1)
+            GRU(409, 
+                512, 
+                dropout=True, 
+                has_padding=False, 
+                batch_first=True, 
+                last_only=True), 
+            MLP(512, 512, 1)
     ).to(device)
     
     print("Training model...")
@@ -85,7 +92,9 @@ def main():
     print("\nTesting:")
     
     # Load best model and test
-    model = torch.load('mosi_ef_r0.pt', weights_only=False).to(device)
+    model = torch.load('mosi_ef_r0.pt', 
+                       map_location=device,
+                       weights_only=False).to(device)
     test(
         model, testdata, 
         dataset='affect',
