@@ -26,9 +26,9 @@ innovations in (1) data preprocessing, (2) fusion paradigms, (3) optimization ob
    :maxdepth: 2
    :caption: Tutorials:
 
-   Simple Use Case <https://colab.research.google.com/github/pliang279/MultiBench/blob/main/examples/Multibench_Example_Usage_Colab.ipynb>
-   Multimodal Fusion Architecture  Search <https://colab.research.google.com/github/pliang279/MultiBench/blob/main/examples/Multibench_Example_Usage_On_Colab_Part_2_MFAS.ipynb>
-   MCTN <https://colab.research.google.com/github/pliang279/MultiBench/blob/main/examples/Multibench_Example_Usage_On_Colab_Part_3_MCTN.ipynb>
+   Simple Early Fusion Case <https://colab.research.google.com/drive/1PfgotUdIWQvA0mIUbncLPSRzqAPXKZV9>
+   Multimodal Fusion Architecture Search <https://colab.research.google.com/drive/1ywJ06rC5WRMEGrCtWE5g9DWdv3U9p8xa>
+   MCTN <https://colab.research.google.com/drive/1M76QyqdaqkaKU786HnM4qxxnkxMAcex5>
 
 
 

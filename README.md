@@ -2,7 +2,6 @@
 
 **Standardized toolkit for multimodal deep learning research**
 
-[![codecov](https://codecov.io/gh/pliang279/MultiBench/branch/main/graph/badge.svg?token=IN899HIWCF)](https://codecov.io/gh/pliang279/MultiBench)
 [![Documentation Status](https://readthedocs.org/projects/multibench/badge/?version=latest)](https://multibench.readthedocs.io/en/latest/?badge=latest)
 
 ![Overview](images/overview.png)
@@ -15,7 +14,7 @@ Paired with **MultiZoo**, a modular collection of 20 core multimodal learning ap
 2. **Complexity** during training and inference
 3. **Robustness** to noisy and missing modalities
 
-[Website](https://cmu-multicomp-lab.github.io/multibench/) · [Documentation](https://multibench.readthedocs.io/en/latest/) · [Tutorials](https://github.com/pliang279/MultiBench/tree/main/examples)
+ [Documentation](https://human-ai-lab.github.io/multibench/) · 
 
 ## Supported datasets
 
@@ -122,7 +121,7 @@ test(model, testdata, dataset='affect', is_packed=False,
 ```
 
 > [!TIP]
-> Check out the [Colab tutorials](https://github.com/pliang279/MultiBench/tree/main/examples) for step-by-step walkthroughs covering basic fusion, architecture search (MFAS), and cross-modal translation (MCTN).
+> Check out the [Colab tutorials](https://drive.google.com/file/d/1PfgotUdIWQvA0mIUbncLPSRzqAPXKZV9/view?usp=sharing) for step-by-step walkthroughs covering basic early fusion, architecture search (MFAS), and cross-modal translation (MCTN).
 
 ## Running experiments
 
@@ -243,4 +242,4 @@ If you use MultiBench in your research, please cite:
 
 ## Contributors
 
-- [Paul Pu Liang](http://www.cs.cmu.edu/~pliang/) · [Yiwei Lyu](https://github.com/lvyiwei1) · [Xiang Fan](https://github.com/sfanxiang) · [Zetian Wu](http://neal-ztwu.github.io) · [Yun Cheng](https://kapikantzari.github.io) · [Arav Agarwal](https://www.linkedin.com/in/arav-agarwal-941b44109/) · [Jason Wu](https://jasonwunix.com/) · Leslie Chen · [Peter Wu](https://peter.onrender.com/) · [Michelle A. Lee](http://stanford.edu/~mishlee/) · [Yuke Zhu](https://www.cs.utexas.edu/~yukez/) · [Ruslan Salakhutdinov](https://www.cs.cmu.edu/~rsalakhu/) · [Louis-Philippe Morency](https://www.cs.cmu.edu/~morency/)
+[Paul Pu Liang](http://www.cs.cmu.edu/~pliang/) · [Yiwei Lyu](https://github.com/lvyiwei1) · [Xiang Fan](https://github.com/sfanxiang) · [Zetian Wu](http://neal-ztwu.github.io) · [Yun Cheng](https://kapikantzari.github.io) · [Arav Agarwal](https://www.linkedin.com/in/arav-agarwal-941b44109/) · [Jason Wu](https://jasonwunix.com/) · Leslie Chen · [Peter Wu](https://peter.onrender.com/) · [Michelle A. Lee](http://stanford.edu/~mishlee/) · [Yuke Zhu](https://www.cs.utexas.edu/~yukez/) · [Ruslan Salakhutdinov](https://www.cs.cmu.edu/~rsalakhu/) · [Louis-Philippe Morency](https://www.cs.cmu.edu/~morency/)

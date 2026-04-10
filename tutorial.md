@@ -4,11 +4,11 @@
 
 To install, clone this repository directly from GitHub.
 
-``git clone https://github.com/pliang279/MultiBench.git``
+``git clone https://github.com/human-ai-lab/MultiBench.git``
 
 ## Python Package Requirements
 
-python >= 3.7
+python >= 3.10
 
 matplotlib >= 3.3.2
 
@@ -49,7 +49,7 @@ This repository provides automated end-to-end pipeline that simplifies and stand
 5) **Objective Functions**: The default objective function for classification tasks is ``torch.nn.CrossEntropyLoss`` or ``torch.nn.BCEWithLogitsLoss`` and the default objective function for prediction tasks is ``torch.nn.MSELoss``. However, our pipeline allows customized objective functions for more complex architectures. Some custom objective functions are provided under ``objective_functions`` folder.
 6) **Evaluation Scripts**: We also provide scripts for evaluating the performance, complexity and robustness of an architecture on a dataset. These scripts are usually integrated into the training structures (so the performance, complexity and robustness metrics will be automatically computed when a training structure is run).
 
-This modualrized design makes the pipeline very easy to use. Below are a few tutorials on usage.
+This modularized design makes the pipeline very easy to use. Below are a few tutorials on usage.
 
 # Tutorial (AV-MNIST Simple Late Fusion)
 
