@@ -4,3 +4,4 @@ memory-profiler
 scikit-learn
 matplotlib
 h5py
+tqdm
