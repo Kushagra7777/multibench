@@ -20,7 +20,7 @@
 
 ## Colab Links to the Tutorials:
 
-- [Tutorial 1](https://colab.research.google.com/github/human-ai-lab/MultiBench/blob/main/examples/Multibench_Example_Usage_Colab.ipynb): This example shows a very basic usage case of MultiBench. In particular, it demonstrates how to use MultiBench with the affective computing dataset MOSI, and how to use it with a very simple fusion model.
-- [Tutorial 2](https://colab.research.google.com/github/human-ai-lab/MultiBench/blob/main/examples/Multibench_Example_Usage_On_Colab_Part_2_MFAS.ipynb): This example shows a slightly more complicated training paradigm in MultiBench - MFAS (MultiModal Fusion Architecture Search) model on the AVMNIST dataset.
-- [Tutorial 3](https://colab.research.google.com/github/human-ai-lab/MultiBench/blob/main/examples/Multibench_Example_Usage_On_Colab_Part_3_MCTN.ipynb): This example shows a slightly more complicated training paradigm in MultiBench. Namely, we'll run MCTN (learning representations by translating from one modality to another) on MOSI.
+- [Tutorial 1](https://colab.research.google.com/drive/1PfgotUdIWQvA0mIUbncLPSRzqAPXKZV9): This example shows a very basic usage case of MultiBench. In particular, it demonstrates how to use MultiBench with the affective computing dataset MOSI, and how to use it with a very simple fusion model.
+- [Tutorial 2](https://colab.research.google.com/drive/1ywJ06rC5WRMEGrCtWE5g9DWdv3U9p8xa): This example shows a slightly more complicated training paradigm in MultiBench - MFAS (MultiModal Fusion Architecture Search) model on the AVMNIST dataset.
+- [Tutorial 3](https://colab.research.google.com/drive/1M76QyqdaqkaKU786HnM4qxxnkxMAcex5): This example shows a slightly more complicated training paradigm in MultiBench. Namely, we'll run MCTN (learning representations by translating from one modality to another) on MOSI.
 
