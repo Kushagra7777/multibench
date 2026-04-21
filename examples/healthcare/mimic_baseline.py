@@ -14,7 +14,7 @@ from training_structures.Supervised_Learning import train, test # noqa
 
 # get dataloader for icd9 classification task 7
 traindata, validdata, testdata = get_dataloader(
-    7, imputed_path='/home/pliang/yiwei/im.pk')
+    7, imputed_path=os.path.expanduser('~/yiwei/im.pk'))
 
 # build encoders, head and fusion layer
 encoders = [MLP(5, 10, 10, dropout=False).to(device), GRU(

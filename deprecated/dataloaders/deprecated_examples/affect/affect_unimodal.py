@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 traindata, validdata, testdata = get_dataloader(
-    '/home/paul/MultiBench/mosi_raw.pkl')
+    os.path.expanduser('~/MultiBench/mosi_raw.pkl'))
 
 
 modal_num = 2

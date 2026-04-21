@@ -18,7 +18,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1,2"
 
 # analysis the time and space complexity
 
-sys.path.append('/home/pliang/multibench/MultiBench/datasets/affect')
+sys.path.append(os.path.expanduser('~/multibench/MultiBench/datasets/affect'))
 
 # Support mosi/mosi_unaligned/mosei/mosei_unaligned/iemocap/iemocap_unaligned
 traindata, validdata, robust_text, robust_vision, robust_audio, robust_timeseries = get_dataloader(

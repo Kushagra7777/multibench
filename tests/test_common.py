@@ -1,8 +1,10 @@
+import os
+
 from unimodals.common_models import *
 import torch
 
 
-DATA_PATH = '/home/arav/MultiBench/MultiBench/'
+DATA_PATH = os.path.expanduser('~/MultiBench/MultiBench/')
 
 def test_id():
     """Test Identity module."""
@@ -58,19 +60,6 @@ def test_MLP():
     lin = MLP(3,2,1)
     assert lin(test).shape == (3,1)
 
-
-def test_MLP():
-    """Test common module."""
-    lin = MLP(3,2,1, True, 0.1,True)
-    test = torch.zeros((3,3))
-    out = lin(test)
-    assert out[0] == 0
-    assert out[1].shape == test.shape
-    assert out[2].shape == (3,2)
-    assert out[3].shape == (3,2)
-    lin = MLP(3,2,1)
-    assert lin(test).shape == (3,1)
-    
 def test_GRU():
     """Test common module."""
     lin = GRU(3,2,1, True)

@@ -11,7 +11,7 @@ sys.path.append(os.getcwd())
 
 # Support mosi/mosi_unaligned/mosei/mosei_unaligned
 traindata, validdata, testdata = get_dataloader(
-    '/home/pliang/multibench/affect/processed/humor_data.pkl')
+    os.path.expanduser('~/multibench/affect/processed/humor_data.pkl'))
 
 # humor 371 81 300
 encoders = GRU(752, 1128, dropout=True, has_padding=True).to(device)

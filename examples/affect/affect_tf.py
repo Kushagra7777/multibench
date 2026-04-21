@@ -16,7 +16,7 @@ from fusions.common_fusions import Concat, TensorFusion  # noqa
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 # raw_path: mosi.hdf5, mosei.hdf5, sarcasm_raw_text.pkl, humor_raw_text.pkl
 traindata, validdata, test_robust = get_dataloader(
-    '/home/bagus/github/multibench/data/affect/mosi_raw.pkl',
+    'data/affect/mosi_raw.pkl',
     robust_test=False, max_pad=True, num_workers=0)
 
 # mosi/mosei - use GRU with last_only=True to return single vectors for TensorFusion

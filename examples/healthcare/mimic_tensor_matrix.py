@@ -16,7 +16,7 @@ filename = 'besttensor.pt'
 
 # get dataloader for icd9 classification task 7
 traindata, validdata, testdata = get_dataloader(
-    1, imputed_path='/home/paul/yiwei/im.pk')
+    1, imputed_path=os.path.expanduser('~/yiwei/im.pk'))
 # build encoders, head and fusion layer
 encoders = [MLP(5, 10, 10, dropout=False).to(device), GRU(
     12, 30, dropout=False, batch_first=True).to(device)]

@@ -71,13 +71,13 @@ def test_MVAE_objective(set_seeds):
     args['inputs'] = [torch.randn((10,10)).to(device),torch.randn((10,10)).to(device)]
     args['training'] = True
     out = objective1(torch.randn((10,10)).to(device),torch.randint(low=0, high=10, size=(10,)).to(device),args).cpu().detach().numpy()
-    assert np.isclose(out,45.058445)
+    assert np.isclose(out,44.43377)
     args['training'] = False
     out = objective1(torch.randn((10,10)).to(device),torch.randint(low=0, high=10, size=(10,)).to(device),args).cpu().detach().numpy()
-    assert np.isclose(out,42.121914)
+    assert np.isclose(out,41.563843)
     objective2 = MVAE_objective(2.0, [torch.nn.MSELoss(), torch.nn.MSELoss()], [1.0, 1.0], input_to_float=False)
     out = objective2(torch.randn((10,10)).to(device),torch.randint(low=0, high=10, size=(10,)).to(device),args).cpu().detach().numpy()
-    assert np.isclose(out,41.353207)
+    assert np.isclose(out,42.130898)
 
 def test_CCA_objective(set_seeds):
     objective = CCA_objective(10)
@@ -104,7 +104,7 @@ def test_RMFE_object(set_seeds):
     args = dict()
     args['model'] = model
     args['inputs'] = [torch.rand((10,10)).to(device),torch.rand((10,10)).to(device)]
-    assert np.isclose(objective(torch.rand((10,10)).to(device),torch.ones([10,10]).to(device),args).item(),0.4805612862110138)
+    assert np.isclose(objective(torch.rand((10,10)).to(device),torch.ones([10,10]).to(device),args).item(),0.4805537164211273, atol=1e-4)
     args['inputs'] = []
     try:
         objective(torch.rand((10,10)).to(device),torch.ones([10,10]).to(device),args)

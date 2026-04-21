@@ -61,7 +61,7 @@ class selfsupervised:
         self.loss_contact_next = nn.BCEWithLogitsLoss()
 
         self.train_loader, self.val_loader = get_data(
-            self.device, self.configs, "/home/pliang/multibench/MultiBench-robotics/")
+            self.device, self.configs, os.path.expanduser("~/multibench/MultiBench-robotics/"))
 
     def train(self):
         print(len(self.train_loader.dataset), len(self.val_loader.dataset))

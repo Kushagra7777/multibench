@@ -27,7 +27,7 @@ timestep = 50
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 # raw_path: mosi.hdf5, mosei.hdf5, sarcasm_raw_text.pkl, humor_raw_text.pkl
 traindata, validdata, test_robust = get_dataloader(
-    '/home/bagus/github/multibench/data/affect/mosi_raw.pkl', task='classification', robust_test=False, max_pad=True, max_seq_len=timestep, num_workers=0)
+    'data/affect/mosi_raw.pkl', task='classification', robust_test=False, max_pad=True, max_seq_len=timestep, num_workers=0)
 
 encoders = [TSEncoder(dim_0, 30, n_latent, timestep, returnvar=False).to(device), TSEncoder(
     dim_1, 30, n_latent, timestep, returnvar=False).to(device), TSEncoder(dim_2, 30, n_latent, timestep, returnvar=False).to(device)]

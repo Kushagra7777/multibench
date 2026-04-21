@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 import random
 import pickle
 import copy
-# sys.path.append('/home/pliang/multibench/robustness/')
+# sys.path.append(os.path.expanduser('~/multibench/robustness/'))
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 

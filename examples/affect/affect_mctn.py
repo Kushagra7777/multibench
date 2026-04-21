@@ -18,7 +18,7 @@ from datasets.affect.get_data import get_dataloader # noqa
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 # raw_path: mosi.hdf5, mosei.hdf5, sarcasm_raw_text.pkl, humor_raw_text.pkl
 traindata, validdata, testdata = \
-    get_dataloader('/home/bagus/github/multibench/data/affect/mosi_raw.pkl',
+    get_dataloader('data/affect/mosi_raw.pkl',
                    robust_test=False, num_workers=0)
 
 max_seq = 20

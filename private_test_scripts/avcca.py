@@ -12,7 +12,7 @@ import os
 sys.path.append(os.getcwd())
 
 traindata, validdata, testdata = get_dataloader(
-    '/home/pliang/yiwei/avmnist/_MFAS/avmnist', batch_size=800)
+    os.path.expanduser('~/yiwei/avmnist/_MFAS/avmnist'), batch_size=800)
 channels = 6
 encoders = [LeNet(1, channels, 3).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), Sequential2(
     LeNet(1, channels, 5), Linear(192, 48, xavier_init=True)).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))]

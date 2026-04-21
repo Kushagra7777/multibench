@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader, Subset
 
 
 traindata, validdata, testdata = get_dataloader(
-    '/home/bagus/github/multibench/avmnist', batch_size=32)
+    'data/avmnist', batch_size=32)
 traindata = DataLoader(Subset(traindata.dataset, range(2000)), batch_size=32, shuffle=True)
 validdata = DataLoader(Subset(validdata.dataset, range(500)), batch_size=32, shuffle=False)
 

@@ -4,7 +4,7 @@ import os
 
 sys.path.append(os.getcwd())
 
-from .training_structures.architecture_search import train, test # noqa
+from training_structures.architecture_search import train, test # noqa
 import utils.surrogate as surr # noqa
 import torch # noqa
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

@@ -15,10 +15,10 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 # raw_path: mosi.hdf5, mosei.hdf5, sarcasm_raw_text.pkl, humor_raw_text.pkl
 traindata, validdata, test_robust = get_dataloader(
-    '/home/bagus/github/multibench/data/affect/mosi_raw.pkl', robust_test=False, data_type='mosi', num_workers=0)
+    'data/affect/mosi_raw.pkl', robust_test=False, data_type='mosi', num_workers=0)
 
 # traindata, validdata, test_robust = \
-#     get_dataloader('/home/pliang/multibench/affect/sarcasm.pkl', robust_test=False)
+#     get_dataloader(os.path.expanduser('~/multibench/affect/sarcasm.pkl'), robust_test=False)
 
 # mosi/mosei
 encoders = [GRU(35, 70, dropout=True, has_padding=True, batch_first=True).to(device),

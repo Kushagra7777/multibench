@@ -21,7 +21,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1,2"
 
 # Support mosi/mosi_unaligned/mosei/mosei_unaligned/iemocap/iemocap_unaligned
 traindata, validdata, testdata = get_dataloader(
-    '/home/pliang/multibench/affect/processed/mosei_senti_data.pkl')
+    os.path.expanduser('~/multibench/affect/processed/mosei_senti_data.pkl'))
 
 # mosi
 # encoders=[GRU(20,50,dropout=True,has_padding=True).to(device), \

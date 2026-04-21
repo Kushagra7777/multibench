@@ -10,7 +10,7 @@ sys.path.append(os.getcwd())
 
 # get dataloader for icd9 classification task 7
 traindata, validdata, testdata = get_dataloader(
-    imputed_path='/home/yiwei/im.pk')
+    imputed_path=os.path.expanduser('~/im.pk'))
 
 # build encoders, head and fusion layer
 encoders = [MLP(5, 10, 10, dropout=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")),

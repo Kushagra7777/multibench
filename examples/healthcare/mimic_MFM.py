@@ -16,7 +16,7 @@ from fusions.common_fusions import Concat # noqa
 
 
 traindata, validdata, testdata = get_dataloader(
-    7, imputed_path='/home/pliang/yiwei/im.pk', flatten_time_series=True)
+    7, imputed_path=os.path.expanduser('~/yiwei/im.pk'), flatten_time_series=True)
 classes = 2
 n_latent = 200
 series_dim = 12

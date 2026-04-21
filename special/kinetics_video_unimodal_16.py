@@ -8,7 +8,7 @@ sys.path.append(os.getcwd())
 # model=torch.nn.Sequential(r3d,torch.load('best1.pt', weights_only=False)).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 model = torch.load('best2.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 optim = torch.optim.Adam(model.parameters(), lr=0.0001)
-datas = torch.load('/home/pliang/yiwei/kinetics_small/valid/batch0.pdt', weights_only=False)
+datas = torch.load(os.path.expanduser('~/yiwei/kinetics_small/valid/batch0.pdt'), weights_only=False)
 criterion = torch.nn.CrossEntropyLoss()
 
 epochs = 15
@@ -21,7 +21,7 @@ for ep in range(epochs):
     for i in range(24):
         print("epoch "+str(ep)+" subiter "+str(i))
         datas = torch.load(
-            '/home/pliang/yiwei/kinetics_small/train/batch'+str(i)+'.pdt', weights_only=False)
+            os.path.expanduser('~/yiwei/kinetics_small/train/batch')+str(i)+'.pdt', weights_only=False)
         train_dataloader = DataLoader(datas, shuffle=True, batch_size=45)
         for j in train_dataloader:
             optim.zero_grad()
@@ -55,7 +55,7 @@ for ep in range(epochs):
 
 print('testing')
 valid_dataloader = None
-datas = torch.load('/home/pliang/yiwei/kinetics_small/test/batch0.pdt', weights_only=False)
+datas = torch.load(os.path.expanduser('~/yiwei/kinetics_small/test/batch0.pdt'), weights_only=False)
 test_dataloader = DataLoader(datas, shuffle=False, batch_size=45)
 with torch.no_grad():
     total = 0

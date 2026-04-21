@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 traindata, validdata, testdata = get_dataloader(
-    '/home/pliang/multibench/affect/processed/mosi_raw.pkl')
+    os.path.expanduser('~/multibench/affect/processed/mosi_raw.pkl'))
 
 # mosi/mosei
 encoders = [MULTModel(409, 512).to(device)]

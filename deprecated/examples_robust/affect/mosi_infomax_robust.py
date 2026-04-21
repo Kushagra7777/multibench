@@ -10,7 +10,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 
-sys.path.append('/home/pliang/multibench/MultiBench/datasets/affect')
+sys.path.append(os.path.expanduser('~/multibench/MultiBench/datasets/affect'))
 
 
 traindata, validdata, robust_text, robust_vision, robust_audio, robust_timeseries = get_dataloader(

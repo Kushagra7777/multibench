@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader, Subset
 
 
 traindata, validdata, testdata = get_dataloader(
-    '/home/bagus/github/multibench/avmnist', batch_size=800, num_workers=0)
+    'data/avmnist', batch_size=800, num_workers=0)
 traindata = DataLoader(Subset(traindata.dataset, range(2000)), batch_size=800, shuffle=True, num_workers=0)
 channels = 6
 encoders = [LeNet(1, channels, 3).to(device), Sequential2(

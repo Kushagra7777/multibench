@@ -6,7 +6,7 @@ MultiBench is a standardized toolkit for multimodal deep learning research. It p
 
 ## Critical Working Directory Requirement
 
-**All scripts must run from the repository root**. The codebase uses `sys.path.append(os.getcwd())` everywhere. Always execute commands from `/home/bagustris/github/multibench` or the workspace root.
+**All scripts must run from the repository root**. The codebase uses `sys.path.append(os.getcwd())` everywhere. Always execute commands from the workspace root (the directory containing this repository).
 
 ## Architecture Patterns
 
@@ -131,7 +131,7 @@ train(encoders, fusion, head, traindata, validdata, epochs, is_packed=False)
 pytest tests/  # Unit tests for modules
 ```
 
-Tests use fixtures from `tests/common.py`. Mock data paths hardcoded to `/home/arav/MultiBench/MultiBench/` (ignore in tests).
+Tests use fixtures from `tests/common.py`. Mock data paths use `os.path.expanduser('~')` for portability.
 
 ### Tracking Complexity
 

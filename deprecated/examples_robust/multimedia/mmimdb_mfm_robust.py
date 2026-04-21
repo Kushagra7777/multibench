@@ -8,8 +8,8 @@ import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import sys
 import os
-sys.path.append('/home/pliang/multibench/MultiBench/datasets/imdb')
-sys.path.append('/home/pliang/multibench/MultiBench')
+sys.path.append(os.path.expanduser('~/multibench/MultiBench/datasets/imdb'))
+sys.path.append(os.path.expanduser('~/multibench/MultiBench'))
 
 
 traindata, validdata = get_dataloader(

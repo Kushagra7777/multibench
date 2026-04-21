@@ -55,13 +55,13 @@ This modularized design makes the pipeline very easy to use. Below are a few tut
 
 Here is a simple example of using this repository to quickly build and evaluate a multimodal architecture. We will be using the AV-MNIST dataset. 
 
-The first step is to download the data. You can download the tar file [here](https://drive.google.com/file/d/1KvKynJJca5tDtI5Mmp6CoRh9pQywH8Xp/view?usp=sharing). Then put it somewhere on your hard drive. Let's assume you put the downloaded tar file under ``/home/username/``. Then you need to untar the file using
+The first step is to download the data. You can download the tar file [here](https://drive.google.com/file/d/1KvKynJJca5tDtI5Mmp6CoRh9pQywH8Xp/view?usp=sharing). Then put it somewhere on your hard drive. Let's assume you put the downloaded tar file under ``~/``. Then you need to untar the file using
 
 ```
 tar -xvzf avmnist.tar.gz
 ```
 
-Then you should have a ``avmnist`` folder under ``/home/username/``. Now please change your working directory to the home of this repository. Note that all operations from this pipeline should be done with this working directory. Then you want to write a script to train and evaluate the simple late fusion model on the dataset. At the top of the script, always include the following so that python can find all scripts in this repo:
+Then you should have a ``avmnist`` folder under ``~/``. Now please change your working directory to the home of this repository. Note that all operations from this pipeline should be done with this working directory. Then you want to write a script to train and evaluate the simple late fusion model on the dataset. At the top of the script, always include the following so that python can find all scripts in this repo:
 
 ```
 import sys
@@ -73,7 +73,7 @@ Next, we are going to build dataloaders for AV-MNIST:
 
 ```
 from datasets.avnist.get_data import get_dataloader
-traindata,validdata,testdata = get_dataloader('/home/username/avmnist')
+traindata,validdata,testdata = get_dataloader('data/avmnist')
 ```
 
 Now we have a dataloader each for train, valid and test splits. AV-MNIST is a dataset with energy-reduced MNIST digits and audio of humans reading the digits and the task is to predict the digit using the blurry images as well as the audio.
@@ -117,7 +117,7 @@ sys.path.append(os.getcwd())
 
 # get data loaders
 from datasets.avnist.get_data import get_dataloader
-traindata,validdata,testdata = get_dataloader('/home/username/avmnist')
+traindata,validdata,testdata = get_dataloader('data/avmnist')
 ```
 
 But this time we will need both the encoders and decoders for the 2 modalities (image and audio). Suppose we want the latent representataion of each modality to have size 200, then we can write the following:

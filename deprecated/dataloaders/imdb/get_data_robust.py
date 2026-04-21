@@ -94,9 +94,9 @@ def get_dataloader_robust(path: str, test_path: str, num_workers: int = 8, train
     dataset = os.path.join(path, "dataset")
 
     clsf = VGGClassifier(
-        model_path='/home/pliang/multibench/MultiBench/datasets/imdb/vgg16.tar', synset_words='synset_words.txt')
+        model_path=os.path.expanduser('~/multibench/MultiBench/datasets/imdb/vgg16.tar'), synset_words='synset_words.txt')
     googleword2vec = KeyedVectors.load_word2vec_format(
-        '/home/pliang/multibench/MultiBench/datasets/imdb/GoogleNews-vectors-negative300.bin.gz', binary=True)
+        os.path.expanduser('~/multibench/MultiBench/datasets/imdb/GoogleNews-vectors-negative300.bin.gz'), binary=True)
 
     images = []
     texts = []

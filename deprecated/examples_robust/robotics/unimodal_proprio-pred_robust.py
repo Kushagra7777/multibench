@@ -57,7 +57,7 @@ class selfsupervised:
         self.loss_contact_next = nn.BCEWithLogitsLoss()
 
         self.train_loader, self.val_loader, self.test_loader = get_data(
-            self.device, self.configs, "/home/pliang/multibench/MultiBench-robotics/", unimodal="proprio", output="ee_yaw_next")
+            self.device, self.configs, os.path.expanduser("~/multibench/MultiBench-robotics/"), unimodal="proprio", output="ee_yaw_next")
         self.filename = 'robotics_unimodal_proprio-pred_best.pt'
 
     def train(self):

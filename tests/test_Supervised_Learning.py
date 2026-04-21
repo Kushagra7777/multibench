@@ -46,8 +46,9 @@ def test_Supervised_Learning_unimodal_classification():
 
     train([model], Concat(), nn.Identity(), train_loader, train_loader, 80)
 
+    device = next(model.parameters()).device
     for i, o in zip(x, y):
-        assert torch.allclose(torch.argmax(model(i[None]), dim=-1), o[None])
+        assert torch.allclose(torch.argmax(model(i[None].to(device)), dim=-1), o[None].to(device))
 
 def test_Supervised_Learning_multimodal_classification():
     encoders = [nn.Sequential(
@@ -69,13 +70,14 @@ def test_Supervised_Learning_multimodal_classification():
 
     train(encoders, fusion, nn.Identity(), train_loader, train_loader, 80)
 
+    device = next(encoders[0].parameters()).device
     for i1, i2, o in zip(x1, x2, y):
-        i = [i1, i2]
+        i = [i1.to(device), i2.to(device)]
         output = []
         for j in range(len(i)):
             output.append(encoders[j](i[j][None]))
         output = fusion(output)
-        assert torch.allclose(torch.argmax(output, dim=-1), o[None])
+        assert torch.allclose(torch.argmax(output, dim=-1), o[None].to(device))
 
 def test_Supervised_Learning_unimodal_regression():
     model = nn.Sequential(
@@ -95,8 +97,9 @@ def test_Supervised_Learning_unimodal_regression():
 
     train([model], Concat(), nn.Identity(), train_loader, train_loader, 160, task='regression', objective=nn.MSELoss())
 
+    device = next(model.parameters()).device
     for i, o in zip(x, y):
-        assert torch.allclose(model(i), o, atol=0.1)
+        assert torch.allclose(model(i.to(device)), o.to(device), atol=0.1)
 
 def test_Supervised_Learning_multimodal_regression():
     encoders = [nn.Sequential(
@@ -118,10 +121,11 @@ def test_Supervised_Learning_multimodal_regression():
 
     train(encoders, fusion, nn.Identity(), train_loader, train_loader, 80, task='regression', objective=nn.MSELoss())
 
+    device = next(encoders[0].parameters()).device
     for i1, i2, o in zip(x1, x2, y):
-        i = [i1, i2]
+        i = [i1.to(device), i2.to(device)]
         output = []
         for j in range(len(i)):
             output.append(encoders[j](i[j][None]))
         output = fusion(output)
-        assert torch.allclose(output, o[None], atol=0.1)
+        assert torch.allclose(output, o[None].to(device), atol=0.1)

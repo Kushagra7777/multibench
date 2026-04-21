@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader, Subset
 
 filename = 'best3.pt'
 traindata, validdata, testdata = get_dataloader(
-    '/home/bagus/github/multibench/avmnist', num_workers=0)
+    'data/avmnist', num_workers=0)
 traindata = DataLoader(Subset(traindata.dataset, range(2000)), batch_size=40, shuffle=True, num_workers=0)
 validdata = DataLoader(Subset(validdata.dataset, range(500)), batch_size=40, shuffle=False, num_workers=0)
 channels = 6

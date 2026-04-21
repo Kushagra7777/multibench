@@ -10,7 +10,7 @@ sys.path.append(os.getcwd())
 
 # get dataloader for icd9 classification task 7
 traindata, validdata, testdata = get_dataloader(
-    imputed_path='/home/pliang/yiwei/im.pk')
+    imputed_path=os.path.expanduser('~/yiwei/im.pk'))
 
 
 # test

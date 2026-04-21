@@ -142,8 +142,9 @@ class SurrogateDataloader():
                 conf_list, np.float32), (1, 0, 2))
 
             dataset_conf.append(np.array(conf_list, np.float32))
+            acc_list_vals = [a.cpu().item() if isinstance(a, torch.Tensor) else a for a in acc_list]
             dataset_acc.append(np.expand_dims(
-                np.array(acc_list, np.float32), 1))
+                np.array(acc_list_vals, np.float32), 1))
 
         if to_torch:
             for index in range(len(dataset_conf)):
@@ -193,6 +194,7 @@ def train_simple_surrogate(model, criterion, optimizer, data_tensors, num_epochs
     Returns:
         float: Loss of this surrogate.
     """
+    model.to(device)
     for epoch in range(num_epochs):
 
         model.train(True)  # Set model to training mode

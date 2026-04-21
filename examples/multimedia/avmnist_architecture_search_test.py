@@ -11,7 +11,7 @@ import os
 sys.path.append(os.getcwd())
 
 traindata, validdata, testdata = get_dataloader(
-    '/home/bagus/github/multibench/avmnist', batch_size=32)
+    'data/avmnist', batch_size=32)
 import glob
 best_files = sorted(glob.glob('tests/best*.pt'))
 if not best_files:

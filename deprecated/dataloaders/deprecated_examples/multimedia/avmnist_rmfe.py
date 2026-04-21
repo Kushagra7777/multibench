@@ -13,7 +13,7 @@ sys.path.append(os.getcwd())
 
 
 traindata, validdata, testdata = get_dataloader(
-    '/home/pliang/yiwei/avmnist/_MFAS/avmnist', batch_size=2)
+    os.path.expanduser('~/yiwei/avmnist/_MFAS/avmnist'), batch_size=2)
 channels = 6
 encoders = [LeNet(1, channels, 3).to(device), LeNet(1, channels, 5).to(device)]
 #encoders=[MLP(300,512,outdim), MLP(4096,1024,outdim)]

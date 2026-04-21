@@ -10,7 +10,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 
-sys.path.append('/home/pliang/multibench/MultiBench/datasets/imdb')
+sys.path.append(os.path.expanduser('~/multibench/MultiBench/datasets/imdb'))
 
 traindata, validdata = get_dataloader(
     '../../../video/multimodal_imdb.hdf5', vgg=True)

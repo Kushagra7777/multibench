@@ -263,7 +263,7 @@ class Affectdataset(Dataset):
 def get_dataloader(
         filepath: str, batch_size: int = 32, max_seq_len=50, max_pad=False, train_shuffle: bool = True,
         num_workers: int = 2, flatten_time_series: bool = False, task=None, robust_test=False, data_type='mosi', 
-        raw_path='/home/van/backup/pack/mosi/mosi.hdf5', z_norm=False) -> DataLoader:
+        raw_path=os.path.expanduser('~/backup/pack/mosi/mosi.hdf5'), z_norm=False) -> DataLoader:
     """Get dataloaders for affect data.
 
     Args:
@@ -277,7 +277,7 @@ def get_dataloader(
         task (str, optional): Which task to load in. Defaults to None.
         robust_test (bool, optional): Whether to apply robustness to data or not. Defaults to False.
         data_type (str, optional): What data to load in. Defaults to 'mosi'.
-        raw_path (str, optional): Full path to data. Defaults to '/home/van/backup/pack/mosi/mosi.hdf5'.
+        raw_path (str, optional): Full path to data. Defaults to '~/backup/pack/mosi/mosi.hdf5'.
         z_norm (bool, optional): Whether to normalize data along the z dimension or not. Defaults to False.
 
     Returns:

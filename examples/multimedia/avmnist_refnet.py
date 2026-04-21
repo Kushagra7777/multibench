@@ -14,7 +14,7 @@ from training_structures.Supervised_Learning import train, test
 from torch.utils.data import DataLoader, Subset
 
 traindata, validdata, testdata = get_dataloader(
-    '/home/bagus/github/multibench/avmnist', batch_size=20, num_workers=0)
+    'data/avmnist', batch_size=20, num_workers=0)
 traindata = DataLoader(Subset(traindata.dataset, range(2000)), batch_size=20, shuffle=True, num_workers=0)
 channels = 6
 encoders = [Sequential2(LeNet(1, channels, 3), nn.Linear(

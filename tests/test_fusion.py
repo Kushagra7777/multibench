@@ -60,12 +60,12 @@ def test_tensor_fusion(set_seeds):
 
 def test_low_rank_tensor_fusion(set_seeds):
     """Test low rank tensor fusion."""
-    fusion = LowRankTensorFusion((10,10),2,1)
+    fusion = LowRankTensorFusion((10,10),2,1).to(device)
     output = fusion([torch.randn((10,10)).to(device) for _ in range(2)])
     assert output.shape == (10,2)
     assert np.isclose(torch.norm(output).item(), 0.6151207089424133)
     assert count_parameters(fusion) == 47  # 2 factors (1,11,2)=22 each + fusion_weights(1,1)=1 + fusion_bias(1,2)=2
-    fusion = LowRankTensorFusion((10,10),2,1,flatten=False)
+    fusion = LowRankTensorFusion((10,10),2,1,flatten=False).to(device)
     output = fusion([torch.randn((10,10)).to(device) for _ in range(2)])
     assert output.shape == (10,2)
     assert np.isclose(torch.norm(output).item(), 8.852971076965332)

@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 # mosi_raw.pkl, mosei_raw.pkl, sarcasm.pkl, humor.pkl
 traindata, validdata, test_robust = \
-    get_dataloader('/home/pliang/multibench/affect/processed/mosi_raw.pkl')
+    get_dataloader(os.path.expanduser('~/multibench/affect/processed/mosi_raw.pkl'))
 
 max_seq = 20
 feature_dim = 300

@@ -61,10 +61,10 @@ def train(ep=0):
         print("epoch "+str(ep)+" subiter "+str(fid))
         if dataset_size == 'small':
             datas = torch.load(
-                '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid)+'.pdt', weights_only=False)
+                os.path.expanduser('~/yiwei/kinetics_small/train/batch_37')+str(fid)+'.pdt', weights_only=False)
         else:
             datas = torch.load(
-                '/home/pliang/yiwei/kinetics_medium/train/batch_medium'+str(fid)+'.pdt', weights_only=False)
+                os.path.expanduser('~/yiwei/kinetics_medium/train/batch_medium')+str(fid)+'.pdt', weights_only=False)
         datas = [d for d in datas if d[1].shape[1] == 763]
         train_dataloader = DataLoader(
             datas, shuffle=True, batch_size=batch_size)
@@ -95,10 +95,10 @@ for ep in tqdm(range(epochs)):
         for fid in range(num_valid_loaders):
             if dataset_size == 'small':
                 datas = torch.load(
-                    '/home/pliang/yiwei/kinetics_small/valid/batch_37%d.pdt' % fid, weights_only=False)
+                    os.path.expanduser('~/yiwei/kinetics_small/valid/batch_37%d.pdt') % fid, weights_only=False)
             else:
                 datas = torch.load(
-                    '/home/pliang/yiwei/kinetics_medium/valid/batch_medium%d.pdt' % fid, weights_only=False)
+                    os.path.expanduser('~/yiwei/kinetics_medium/valid/batch_medium%d.pdt') % fid, weights_only=False)
             valid_dataloader = DataLoader(
                 datas, shuffle=False, batch_size=batch_size, num_workers=num_workers)
             for j in valid_dataloader:
@@ -132,10 +132,10 @@ totalloss = 0.0
 for fid in range(num_test_dataloaders):
     if dataset_size == 'small':
         datas = torch.load(
-            '/home/pliang/yiwei/kinetics_small/test/batch_37%d.pdt' % fid, weights_only=False)
+            os.path.expanduser('~/yiwei/kinetics_small/test/batch_37%d.pdt') % fid, weights_only=False)
     else:
         datas = torch.load(
-            '/home/pliang/yiwei/kinetics_medium/test/batch_medium%d.pdt' % fid, weights_only=False)
+            os.path.expanduser('~/yiwei/kinetics_medium/test/batch_medium%d.pdt') % fid, weights_only=False)
     test_dataloader = DataLoader(datas, shuffle=False, batch_size=batch_size)
     ys = []
     with torch.no_grad():

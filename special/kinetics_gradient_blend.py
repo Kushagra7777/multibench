@@ -37,7 +37,7 @@ def gettrainloss(model, head, monum, batch_size, num_workers):
     with torch.no_grad():
         for fid in range(22):
             datas = torch.load(
-                '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid)+'.pdt', weights_only=False)
+                os.path.expanduser('~/yiwei/kinetics_small/train/batch_37')+str(fid)+'.pdt', weights_only=False)
             train_dataloader = DataLoader(
                 datas, shuffle=True, batch_size=batch_size, num_workers=num_workers)
             for j in train_dataloader:
@@ -77,7 +77,7 @@ def gettrainmloss(models, head, fuse, batch_size, num_workers):
     with torch.no_grad():
         for fid in range(22):
             datas = torch.load(
-                '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid)+'.pdt', weights_only=False)
+                os.path.expanduser('~/yiwei/kinetics_small/train/batch_37')+str(fid)+'.pdt', weights_only=False)
             train_dataloader = DataLoader(
                 datas, shuffle=True, batch_size=batch_size, num_workers=num_workers)
             for j in train_dataloader:
@@ -197,10 +197,10 @@ bestvalloss = 10000.0
 num_epoch = 60  # 30 # 16
 gb_epoch = 6  # 3 # 2
 finetune_epoch = 3  # 2
-datas = torch.load('/home/pliang/yiwei/kinetics_small/valid/batch_370.pdt', weights_only=False)
+datas = torch.load(os.path.expanduser('~/yiwei/kinetics_small/valid/batch_370.pdt'), weights_only=False)
 valid_dataloader0 = DataLoader(
     datas, shuffle=False, batch_size=batch_size, num_workers=num_workers)
-datas = torch.load('/home/pliang/yiwei/kinetics_small/valid/batch_371.pdt', weights_only=False)
+datas = torch.load(os.path.expanduser('~/yiwei/kinetics_small/valid/batch_371.pdt'), weights_only=False)
 valid_dataloader1 = DataLoader(
     datas, shuffle=False, batch_size=batch_size, num_workers=num_workers)
 valid_dataloaders = [valid_dataloader0, valid_dataloader1]
@@ -223,7 +223,7 @@ for ep in tqdm(range(num_epoch//gb_epoch)):
             total = 0
             for fid in range(22):
                 datas = torch.load(
-                    '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid)+'.pdt', weights_only=False)
+                    os.path.expanduser('~/yiwei/kinetics_small/train/batch_37')+str(fid)+'.pdt', weights_only=False)
                 train_dataloader = DataLoader(
                     datas, shuffle=True, batch_size=batch_size, num_workers=num_workers)
                 for j in train_dataloader:
@@ -274,7 +274,7 @@ for ep in tqdm(range(num_epoch//gb_epoch)):
         total = 0
         for fid in range(22):
             datas = torch.load(
-                '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid)+'.pdt', weights_only=False)
+                os.path.expanduser('~/yiwei/kinetics_small/train/batch_37')+str(fid)+'.pdt', weights_only=False)
             train_dataloader = DataLoader(
                 datas, shuffle=True, batch_size=batch_size, num_workers=num_workers)
             for j in train_dataloader:
@@ -317,7 +317,7 @@ for ep in tqdm(range(num_epoch//gb_epoch)):
         total = 0
         for fid in range(22):
             datas = torch.load(
-                '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid)+'.pdt', weights_only=False)
+                os.path.expanduser('~/yiwei/kinetics_small/train/batch_37')+str(fid)+'.pdt', weights_only=False)
             train_dataloader = DataLoader(
                 datas, shuffle=True, batch_size=batch_size, num_workers=num_workers)
             for j in train_dataloader:
@@ -345,7 +345,7 @@ for ep in tqdm(range(num_epoch//gb_epoch)):
     with torch.no_grad():
         for fid in range(22):
             datas = torch.load(
-                '/home/pliang/yiwei/kinetics_small/train/batch_37'+str(fid)+'.pdt', weights_only=False)
+                os.path.expanduser('~/yiwei/kinetics_small/train/batch_37')+str(fid)+'.pdt', weights_only=False)
             train_dataloader = DataLoader(
                 datas, shuffle=True, batch_size=batch_size, num_workers=num_workers)
             for j in train_dataloader:
@@ -410,7 +410,7 @@ corrects = 0
 totalloss = 0.0
 for fid in range(3):
     datas = torch.load(
-        '/home/pliang/yiwei/kinetics_small/test/batch_37%d.pdt' % fid, weights_only=False)
+        os.path.expanduser('~/yiwei/kinetics_small/test/batch_37%d.pdt') % fid, weights_only=False)
     test_dataloader = DataLoader(
         datas, shuffle=False, batch_size=batch_size, num_workers=num_workers)
     with torch.no_grad():
