@@ -224,7 +224,7 @@ class NCECriterion(nn.Module):
 
         # loss for K negative pair
         P_neg = x.narrow(1, 1, m)
-        log_D0 = torch.div(P_neg.clone().fill_(m * Pn),
+        log_D0 = torch.div(torch.full_like(P_neg, m * Pn),
                            P_neg.add(m * Pn + eps)).log_()
 
         loss = - (log_D1.sum(0) + log_D0.view(-1, 1).sum(0)) / bsz
@@ -251,7 +251,7 @@ class NCESoftmaxLoss(nn.Module):
         """
         bsz = x.shape[0]
         x = x.squeeze()
-        label = torch.zeros([bsz]).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")).long()
+        label = torch.zeros(bsz, dtype=torch.long, device=x.device)
         loss = self.criterion(x, label)
         return loss
 

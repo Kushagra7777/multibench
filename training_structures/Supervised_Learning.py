@@ -9,7 +9,7 @@ from eval_scripts.robustness import relative_robustness, effective_robustness, s
 from tqdm import tqdm
 #import pdb
 
-softmax = nn.Softmax()
+softmax = nn.Softmax(dim=1)
 
 
 class MMDL(nn.Module):
@@ -140,12 +140,10 @@ def train(
                 op.zero_grad()
                 if is_packed:
                     with torch.backends.cudnn.flags(enabled=False):
-                        model.train()
                         out = model([[_processinput(i).to(device)
                                     for i in j[0]], j[1]])
 
                 else:
-                    model.train()
                     out = model([_processinput(i).to(device)
                                 for i in j[:-1]])
                 if not (objective_args_dict is None):

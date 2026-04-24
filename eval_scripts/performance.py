@@ -13,11 +13,11 @@ def AUPRC(pts):
 
 
 def f1_score(truth, pred, average):
-    return sklearn.metrics.f1_score(truth.cpu().numpy(), pred.cpu().numpy(), average=average)
+    return sklearn.metrics.f1_score(truth.detach().cpu().numpy(), pred.detach().cpu().numpy(), average=average)
 
 
 def accuracy(truth, pred):
-    return sklearn.metrics.accuracy_score(truth.cpu().numpy(), pred.cpu().numpy())
+    return sklearn.metrics.accuracy_score(truth.detach().cpu().numpy(), pred.detach().cpu().numpy())
 
 
 def eval_affect(truths, results, exclude_zero=True):

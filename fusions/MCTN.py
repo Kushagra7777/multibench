@@ -1,6 +1,5 @@
 """Implements MCTN for Fusions."""
 
-from torch.autograd import Variable
 import random
 import math
 from torch.nn import functional as F
@@ -188,30 +187,24 @@ class Seq2Seq(nn.Module):
         max_len = src.size(0)
 
         output_size = self.decoder.output_size
-        outputs = Variable(torch.zeros(
-            max_len, batch_size, output_size)).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+        outputs = torch.zeros(max_len, batch_size, output_size, device=src.device)
 
         encoder_output, hidden = self.encoder(src)
         hidden = hidden[:self.decoder.n_layers]
 
-        
-        
-
         if self.training:
-            output = Variable(
-                torch.zeros_like(trg.data[0, :]))  # solve the bug of input.size must be equal to input_size
+            output = torch.zeros_like(trg[0])  # solve the bug of input.size must be equal to input_size
         else:
-            output = Variable(torch.zeros_like(src.data[0, :]))
-        
-        
+            output = torch.zeros_like(src[0])
+
         for t in range(0, max_len):
             output, hidden, attn_weights = self.decoder(
                 output, hidden, encoder_output)
             outputs[t] = output
 
             is_teacher = random.random() < teacher_forcing_ratio
-            if is_teacher:
-                output = Variable(trg.data[t]).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+            if is_teacher and trg is not None:
+                output = trg[t].detach()
 
         return outputs, encoder_output
 

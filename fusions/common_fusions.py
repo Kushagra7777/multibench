@@ -184,14 +184,11 @@ class MultiplicativeInteractions2Modal(nn.Module):
                 p.register_hook(lambda grad: torch.clamp(
                     grad, grad_clip[0], grad_clip[1]))
 
-    def _repeatHorizontally(self, tensor, dim):
-        return tensor.repeat(dim).view(dim, -1).transpose(0, 1)
-
     def forward(self, modalities):
         """
         Forward Pass of MultiplicativeInteractions2Modal.
-        
-        :param modalities: An iterable of modalities to combine. 
+
+        :param modalities: An iterable of modalities to combine.
         """
         if len(modalities) == 1:
             return modalities[0]
@@ -230,14 +227,13 @@ class MultiplicativeInteractions2Modal(nn.Module):
         elif self.output == 'vector':
             Wprime = torch.matmul(m1, self.W) + self.V      # bm
             bprime = torch.matmul(m1, self.U) + self.b      # b
-            output = Wprime*m2 + bprime             # bm
+            output = Wprime * m2 + bprime             # bm
 
-        # Scales and Biases.
+        # Scales and Biases — broadcast [b,1] over m2 [b,d] instead of repeat+transpose
         elif self.output == 'scalar':
             Wprime = torch.matmul(m1, self.W.unsqueeze(1)).squeeze(1) + self.V
             bprime = torch.matmul(m1, self.U.unsqueeze(1)).squeeze(1) + self.b
-            output = self._repeatHorizontally(
-                Wprime, self.input_dims[1]) * m2 + self._repeatHorizontally(bprime, self.input_dims[1])
+            output = Wprime.unsqueeze(1) * m2 + bprime.unsqueeze(1)
         return output
 
 
