@@ -91,8 +91,9 @@ from datasets.affect.get_data import get_dataloader
 from unimodals.common_models import GRU, MLP, Sequential, Identity
 from fusions.common_fusions import ConcatEarly
 from training_structures.Supervised_Learning import train, test
+from utils.device import get_device
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = get_device()  # automatically selects CUDA, MPS (Apple Silicon), or CPU
 
 # Load data (3 modalities: text, audio, vision)
 traindata, validdata, testdata = get_dataloader(
@@ -188,6 +189,32 @@ Modality-specific noise implementations are in `robustness/`, with evaluation sc
 
 ![Robustness plots](images/robustness_plots.png)
 
+## Utilities
+
+### Device abstraction
+
+`utils/device.py` provides `get_device()`, which automatically selects the best available hardware — CUDA GPU, Apple Silicon MPS, or CPU — without any manual configuration. All core modules use this internally, so the toolkit runs on any hardware out of the box.
+
+```python
+from utils.device import get_device
+
+device = get_device()          # "cuda:0", "mps", or "cpu"
+model = MyModel().to(device)
+```
+
+### Shape validation
+
+`utils/verify.py` provides `validate_shapes()`, which dry-runs the full encoder → fusion → head pipeline with sample tensors to catch dimension mismatches before training starts.
+
+```python
+from utils.verify import validate_shapes
+import torch
+
+sample_inputs = [torch.zeros(2, 1, 28, 28), torch.zeros(2, 1, 112, 112)]
+validate_shapes(encoders, fusion, head, sample_inputs)
+# Prints shapes at each stage; raises RuntimeError on mismatch
+```
+
 ## Project structure
 
 ```
@@ -201,7 +228,9 @@ multibench/
 ├── robustness/            # Modality-specific noise implementations
 ├── examples/              # Runnable scripts and Colab notebooks
 ├── pretrained/            # Pre-trained model weights
-└── utils/                 # Helper modules
+└── utils/
+    ├── device.py          # get_device(): selects CUDA → MPS → CPU automatically
+    └── verify.py          # validate_shapes(): dry-runs pipeline to catch dim mismatches
 ```
 
 ## Adding new datasets or algorithms

@@ -78,20 +78,28 @@ traindata,validdata,testdata = get_dataloader('data/avmnist')
 
 Now we have a dataloader each for train, valid and test splits. AV-MNIST is a dataset with energy-reduced MNIST digits and audio of humans reading the digits and the task is to predict the digit using the blurry images as well as the audio.
 
-Now we need to build the multimodal architecture. We first need the unimodal encoders for image and audio modality, respectively. We will use LeNet-3 and LeNet-5 for the image and audio, respectively. We can construct the unimodal encoders as following:
+Now we need to build the multimodal architecture. We first need the unimodal encoders for image and audio modality, respectively. We will use LeNet-3 and LeNet-5 for the image and audio, respectively. First, pick the best available device and construct the unimodal encoders:
 
 ```
+from utils.device import get_device
 from unimodals.common_models import LeNet
-encoders=[LeNet(1,6,3).cuda(),LeNet(1,6,5).cuda()]
+device = get_device()  # selects CUDA, MPS, or CPU automatically
+encoders=[LeNet(1,6,3).to(device),LeNet(1,6,5).to(device)]
 ```
 Note that the arguments to LeNet are number of input channels, number of internal channels, and number of layers, respectively. Since the input of image modality are 28x28 greyscale pixels and input of audio are 112x112 spectograms, we need 3-layer and 5-layer LeNet respectively. The output of the image encoder will have size 48 and the output of the audio encoder will have size 192. Therefore, if we fuse them by simple concatenation, the joint representation will have size 240. Now let's construct the fusion module and classification head:
 ```
 from fusions.common_fusions import Concat
 from unimodals.common_models import MLP
-fusion=Concat().cuda()
-head=MLP(240,100,10).cuda()
+fusion=Concat().to(device)
+head=MLP(240,100,10).to(device)
 ```
-Now we have all parts we need! We can start training with Supervised Learning training structure by passing in each part we constructed as well as training and validation data, together some with training hyperparameters (train 30 epochs, use SGD optimizer, with learning rate 0.1 and weight decay of 0.0001):
+Now we have all parts we need! Before training, you can optionally validate that all dimensions line up using `validate_shapes`:
+```
+from utils.verify import validate_shapes
+import torch
+validate_shapes(encoders, fusion, head, [torch.zeros(2,1,28,28), torch.zeros(2,1,112,112)])
+```
+We can start training with Supervised Learning training structure by passing in each part we constructed as well as training and validation data, together some with training hyperparameters (train 30 epochs, use SGD optimizer, with learning rate 0.1 and weight decay of 0.0001):
 ```
 import torch
 from training_structures.Supervised_Learning import train
@@ -99,7 +107,7 @@ train(encoders,fusion,head,traindata,validdata,30,optimtype=torch.optim.SGD,lr=0
 ```
 The training structure will automatically save the model at the epoch with the best validation performance in a file called ``best.pt``. So to test the performance of our saved model, we need to load it and use the test function provided in the same training structure:
 ```
-model=torch.load('best.pt')
+model=torch.load('best.pt', weights_only=False).to(device)
 from training_structures.Supervised_Learning import test
 test(model,testdata)
 ```
@@ -122,25 +130,27 @@ traindata,validdata,testdata = get_dataloader('data/avmnist')
 
 But this time we will need both the encoders and decoders for the 2 modalities (image and audio). Suppose we want the latent representataion of each modality to have size 200, then we can write the following:
 ```
-n_latent=200
+from utils.device import get_device
 from unimodals.MVAE import LeNetEncoder,DeLeNet
-encoders=[LeNetEncoder(1,6,3,n_latent).cuda(),LeNetEncoder(1,6,5,n_latent)]
-decoders=[DeLeNet(1,6,3,n_latent).cuda(),DeLeNet(1,6,5,n_latent)]
+device = get_device()
+n_latent=200
+encoders=[LeNetEncoder(1,6,3,n_latent).to(device),LeNetEncoder(1,6,5,n_latent).to(device)]
+decoders=[DeLeNet(1,6,3,n_latent).to(device),DeLeNet(1,6,5,n_latent).to(device)]
 ```
 Then we write the fusion layer, which will be a concatenation followed by a MLP:
 ```
-from unimodals.common_unimodals import MLP
+from unimodals.common_models import MLP
 from fusions.common_fusions import Concat
 from utils.helper_modules import Sequential2
-fuse = Sequential2(Concat(),MLP(2*n_latent,n_latent.n_latent//2)).cuda()
+fuse = Sequential2(Concat(),MLP(2*n_latent,n_latent,n_latent//2)).to(device)
 ```
 The MFM architectures requires additional intermediate layers, so we need to construct these as well:
 ```
-intermediates = [MLP(n_latent,n_latent//2,n_latent//2).cuda(),MLP(n_latent,n_latent//2,n_latent//2).cuda()]
+intermediates = [MLP(n_latent,n_latent//2,n_latent//2).to(device),MLP(n_latent,n_latent//2,n_latent//2).to(device)]
 ```
 And we also need the classification head:
 ```
-head = MLP(n_latent//2,40,10).cuda()
+head = MLP(n_latent//2,40,10).to(device)
 ```
 Since MFM's objective function has more components than just one cross entropy loss, we need to use a custom objective function. Luckily, the MFM objective is already provided in MultiBench, so we can directly import and use it:
 ```
@@ -157,7 +167,7 @@ from training_structures.Supervised_Learning import train,test
 train(encoders,fuse,head,traindata,validdata,25,additional_optimizing_modules=decoders+intermediates,objective=objective,objective_args_dict={'decoders':decoders,'intermediates':intermediates})
 
 #testing
-model=torch.load('best.pt')
+model=torch.load('best.pt', weights_only=False).to(device)
 test(model,testdata)
 ```
 
