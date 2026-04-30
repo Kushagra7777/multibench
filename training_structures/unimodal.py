@@ -7,7 +7,7 @@ from eval_scripts.performance import eval_affect
 from eval_scripts.complexity import all_in_one_train, all_in_one_test
 from eval_scripts.robustness import relative_robustness, effective_robustness, single_plot
 from tqdm import tqdm
-softmax = nn.Softmax()
+softmax = nn.Softmax(dim=-1)
 
 
 def train(encoder, head, train_dataloader, valid_dataloader, total_epochs, early_stop=False, optimtype=torch.optim.RMSprop, lr=0.001, weight_decay=0.0, criterion=nn.CrossEntropyLoss(), auprc=False, save_encoder='encoder.pt', save_head='head.pt', modalnum=0, task='classification', track_complexity=True):
@@ -41,6 +41,7 @@ def train(encoder, head, train_dataloader, valid_dataloader, total_epochs, early
         for epoch in range(total_epochs):
             totalloss = 0.0
             totals = 0
+            model.train()
             for j in train_dataloader:
                 op.zero_grad()
                 out = model(j[modalnum].float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
@@ -55,6 +56,7 @@ def train(encoder, head, train_dataloader, valid_dataloader, total_epochs, early
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 8)
                 op.step()
             print("Epoch "+str(epoch)+" train loss: "+str(totalloss/totals))
+            model.eval()
             with torch.no_grad():
                 totalloss = 0.0
                 pred = []
@@ -196,7 +198,7 @@ def single_test(encoder, head, test_dataloader, auprc=False, modalnum=0, task='c
             print("acc: "+str(accs) + ', ' + str(acc2))
             return {'Accuracy': accs}
         else:
-            return {'MSE': (totalloss / totals).item()}
+            return {'MSE': totalloss / totals}
 
 
 def test(encoder, head, test_dataloaders_all, dataset='default', method_name='My method', auprc=False, modalnum=0, task='classification', criterion=None, no_robust=False):

@@ -69,13 +69,13 @@ class MMDL(nn.Module):
 def deal_with_objective(objective, pred, truth, args):
     """Alter inputs depending on objective function, to deal with different objective arguments."""
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    if type(objective) == nn.CrossEntropyLoss:
+    if isinstance(objective, nn.CrossEntropyLoss):
         if len(truth.size()) == len(pred.size()):
             truth1 = truth.squeeze(len(pred.size())-1)
         else:
             truth1 = truth
         return objective(pred, truth1.long().to(device))
-    elif type(objective) == nn.MSELoss or type(objective) == nn.modules.loss.BCEWithLogitsLoss or type(objective) == nn.L1Loss:
+    elif isinstance(objective, (nn.MSELoss, nn.modules.loss.BCEWithLogitsLoss, nn.L1Loss)):
         return objective(pred, truth.float().to(device))
     else:
         return objective(pred, truth, args)
@@ -281,10 +281,10 @@ def single_test(
             else:
                 out = model([_processinput(i).float().to(device)
                             for i in j[:-1]])
-            if type(criterion) == torch.nn.modules.loss.BCEWithLogitsLoss or type(criterion) == torch.nn.MSELoss:
+            if isinstance(criterion, (torch.nn.modules.loss.BCEWithLogitsLoss, torch.nn.MSELoss)):
                 loss = criterion(out, j[-1].float().to(device))
 
-            elif type(criterion) == nn.CrossEntropyLoss:
+            elif isinstance(criterion, nn.CrossEntropyLoss):
                 if len(j[-1].size()) == len(out.size()):
                     truth1 = j[-1].squeeze(len(out.size())-1)
                 else:

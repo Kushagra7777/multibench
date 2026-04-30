@@ -84,7 +84,10 @@ def maxmin_normalize(result, task):
     tmp = np.array(tmp)
     if task.startswith('finance'):
         tmp = -1 * tmp
-    tmp = (tmp - np.min(tmp)) / (np.max(tmp) - np.min(tmp))
+    range_ = np.max(tmp) - np.min(tmp)
+    if range_ == 0:
+        return 0.5
+    tmp = (tmp - np.min(tmp)) / range_
     return tmp[method2idx['my method']]
 
 

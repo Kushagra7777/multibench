@@ -1,4 +1,3 @@
-from memory_profiler import memory_usage
 import time
 
 

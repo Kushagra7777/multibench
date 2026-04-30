@@ -56,7 +56,7 @@ def test_MLP():
     assert out[0] == 0
     assert out[1].shape == test.shape
     assert out[2].shape == (3,2)
-    assert out[3].shape == (3,2)
+    assert out[3].shape == (3,1)
     lin = MLP(3,2,1)
     assert lin(test).shape == (3,1)
 

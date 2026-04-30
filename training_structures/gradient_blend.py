@@ -251,7 +251,7 @@ def gb_estimate(unimodal_models, multimodal_classification_head, fuse, unimodal_
     return [(w/z).item() for w in weights]
 
 
-softmax = nn.Softmax()
+softmax = nn.Softmax(dim=-1)
 
 
 class completeModule(nn.Module):

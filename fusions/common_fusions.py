@@ -376,7 +376,7 @@ class NLgate(torch.nn.Module):
 
     def forward(self, x):
         """
-        Apply Low-Rank TensorFusion to input.
+        Apply NLgate fusion to input.
         
         :param x: An iterable of modalities to combine. 
         """

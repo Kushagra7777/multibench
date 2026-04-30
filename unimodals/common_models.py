@@ -167,7 +167,7 @@ class MLP(torch.nn.Module):
             output = self.dropout_layer(output)
         output2 = self.fc2(output)
         if self.dropout:
-            output2 = self.dropout_layer(output)
+            output2 = self.dropout_layer(output2)
         if self.output_each_layer:
             return [0, x, output, self.lklu(output2)]
         return output2
@@ -354,8 +354,9 @@ class TwoLayersLSTM(torch.nn.Module):
         super(TwoLayersLSTM, self).__init__()
         self.lstm_0 = nn.LSTM(indim, hiddim, batch_first=True,
                               bidirectional=isBidirectional)
+        lstm_1_indim = 2 * hiddim if isBidirectional else hiddim
         self.lstm_1 = nn.LSTM(
-            2*indim, hiddim, batch_first=True, bidirectional=isBidirectional)
+            lstm_1_indim, hiddim, batch_first=True, bidirectional=isBidirectional)
         self.layer_norm = nn.LayerNorm(2*hiddim)
         self.dropout_layer = torch.nn.Dropout(dropoutp)
         self.dropout = dropout
@@ -373,15 +374,12 @@ class TwoLayersLSTM(torch.nn.Module):
             torch.Tensor: Layer Output
         """
         if self.has_padding:
-            x = pack_padded_sequence(
+            packed_sequence = pack_padded_sequence(
                 x[0], x[1], batch_first=True, enforce_sorted=False)
-            out = self.lstm(x)[1][-1]
-
-            packed_sequence = pack_padded_sequence(x[0], x[1])
             packed_h1, (_, _) = self.lstm_0(packed_sequence)
-            padded_h1, _ = pad_packed_sequence(packed_h1)
+            padded_h1, lengths = pad_packed_sequence(packed_h1, batch_first=True)
             normed_h1 = self.layer_norm(padded_h1)
-            packed_normed_h1 = pack_padded_sequence(normed_h1, x[1])
+            packed_normed_h1 = pack_padded_sequence(normed_h1, lengths, batch_first=True, enforce_sorted=False)
             _, (out, _) = self.lstm_1(packed_normed_h1)
         else:
             out = self.lstm_0(x)[0]
