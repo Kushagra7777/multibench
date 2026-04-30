@@ -63,7 +63,7 @@ def train_sampled_models(sampled_configurations, searchable_type, dataloaders,
             if not premodels:
                 sds = []
                 for i in unimodal_files:
-                    sds.append(torch.load(i, map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"), weights_only=False))
+                    sds.append(torch.load(i, map_location=device, weights_only=False))
                 for sd in sds:
                     sd.output_each_layer = True
                 rmode = searchable_type(
@@ -77,11 +77,11 @@ def train_sampled_models(sampled_configurations, searchable_type, dataloaders,
             scheduler = sc.LRCosineAnnealingScheduler(eta_max, eta_min, Ti, Tm,
                                                       num_batches_per_epoch)
 
-            rmode.to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+            rmode.to(device)
 
             best_model_acc = train_track_acc(rmode, [criterion], optimizer, scheduler, dataloaders,
                                              dataset_sizes,
-                                             device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"), num_epochs=epochs, verbose=False,
+                                             device=device, num_epochs=epochs, verbose=False,
                                              multitask=False)
 
             real_accuracies.append(best_model_acc)
@@ -135,8 +135,8 @@ def train_track_acc(model, criteria, optimizer, scheduler, dataloaders, dataset_
             for data in dataloaders[phase]:
 
                 # get the inputs
-                inputs = [d.float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")) for d in data[:-1]]
-                label = data[-1].to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+                inputs = [d.float().to(device) for d in data[:-1]]
+                label = data[-1].to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()

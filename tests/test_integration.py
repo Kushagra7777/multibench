@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from utils.device import get_device  # noqa
 
     
 def test_sl1():
@@ -10,16 +11,16 @@ def test_sl1():
     my_dataset = torch.utils.data.TensorDataset(*data)
     dl = torch.utils.data.DataLoader(my_dataset)
 
-    encoders = [Identity().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), Identity().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), Identity().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))]
+    encoders = [Identity().to(get_device()), Identity().to(get_device()), Identity().to(get_device())]
     head = Sequential(GRU(409, 512, dropout=True, has_padding=False,
-                  batch_first=True, last_only=True), MLP(512, 512, 1)).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+                  batch_first=True, last_only=True), MLP(512, 512, 1)).to(get_device())
 
-    fusion = ConcatEarly().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+    fusion = ConcatEarly().to(get_device())
 
     train(encoders, fusion, head, dl, dl, 1, task="regression", optimtype=torch.optim.AdamW,
       is_packed=False, lr=1e-3, save='mosi_ef_r0.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
-    model = torch.load('mosi_ef_r0.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+    model = torch.load('mosi_ef_r0.pt', weights_only=False).to(get_device())
     test(model, {'key':[dl]}, 'affect', is_packed=False,
      criterion=torch.nn.L1Loss(), task="posneg-classification", auprc=False, no_robust=False)
 
@@ -33,29 +34,29 @@ def test_sl2():
   dl = torch.utils.data.DataLoader(my_dataset, batch_size=32)
 
   # mosi/mosei
-  encoders = [Transformer(35, 70).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")),
-              Transformer(74, 150).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")),
-              Transformer(300, 600).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))]
-  head = MLP(820, 512, 2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  encoders = [Transformer(35, 70).to(get_device()),
+              Transformer(74, 150).to(get_device()),
+              Transformer(300, 600).to(get_device())]
+  head = MLP(820, 512, 2).to(get_device())
 
-  unimodal_heads = [MLP(70, 32, 2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), MLP(
-      150, 64, 2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), MLP(600, 256, 2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))]
+  unimodal_heads = [MLP(70, 32, 2).to(get_device()), MLP(
+      150, 64, 2).to(get_device()), MLP(600, 256, 2).to(get_device())]
 
   # humor/sarcasm
-  # encoders=[Transformer(371,700).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), \
-  #     Transformer(81,150).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")),\
-  #     Transformer(300,600).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))]
-  # head=MLP(1450,512,2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  # encoders=[Transformer(371,700).to(get_device()), \
+  #     Transformer(81,150).to(get_device()),\
+  #     Transformer(300,600).to(get_device())]
+  # head=MLP(1450,512,2).to(get_device())
 
-  # unimodal_heads=[MLP(700,512,2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")),MLP(150,64,2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")),MLP(600,256,2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))]
+  # unimodal_heads=[MLP(700,512,2).to(get_device()),MLP(150,64,2).to(get_device()),MLP(600,256,2).to(get_device())]
 
-  fusion = Concat().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  fusion = Concat().to(get_device())
 
   # training_structures.gradient_blend.criterion = nn.L1Loss()
 
   train(encoders, head, unimodal_heads, fusion, dl, dl, num_epoch=1, gb_epoch=1, lr=1e-3, AUPRC=False,
         classification=True, optimtype=torch.optim.AdamW, savedir='mosi_best_gb.pt', weight_decay=0.1, finetune_epoch=1)
-  model = torch.load('mosi_best_gb.pt', weights_only=False)
+  model = torch.load('mosi_best_gb.pt', weights_only=False).to(get_device())
   test(model=model, test_dataloaders_all={'fake':[dl]}, dataset='mosi', auprc=True)
 
 def test_sl3():
@@ -70,15 +71,15 @@ def test_sl3():
 
 # mosi/mosei
   encoder = GRU(300, 600, dropout=True, has_padding=False,
-                batch_first=True, last_only=True).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-  head = MLP(600, 512, 1).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+                batch_first=True, last_only=True).to(get_device())
+  head = MLP(600, 512, 1).to(get_device())
 
 
   train(encoder, head, dl, dl, 1, task="regression", optimtype=torch.optim.AdamW, lr=2e-3,
         weight_decay=0.01, criterion=torch.nn.L1Loss(), save_encoder='encoder.pt', save_head='head.pt', modalnum=modality_num)
 
   print("Testing:")
-  encoder = torch.load('encoder.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  encoder = torch.load('encoder.pt', weights_only=False).to(get_device())
   head = torch.load('head.pt', weights_only=False)
   test(encoder, head, dl, 'affect', criterion=torch.nn.L1Loss(),
       task="posneg-classification", modalnum=modality_num, no_robust=True)
@@ -101,13 +102,13 @@ def test_sl4():
   feature_dim = 300
   hidden_dim = 32
 
-  encoder0 = Encoder(feature_dim, hidden_dim, n_layers=1, dropout=0.0).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-  decoder0 = Decoder(hidden_dim, feature_dim, n_layers=1, dropout=0.0).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-  encoder1 = Encoder(hidden_dim, hidden_dim, n_layers=1, dropout=0.0).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-  decoder1 = Decoder(hidden_dim, feature_dim, n_layers=1, dropout=0.0).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  encoder0 = Encoder(feature_dim, hidden_dim, n_layers=1, dropout=0.0).to(get_device())
+  decoder0 = Decoder(hidden_dim, feature_dim, n_layers=1, dropout=0.0).to(get_device())
+  encoder1 = Encoder(hidden_dim, hidden_dim, n_layers=1, dropout=0.0).to(get_device())
+  decoder1 = Decoder(hidden_dim, feature_dim, n_layers=1, dropout=0.0).to(get_device())
 
-  reg_encoder = nn.GRU(hidden_dim, 32).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-  head = MLP(32, 64, 1).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  reg_encoder = nn.GRU(hidden_dim, 32).to(get_device())
+  head = MLP(32, 64, 1).to(get_device())
 
   allmodules = [encoder0, decoder0, encoder1, decoder1, reg_encoder, head]
 
@@ -128,7 +129,7 @@ def test_sl4():
 
   all_in_one_train(trainprocess, allmodules)
 
-  model = torch.load('best_mctn.pt', weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  model = torch.load('best_mctn.pt', weights_only=False).to(get_device())
 
   test(model, dl_faked, 'mosi', no_robust=True)
 
@@ -145,7 +146,7 @@ def test_sl5():
   dl_faked = torch.utils.data.DataLoader(my_dataset, batch_size=32)
   s_data = train(['pretrained/avmnist/image_encoder.pt', 'pretrained/avmnist/audio_encoder.pt'], 16, 10, [(6, 12, 24), (6, 12, 24, 48, 96)],
                   dl_faked, dl_faked, surr.SimpleRecurrentSurrogate(), (3, 5, 2), epochs=1, search_iter=1, epoch_surrogate=1, num_samples=1, max_progression_levels=1)
-  model = torch.load('tests/best0.pt', weights_only=False)
+  model = torch.load('tests/best0.pt', weights_only=False).to(get_device())
   
   test(model, dl_faked, 'test', no_robust=True)
 
@@ -172,18 +173,18 @@ def test_sl6():
   dim_2 = 300
   timestep = 50
 
-  encoders = [TSEncoder(dim_0, 30, n_latent, timestep, returnvar=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), TSEncoder(
-      dim_1, 30, n_latent, timestep, returnvar=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), TSEncoder(dim_2, 30, n_latent, timestep, returnvar=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))]
+  encoders = [TSEncoder(dim_0, 30, n_latent, timestep, returnvar=False).to(get_device()), TSEncoder(
+      dim_1, 30, n_latent, timestep, returnvar=False).to(get_device()), TSEncoder(dim_2, 30, n_latent, timestep, returnvar=False).to(get_device())]
 
-  decoders = [TSDecoder(dim_0, 30, n_latent, timestep).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), TSDecoder(
-      dim_1, 30, n_latent, timestep).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), TSDecoder(dim_2, 30, n_latent, timestep).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))]
+  decoders = [TSDecoder(dim_0, 30, n_latent, timestep).to(get_device()), TSDecoder(
+      dim_1, 30, n_latent, timestep).to(get_device()), TSDecoder(dim_2, 30, n_latent, timestep).to(get_device())]
 
-  fuse = Sequential2(Concat(), MLP(3*n_latent, n_latent, n_latent//2)).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  fuse = Sequential2(Concat(), MLP(3*n_latent, n_latent, n_latent//2)).to(get_device())
 
-  intermediates = [MLP(n_latent, n_latent//2, n_latent//2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), MLP(n_latent,
-                                                                      n_latent//2, n_latent//2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), MLP(n_latent, n_latent//2, n_latent//2).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))]
+  intermediates = [MLP(n_latent, n_latent//2, n_latent//2).to(get_device()), MLP(n_latent,
+                                                                      n_latent//2, n_latent//2).to(get_device()), MLP(n_latent, n_latent//2, n_latent//2).to(get_device())]
 
-  head = MLP(n_latent//2, 20, classes).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  head = MLP(n_latent//2, 20, classes).to(get_device())
 
   argsdict = {'decoders': decoders, 'intermediates': intermediates}
 

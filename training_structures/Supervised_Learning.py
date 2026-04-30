@@ -78,15 +78,14 @@ class MMDL(nn.Module):
 
 def deal_with_objective(objective, pred, truth, args):
     """Alter inputs depending on objective function, to deal with different objective arguments."""
-    device = get_device()
     if isinstance(objective, nn.CrossEntropyLoss):
         if len(truth.size()) == len(pred.size()):
             truth1 = truth.squeeze(len(pred.size())-1)
         else:
             truth1 = truth
-        return objective(pred, truth1.long().to(device))
+        return objective(pred, truth1.long().to(pred.device))
     elif isinstance(objective, (nn.MSELoss, nn.modules.loss.BCEWithLogitsLoss, nn.L1Loss)):
-        return objective(pred, truth.float().to(device))
+        return objective(pred, truth.float().to(pred.device))
     else:
         return objective(pred, truth, args)
 
@@ -140,6 +139,8 @@ def train(
     """
     device = get_device()
     model = MMDL(encoders, fusion, head, has_padding=is_packed).to(device)
+    for m in additional_optimizing_modules:
+        m.to(device)
 
     def _trainprocess():
         additional_params = []
@@ -299,7 +300,7 @@ def single_test(
             return inp.float()
         else:
             return inp
-    device = get_device()
+    device = next(model.parameters()).device
     model.eval()
     with torch.inference_mode():
         totalloss = 0.0
