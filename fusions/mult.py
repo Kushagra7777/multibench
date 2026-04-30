@@ -3,6 +3,7 @@ import math
 import torch
 import torch.nn.functional as F
 from torch import nn
+from utils.device import get_device
 
 
 class MULTModel(nn.Module):
@@ -349,8 +350,8 @@ def buffered_future_mask(tensor, tensor2=None):
         dim2 = tensor2.size(0)
     future_mask = torch.triu(fill_with_neg_inf(
         torch.ones(dim1, dim2)), 1+abs(dim2-dim1))
-    if tensor.is_cuda:
-        future_mask = future_mask.to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+    if tensor.is_cuda or tensor.device.type != "cpu":
+        future_mask = future_mask.to(tensor.device)
     return future_mask[:dim1, :dim2]
 
 

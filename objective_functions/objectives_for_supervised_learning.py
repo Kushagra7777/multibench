@@ -3,9 +3,10 @@ import torch
 from objective_functions.recon import recon_weighted_sum, elbo_loss
 from objective_functions.cca import CCALoss
 from objective_functions.regularization import RegularizationLoss
+from utils.device import get_device
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = get_device()
 
 
 def _criterioning(pred, truth, criterion):

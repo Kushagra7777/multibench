@@ -1,11 +1,15 @@
 
 """Implements supervised learning training procedures."""
+from typing import Callable, Dict, List, Optional, Sequence, Union
+
 import torch
 from torch import nn
+from torch.utils.data import DataLoader
 import time
 from eval_scripts.performance import AUPRC, f1_score, accuracy, eval_affect
 from eval_scripts.complexity import all_in_one_train, all_in_one_test
 from eval_scripts.robustness import relative_robustness, effective_robustness, single_plot
+from utils.device import get_device
 from tqdm import tqdm
 #import pdb
 
@@ -14,8 +18,14 @@ softmax = nn.Softmax(dim=1)
 
 class MMDL(nn.Module):
     """Implements MMDL classifier."""
-    
-    def __init__(self, encoders, fusion, head, has_padding=False):
+
+    def __init__(
+        self,
+        encoders: List[nn.Module],
+        fusion: nn.Module,
+        head: nn.Module,
+        has_padding: bool = False,
+    ) -> None:
         """Instantiate MMDL Module
 
         Args:
@@ -32,7 +42,7 @@ class MMDL(nn.Module):
         self.fuseout = None
         self.reps = []
 
-    def forward(self, inputs):
+    def forward(self, inputs: Union[List[torch.Tensor], List]) -> torch.Tensor:
         """Apply MMDL to Layer Input.
 
         Args:
@@ -68,7 +78,7 @@ class MMDL(nn.Module):
 
 def deal_with_objective(objective, pred, truth, args):
     """Alter inputs depending on objective function, to deal with different objective arguments."""
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = get_device()
     if isinstance(objective, nn.CrossEntropyLoss):
         if len(truth.size()) == len(pred.size()):
             truth1 = truth.squeeze(len(pred.size())-1)
@@ -84,10 +94,27 @@ def deal_with_objective(objective, pred, truth, args):
 
 
 def train(
-        encoders, fusion, head, train_dataloader, valid_dataloader, total_epochs, additional_optimizing_modules=[], is_packed=False,
-        early_stop=False, task="classification", optimtype=torch.optim.RMSprop, lr=0.001, weight_decay=0.0,
-        objective=nn.CrossEntropyLoss(), auprc=False, save='best.pt', validtime=False, objective_args_dict=None, input_to_float=True, clip_val=8,
-        track_complexity=True):
+        encoders: List[nn.Module],
+        fusion: nn.Module,
+        head: nn.Module,
+        train_dataloader: DataLoader,
+        valid_dataloader: DataLoader,
+        total_epochs: int,
+        additional_optimizing_modules: List[nn.Module] = [],
+        is_packed: bool = False,
+        early_stop: bool = False,
+        task: str = "classification",
+        optimtype: type = torch.optim.RMSprop,
+        lr: float = 0.001,
+        weight_decay: float = 0.0,
+        objective: nn.Module = nn.CrossEntropyLoss(),
+        auprc: bool = False,
+        save: str = 'best.pt',
+        validtime: bool = False,
+        objective_args_dict: Optional[Dict] = None,
+        input_to_float: bool = True,
+        clip_val: float = 8,
+        track_complexity: bool = True) -> None:
     """
     Handle running a simple supervised training loop.
     
@@ -111,7 +138,7 @@ def train(
     :param clip_val: grad clipping limit
     :param track_complexity: whether to track training complexity or not
     """
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = get_device()
     model = MMDL(encoders, fusion, head, has_padding=is_packed).to(device)
 
     def _trainprocess():
@@ -249,8 +276,13 @@ def train(
 
 
 def single_test(
-        model, test_dataloader, is_packed=False,
-        criterion=nn.CrossEntropyLoss(), task="classification", auprc=False, input_to_float=True):
+        model: nn.Module,
+        test_dataloader: DataLoader,
+        is_packed: bool = False,
+        criterion: nn.Module = nn.CrossEntropyLoss(),
+        task: str = "classification",
+        auprc: bool = False,
+        input_to_float: bool = True) -> Dict[str, float]:
     """Run single test for model.
 
     Args:
@@ -267,7 +299,7 @@ def single_test(
             return inp.float()
         else:
             return inp
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = get_device()
     model.eval()
     with torch.inference_mode():
         totalloss = 0.0
@@ -341,7 +373,16 @@ def single_test(
 
 
 def test(
-        model, test_dataloaders_all, dataset='default', method_name='My method', is_packed=False, criterion=nn.CrossEntropyLoss(), task="classification", auprc=False, input_to_float=True, no_robust=False):
+        model: nn.Module,
+        test_dataloaders_all: Union[DataLoader, Dict[str, List[DataLoader]]],
+        dataset: str = 'default',
+        method_name: str = 'My method',
+        is_packed: bool = False,
+        criterion: nn.Module = nn.CrossEntropyLoss(),
+        task: str = "classification",
+        auprc: bool = False,
+        input_to_float: bool = True,
+        no_robust: bool = False) -> None:
     """
     Handle getting test results for a simple supervised training loop.
     

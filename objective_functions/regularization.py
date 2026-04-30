@@ -1,6 +1,7 @@
 """Implements the paper: "Removing Bias in Multi-modal Classifiers: Regularization by Maximizing Functional Entropies" NeurIPS 2020."""
 
 import torch
+from utils.device import get_device
 
 
 class Perturbation:
@@ -266,7 +267,7 @@ class RegularizationLoss(torch.nn.Module):
             inf_inputs_len = []
             for ind, i in enumerate(inputs[0]):
                 inf_inputs.append(Perturbation.perturb_tensor(
-                    i, self.reg_params.n_samples).float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+                    i, self.reg_params.n_samples).float().to(get_device()))
                 inf_inputs_len.append(Perturbation.perturb_tensor(
                     inputs[1][ind], self.reg_params.n_samples, False))
             self.model.train()
@@ -275,7 +276,7 @@ class RegularizationLoss(torch.nn.Module):
         else:
             for ind, i in enumerate(inputs):
                 inf_inputs.append(Perturbation.perturb_tensor(
-                    i, self.reg_params.n_samples).float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+                    i, self.reg_params.n_samples).float().to(get_device()))
             self.model.train()
             inf_output = self.model(inf_inputs)
         inf_loss = self.criterion(inf_output, expanded_logits)

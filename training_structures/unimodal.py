@@ -1,8 +1,12 @@
 """Implements training pipeline for unimodal comparison."""
+from typing import Callable, Dict, List, Optional, Union
+
 from sklearn.metrics import accuracy_score, f1_score
 import torch
 from torch import nn
+from torch.utils.data import DataLoader
 from utils.AUPRC import AUPRC
+from utils.device import get_device
 from eval_scripts.performance import eval_affect
 from eval_scripts.complexity import all_in_one_train, all_in_one_test
 from eval_scripts.robustness import relative_robustness, effective_robustness, single_plot
@@ -10,7 +14,23 @@ from tqdm import tqdm
 softmax = nn.Softmax(dim=-1)
 
 
-def train(encoder, head, train_dataloader, valid_dataloader, total_epochs, early_stop=False, optimtype=torch.optim.RMSprop, lr=0.001, weight_decay=0.0, criterion=nn.CrossEntropyLoss(), auprc=False, save_encoder='encoder.pt', save_head='head.pt', modalnum=0, task='classification', track_complexity=True):
+def train(
+        encoder: nn.Module,
+        head: nn.Module,
+        train_dataloader: DataLoader,
+        valid_dataloader: DataLoader,
+        total_epochs: int,
+        early_stop: bool = False,
+        optimtype: type = torch.optim.RMSprop,
+        lr: float = 0.001,
+        weight_decay: float = 0.0,
+        criterion: nn.Module = nn.CrossEntropyLoss(),
+        auprc: bool = False,
+        save_encoder: str = 'encoder.pt',
+        save_head: str = 'head.pt',
+        modalnum: int = 0,
+        task: str = 'classification',
+        track_complexity: bool = True) -> None:
     """Train unimodal module.
 
     Args:
@@ -32,6 +52,7 @@ def train(encoder, head, train_dataloader, valid_dataloader, total_epochs, early
         track_complexity (bool, optional): Whether to track the model's complexity or not. Defaults to True.
     """
     def _trainprocess():
+        device = get_device()
         model = nn.Sequential(encoder, head)
         op = optimtype(model.parameters(), lr=lr, weight_decay=weight_decay)
         bestvalloss = 10000
@@ -44,12 +65,12 @@ def train(encoder, head, train_dataloader, valid_dataloader, total_epochs, early
             model.train()
             for j in train_dataloader:
                 op.zero_grad()
-                out = model(j[modalnum].float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
-                
-                if type(criterion) == torch.nn.modules.loss.BCEWithLogitsLoss:
-                    loss = criterion(out, j[-1].float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+                out = model(j[modalnum].float().to(device))
+
+                if isinstance(criterion, torch.nn.modules.loss.BCEWithLogitsLoss):
+                    loss = criterion(out, j[-1].float().to(device))
                 else:
-                    loss = criterion(out, j[-1].to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+                    loss = criterion(out, j[-1].to(device))
                 totalloss += loss.item() * len(j[-1])
                 totals += len(j[-1])
                 loss.backward()
@@ -63,11 +84,11 @@ def train(encoder, head, train_dataloader, valid_dataloader, total_epochs, early
                 true = []
                 pts = []
                 for j in valid_dataloader:
-                    out = model(j[modalnum].float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
-                    if type(criterion) == torch.nn.modules.loss.BCEWithLogitsLoss:
-                        loss = criterion(out, j[-1].float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+                    out = model(j[modalnum].float().to(device))
+                    if isinstance(criterion, torch.nn.modules.loss.BCEWithLogitsLoss):
+                        loss = criterion(out, j[-1].float().to(device))
                     else:
-                        loss = criterion(out, j[-1].to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+                        loss = criterion(out, j[-1].to(device))
                     totalloss += loss.item()*len(j[-1])
                     if task == "classification":
                         pred.append(torch.argmax(out, 1))
@@ -129,7 +150,14 @@ def train(encoder, head, train_dataloader, valid_dataloader, total_epochs, early
         _trainprocess()
 
 
-def single_test(encoder, head, test_dataloader, auprc=False, modalnum=0, task='classification', criterion=None):
+def single_test(
+        encoder: nn.Module,
+        head: nn.Module,
+        test_dataloader: DataLoader,
+        auprc: bool = False,
+        modalnum: int = 0,
+        task: str = 'classification',
+        criterion: Optional[nn.Module] = None) -> Dict[str, float]:
     """Test unimodal model on one dataloader.
 
     Args:
@@ -145,15 +173,16 @@ def single_test(encoder, head, test_dataloader, auprc=False, modalnum=0, task='c
         dict: Dictionary of (metric, value) relations.
     """
     model = nn.Sequential(encoder, head)
+    device = get_device()
     with torch.no_grad():
         pred = []
         true = []
         totalloss = 0
         pts = []
         for j in test_dataloader:
-            out = model(j[modalnum].float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+            out = model(j[modalnum].float().to(device))
             if criterion is not None:
-                loss = criterion(out, j[-1].to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+                loss = criterion(out, j[-1].to(device))
                 totalloss += loss.item()*len(j[-1])
             if task == "classification":
                 pred.append(torch.argmax(out, 1))
@@ -201,7 +230,17 @@ def single_test(encoder, head, test_dataloader, auprc=False, modalnum=0, task='c
             return {'MSE': totalloss / totals}
 
 
-def test(encoder, head, test_dataloaders_all, dataset='default', method_name='My method', auprc=False, modalnum=0, task='classification', criterion=None, no_robust=False):
+def test(
+        encoder: nn.Module,
+        head: nn.Module,
+        test_dataloaders_all: Union[DataLoader, Dict[str, List[DataLoader]]],
+        dataset: str = 'default',
+        method_name: str = 'My method',
+        auprc: bool = False,
+        modalnum: int = 0,
+        task: str = 'classification',
+        criterion: Optional[nn.Module] = None,
+        no_robust: bool = False) -> None:
     """Test unimodal model on all provided dataloaders.
 
     Args:

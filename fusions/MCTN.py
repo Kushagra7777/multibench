@@ -7,6 +7,7 @@ from torch import nn
 import torch
 import sys
 import os
+from utils.device import get_device
 
 from torch.serialization import save
 
@@ -323,9 +324,9 @@ class L2_MCTN(nn.Module):
     else:
         src = F.pad(src, (0, trg.size(-1) - src.size(-1)))
         # trg = F.pad(trg, (1, 0))
-    src = src.transpose(1, 0).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-    trg = trg.transpose(1, 0).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-    labels = inputs[-1].to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+    src = src.transpose(1, 0).to(get_device())
+    trg = trg.transpose(1, 0).to(get_device())
+    labels = inputs[-1].to(get_device())
 
     return src, trg, labels, feature_dim
 

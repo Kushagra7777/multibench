@@ -1,5 +1,7 @@
 """Implements common fusion patterns."""
 
+from typing import List, Sequence
+
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -13,7 +15,7 @@ class Concat(nn.Module):
         """Initialize Concat Module."""
         super(Concat, self).__init__()
 
-    def forward(self, modalities):
+    def forward(self, modalities: Sequence[torch.Tensor]) -> torch.Tensor:
         """
         Forward Pass of Concat.
         
@@ -33,7 +35,7 @@ class ConcatEarly(nn.Module):
         """Initialize ConcatEarly Module."""
         super(ConcatEarly, self).__init__()
 
-    def forward(self, modalities):
+    def forward(self, modalities: Sequence[torch.Tensor]) -> torch.Tensor:
         """
         Forward Pass of ConcatEarly.
         
@@ -50,7 +52,7 @@ class Stack(nn.Module):
         """Initialize Stack Module."""
         super().__init__()
 
-    def forward(self, modalities):
+    def forward(self, modalities: Sequence[torch.Tensor]) -> torch.Tensor:
         """
         Forward Pass of Stack.
         
@@ -76,7 +78,7 @@ class ConcatWithLinear(nn.Module):
         self.concat_dim = concat_dim
         self.fc = nn.Linear(input_dim, output_dim)
 
-    def forward(self, modalities):
+    def forward(self, modalities: Sequence[torch.Tensor]) -> torch.Tensor:
         """
         Forward Pass of Stack.
         
@@ -102,7 +104,7 @@ class MultiplicativeInteractions3Modal(nn.Module):
                                                   output_dim, 'matrix')
         self.task = task
 
-    def forward(self, modalities):
+    def forward(self, modalities: Sequence[torch.Tensor]) -> torch.Tensor:
         """
         Forward Pass of MultiplicativeInteractions3Modal.
         
@@ -184,7 +186,7 @@ class MultiplicativeInteractions2Modal(nn.Module):
                 p.register_hook(lambda grad: torch.clamp(
                     grad, grad_clip[0], grad_clip[1]))
 
-    def forward(self, modalities):
+    def forward(self, modalities: Sequence[torch.Tensor]) -> torch.Tensor:
         """
         Forward Pass of MultiplicativeInteractions2Modal.
 
@@ -247,7 +249,7 @@ class TensorFusion(nn.Module):
         """Instantiates TensorFusion Network Module."""
         super().__init__()
 
-    def forward(self, modalities):
+    def forward(self, modalities: Sequence[torch.Tensor]) -> torch.Tensor:
         """
         Forward Pass of TensorFusion.
         
@@ -311,7 +313,7 @@ class LowRankTensorFusion(nn.Module):
         nn.init.xavier_normal_(self.fusion_weights)
         self.fusion_bias.data.fill_(0)
 
-    def forward(self, modalities):
+    def forward(self, modalities: Sequence[torch.Tensor]) -> torch.Tensor:
         """
         Forward Pass of Low-Rank TensorFusion.
         

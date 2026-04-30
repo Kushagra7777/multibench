@@ -2,6 +2,7 @@
 import torch
 from torch import nn
 import math
+from utils.device import get_device
 
 
 eps = 1e-7
@@ -57,9 +58,10 @@ class AliasMethod(object):
             self.prob[last_one] = 1
 
     def cuda(self):
-        """Generate CUDA version of self, for GPU-based sampling."""
-        self.prob = self.prob.to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-        self.alias = self.alias.to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+        """Move alias tables to the best available device."""
+        device = get_device()
+        self.prob = self.prob.to(device)
+        self.alias = self.alias.to(device)
 
     def draw(self, N):
         """

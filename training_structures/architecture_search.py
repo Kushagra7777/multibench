@@ -1,5 +1,6 @@
 """Implements training procedure for MFAS."""
 from utils.AUPRC import AUPRC
+from utils.device import get_device
 import torch
 import torch.optim as op
 import numpy as np
@@ -54,7 +55,7 @@ def train(unimodal_files, rep_size, classes, sub_sizes, train_data, valid_data, 
     """
     searcher = ModelSearcher(train_data, valid_data, search_iter, num_samples, epoch_surrogate,
                              temperature_init, temperature_final, temperature_decay, max_progression_levels, lr_surrogate)
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = get_device()
     searcher.device = device
     s_data = searcher.search(surrogate,
                              use_weightsharing, unimodal_files, rep_size, classes, sub_sizes, batch_size, epochs, max_labels,
@@ -246,7 +247,7 @@ def single_test(model, test_dataloader, auprc=False):
     pts = []
     with torch.no_grad():
         for j in test_dataloader:
-            x = [y.float().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")) for y in j[:-1]]
+            x = [y.float().to(get_device()) for y in j[:-1]]
             out = model(x)
             outs = torch.nn.Softmax()(out)
             for ii in range(len(outs)):

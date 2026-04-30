@@ -8,6 +8,7 @@ from functools import partial
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from utils.device import get_device
 
 
 def _get_inplanes():
@@ -267,7 +268,7 @@ class ResNet(nn.Module):
         zero_pads = torch.zeros(out.size(0), planes - out.size(1), out.size(2),
                                 out.size(3), out.size(4))
         if isinstance(out.data, torch.cuda.FloatTensor): # pragma no cover
-            zero_pads = zero_pads.to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+            zero_pads = zero_pads.to(get_device())
 
         out = torch.cat([out.data, zero_pads], dim=1)
 

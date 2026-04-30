@@ -11,6 +11,7 @@ import requests
 import torch
 from torch.utils.data import DataLoader
 from torch import nn
+from utils.device import get_device
 
 
 def get_dataloader(stocks, input_stocks, output_stocks, batch_size=16, train_shuffle=True, start_date=datetime.datetime(2000, 6, 1), end_date=datetime.datetime(2021, 2, 28), window_size=500, val_split=3200, test_split=3700, modality_first=True, cuda=True):
@@ -70,8 +71,8 @@ def get_dataloader(stocks, input_stocks, output_stocks, batch_size=16, train_shu
     X = torch.cat(X)
 
     if cuda:
-        X = X.to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-        Y = Y.to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+        X = X.to(get_device())
+        Y = Y.to(get_device())
 
     class _MyDataset(torch.utils.data.Dataset):
         """"""
@@ -128,7 +129,7 @@ def get_dataloader(stocks, input_stocks, output_stocks, batch_size=16, train_shu
         X_robust = torch.tensor(add_timeseries_noise(
             X_robust, noise_level=noise_level/10), dtype=torch.float32)
         if cuda:
-            X_robust = X_robust.to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+            X_robust = X_robust.to(get_device())
         test_ds = _MyDataset(X_robust, Y[test_split:], modality_first)
         test_loader['timeseries'].append(torch.utils.data.DataLoader(
             test_ds, shuffle=False, batch_size=batch_size, drop_last=False))
