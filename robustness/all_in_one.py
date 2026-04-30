@@ -1,6 +1,7 @@
 """Implements generic modules to apply robustness functions to generic training processses."""
 import numpy as np
 import torch
+from utils.device import get_device
 
 
 def stocks_train(num_training, trainprocess, algorithm, encoder=False): # pragma: no cover 
@@ -50,8 +51,8 @@ def stocks_test(num_training, models, noise_range, testprocess, encoder=False): 
         encoders = models[0]
         heads = models[1]
         for i in range(num_training):
-            encoder = torch.load(encoders[i], weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-            head = torch.load(heads[i], weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+            encoder = torch.load(encoders[i], weights_only=False).to(get_device())
+            head = torch.load(heads[i], weights_only=False).to(get_device())
             loss_tmp = []
             for noise_level in range(noise_range):
                 print("Noise level {}: ".format(noise_level/10))
@@ -59,7 +60,7 @@ def stocks_test(num_training, models, noise_range, testprocess, encoder=False): 
             loss.append(np.array(loss_tmp))
     else:
         for i in range(num_training):
-            model = torch.load(models[i], weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+            model = torch.load(models[i], weights_only=False).to(get_device())
             loss_tmp = []
             for noise_level in range(noise_range):
                 print("Noise level {}: ".format(noise_level/10))
@@ -107,15 +108,15 @@ def general_test(testprocess, filename, robustdatasets, encoder=False, multi_mea
     for robustdata in robustdatasets:
         measure = []
         if encoder:
-            encoder = torch.load(filename[0], weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-            head = torch.load(filename[1], weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+            encoder = torch.load(filename[0], weights_only=False).to(get_device())
+            head = torch.load(filename[1], weights_only=False).to(get_device())
             print("Robustness testing:")
             for noise_level in range(len(robustdata)):
                 print("Noise level {}: ".format(noise_level/10))
                 measure.append(testprocess(
                     encoder, head, robustdata[noise_level]))
         else:
-            model = torch.load(filename, weights_only=False).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+            model = torch.load(filename, weights_only=False).to(get_device())
             print("Robustness testing:")
             for noise_level in range(len(robustdata)):
                 print("Noise level {}: ".format(noise_level/10))

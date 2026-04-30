@@ -57,11 +57,15 @@ class AliasMethod(object):
         for last_one in smaller+larger:
             self.prob[last_one] = 1
 
-    def cuda(self):
-        """Move alias tables to the best available device."""
-        device = get_device()
+    def to(self, device):
+        """Move alias tables to the given device."""
         self.prob = self.prob.to(device)
         self.alias = self.alias.to(device)
+        return self
+
+    def cuda(self):
+        """Move alias tables to the best available device."""
+        return self.to(get_device())
 
     def draw(self, N):
         """
@@ -102,7 +106,7 @@ class NCEAverage(nn.Module):
         self.nLem = outputSize
         self.unigrams = torch.ones(self.nLem)
         self.multinomial = AliasMethod(self.unigrams)
-        self.multinomial.cuda()
+        self.multinomial.to(get_device())
         self.K = K
         self.use_softmax = use_softmax
 
