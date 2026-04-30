@@ -194,8 +194,8 @@ class ModelSearcher():
                 # this should happen only if not first iteration because in that case,
                 # all confs were trained in step 3
                 if si + progression_index == 0:
-                    # move tensor from cuda:0 to cpu
-                    all_accuracies = [i.cpu() if (not isinstance(i, int)) and i.is_cuda else i for i in all_accuracies]
+                    # convert tensors (CPU/CUDA/MPS) to Python floats for numpy compatibility
+                    all_accuracies = [float(i) if isinstance(i, torch.Tensor) else i for i in all_accuracies]
 
                     sampled_k_confs = tools.sample_k_configurations(all_configurations, all_accuracies,
                                                                     self.num_samples, temperature)

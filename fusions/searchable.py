@@ -173,7 +173,7 @@ def train_track_acc(model, criteria, optimizer, scheduler, dataloaders, dataset_
 
             # deep copy the model
             if phase == 'dev' and epoch_acc > best_acc:
-                best_acc = epoch_acc
+                best_acc = epoch_acc.item()
                 best_model_sd = copy.deepcopy(model.state_dict())
 
     model.load_state_dict(best_model_sd)
