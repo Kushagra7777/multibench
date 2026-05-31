@@ -169,7 +169,8 @@ class ModelSearcher():
                 # Step 3: obtain accuracies for all possible unfolded configurations
                 # if first execution, just train all, if not, use surrogate to predict them
                 if si + progression_index == 0:
-                    # the type of each element in all_accuracies is tensor
+                    # train_track_acc returns best_acc via .item(), so each element
+                    # in all_accuracies is already a Python float
                     # check avmnist_searchable for details
                     all_accuracies = train_sampled_models(all_configurations, model_type, dataloaders,
                                                           use_weightsharing, device, unimodal_files, rep_size, classes, sub_sizes, batch_size, epochs,
@@ -194,9 +195,6 @@ class ModelSearcher():
                 # this should happen only if not first iteration because in that case,
                 # all confs were trained in step 3
                 if si + progression_index == 0:
-                    # convert tensors (CPU/CUDA/MPS) to Python floats for numpy compatibility
-                    all_accuracies = [float(i) if isinstance(i, torch.Tensor) else i for i in all_accuracies]
-
                     sampled_k_confs = tools.sample_k_configurations(all_configurations, all_accuracies,
                                                                     self.num_samples, temperature)
 
