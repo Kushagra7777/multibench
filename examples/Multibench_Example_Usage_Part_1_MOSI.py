@@ -84,7 +84,7 @@ def main():
         optimtype=torch.optim.AdamW,
         is_packed=False,
         lr=1e-3,
-        save='mosi_ef_r0.pt',
+        save='results/models/mosi_ef_r0.pt',
         weight_decay=0.01,
         objective=torch.nn.L1Loss()
     )
@@ -92,7 +92,7 @@ def main():
     print("\nTesting:")
     
     # Load best model and test
-    model = torch.load('mosi_ef_r0.pt', 
+    model = torch.load('results/models/mosi_ef_r0.pt', 
                        map_location=device,
                        weights_only=False).to(device)
     test(

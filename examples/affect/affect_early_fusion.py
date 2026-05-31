@@ -30,9 +30,9 @@ head = Sequential(GRU(409, 512, dropout=True, has_padding=False,
 fusion = ConcatEarly().to(device)
 
 train(encoders, fusion, head, traindata, validdata, 2, task="regression", optimtype=torch.optim.AdamW,
-      is_packed=False, lr=1e-3, save='mosi_ef_r0.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
+      is_packed=False, lr=1e-3, save='results/models/mosi_ef_r0.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")
-model = torch.load('mosi_ef_r0.pt', weights_only=False).to(device)
+model = torch.load('results/models/mosi_ef_r0.pt', weights_only=False).to(device)
 test(model, testdata, 'affect', is_packed=False,
      criterion=torch.nn.L1Loss(), task="posneg-classification", no_robust=True)

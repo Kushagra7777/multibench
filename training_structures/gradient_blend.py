@@ -303,7 +303,7 @@ def calcAUPRC(pts):
 def train(unimodal_models,  multimodal_classification_head,
           unimodal_classification_heads, fuse, train_dataloader, valid_dataloader,
           num_epoch, lr, gb_epoch=20, v_rate=0.08, weight_decay=0.0, optimtype=torch.optim.SGD,
-          finetune_epoch=25, classification=True, AUPRC=False, savedir='best.pt',
+          finetune_epoch=25, classification=True, AUPRC=False, savedir='results/models/best.pt',
           num_workers=None, track_complexity=True):
     """Train model using gradient_blending.
 
@@ -323,7 +323,7 @@ def train(unimodal_models,  multimodal_classification_head,
         finetune_epoch (int, optional): Number of epochs to finetune the classification head. Defaults to 25.
         classification (bool, optional): Whether the task is a classification task. Defaults to True.
         AUPRC (bool, optional): Whether to compute auprc score or not. Defaults to False.
-        savedir (str, optional): The name of the saved file for the model with current best validation performance. Defaults to 'best.pt'.
+        savedir (str, optional): The name of the saved file for the model with current best validation performance. Defaults to 'results/models/best.pt'.
         num_workers (int, optional): Number of DataLoader worker processes. Defaults to None (auto: min(8, cpu_count)).
         track_complexity (bool, optional): Whether to track complexity or not. Defaults to True.
     """

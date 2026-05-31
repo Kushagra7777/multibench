@@ -21,6 +21,6 @@ s_data = train(['pretrained/mimic/static_encoder_mortality.pt', 'pretrained/mimi
 
 """
 print("Testing:")
-model=torch.load('best.pt', weights_only=False).to(device)
+model=torch.load('results/models/best.pt', weights_only=False).to(device)
 test(model,testdata)
 """

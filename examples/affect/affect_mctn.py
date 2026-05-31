@@ -47,11 +47,11 @@ def trainprocess():
         mu_t0=0.01, mu_c=0.01, mu_t1=0.01,
         dropout_p=0.15, early_stop=False, patience_num=15,
         lr=1e-4, weight_decay=0.01, op_type=torch.optim.AdamW,
-        epoch=2, model_save='best_mctn.pt')
+        epoch=2, model_save='results/models/best_mctn.pt')
 
 
 all_in_one_train(trainprocess, allmodules)
 
-model = torch.load('best_mctn.pt', weights_only=False).to(device)
+model = torch.load('results/models/best_mctn.pt', weights_only=False).to(device)
 
 test(model, testdata, 'mosi', no_robust=True)

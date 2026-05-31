@@ -34,6 +34,6 @@ elbo = MVAE_objective(2.0, [sigmloss1dcentercrop(
     28, 34), sigmloss1dcentercrop(112, 130)], [1.0, 1.0], annealing=0.0)
 train(encoders, fuse, head, traindata, validdata, 2, decoders,
       objective=elbo, objective_args_dict={'decoders': decoders},
-      save='avmnist_mvae_best.pt')
-mvae = torch.load('avmnist_mvae_best.pt', weights_only=False)
+      save='results/models/avmnist_mvae_best.pt')
+mvae = torch.load('results/models/avmnist_mvae_best.pt', weights_only=False)
 test(mvae, testdata, no_robust=True)

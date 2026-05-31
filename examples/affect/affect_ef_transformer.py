@@ -28,9 +28,9 @@ head = Sequential(Transformer(409, 300).to(device), MLP(300, 128, 1)).to(device)
 
 fusion = ConcatEarly().to(device)
 
-train(encoders, fusion, head, traindata, validdata, 2, task="regression", optimtype=torch.optim.AdamW, is_packed=False, early_stop=False, lr=1e-4, save='mosi_ef_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
+train(encoders, fusion, head, traindata, validdata, 2, task="regression", optimtype=torch.optim.AdamW, is_packed=False, early_stop=False, lr=1e-4, save='results/models/mosi_ef_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")
-model = torch.load('mosi_ef_best.pt', weights_only=False).to(device)
+model = torch.load('results/models/mosi_ef_best.pt', weights_only=False).to(device)
 test(model, testdata, 'affect', is_packed=False,
      criterion=torch.nn.L1Loss(), task="posneg-classification", no_robust=True)

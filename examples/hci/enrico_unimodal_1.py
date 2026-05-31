@@ -35,7 +35,7 @@ def trainprocess():
 all_in_one_train(trainprocess, allmodules)
 
 
-encoder = torch.load('enrico_u1_encoder.pt', weights_only=False).to(device)
-head = torch.load('enrico_u1_head.pt', weights_only=False)
+encoder = torch.load('results/models/enrico_u1_encoder.pt', weights_only=False).to(device)
+head = torch.load('results/models/enrico_u1_head.pt', weights_only=False)
 clean_testdata = testdata[list(testdata.keys())[0]][0]
 test(encoder, head, clean_testdata, dataset='enrico', modalnum=modalnum, no_robust=True)

@@ -25,6 +25,6 @@ train(encoder, head, traindata, validdata, 2, optimtype=torch.optim.SGD,
       save_encoder='avmnist_u0_encoder.pt', save_head='avmnist_u0_head.pt')
 
 print("Testing:")
-encoder = torch.load('avmnist_u0_encoder.pt', weights_only=False).to(device)
-head = torch.load('avmnist_u0_head.pt', weights_only=False)
+encoder = torch.load('results/models/avmnist_u0_encoder.pt', weights_only=False).to(device)
+head = torch.load('results/models/avmnist_u0_head.pt', weights_only=False)
 test(encoder, head, testdata, modalnum=modalnum, no_robust=True)

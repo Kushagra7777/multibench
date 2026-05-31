@@ -26,8 +26,8 @@ def train(
         weight_decay: float = 0.0,
         criterion: nn.Module = nn.CrossEntropyLoss(),
         auprc: bool = False,
-        save_encoder: str = 'encoder.pt',
-        save_head: str = 'head.pt',
+        save_encoder: str = 'results/models/encoder.pt',
+        save_head: str = 'results/models/head.pt',
         modalnum: int = 0,
         task: str = 'classification',
         track_complexity: bool = True) -> None:
@@ -45,8 +45,8 @@ def train(
         weight_decay (float, optional): Weight decay of optimizer. Defaults to 0.0.
         criterion (nn.Module, optional): Loss module. Defaults to nn.CrossEntropyLoss().
         auprc (bool, optional): Whether to compute AUPRC score or not. Defaults to False.
-        save_encoder (str, optional): Path of file to save model with best validation performance. Defaults to 'encoder.pt'.
-        save_head (str, optional): Path fo file to save head with best validation performance. Defaults to 'head.pt'.
+        save_encoder (str, optional): Path of file to save model with best validation performance. Defaults to 'results/models/encoder.pt'.
+        save_head (str, optional): Path fo file to save head with best validation performance. Defaults to 'results/models/head.pt'.
         modalnum (int, optional): Which modality to apply encoder to. Defaults to 0.
         task (str, optional): Type of task to try. Supports "classification", "regression", or "multilabel". Defaults to 'classification'.
         track_complexity (bool, optional): Whether to track the model's complexity or not. Defaults to True.

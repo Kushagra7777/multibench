@@ -38,10 +38,10 @@ fusion = MULTModel(3, [20, 5, 300], hyp_params=HParams).to(device)
 # fusion = MULTModel(3, [371, 81, 300], hyp_params=HParams).to(device)
 head = Identity().to(device)
 
-train(encoders, fusion, head, traindata, validdata, 2, task="regression", optimtype=torch.optim.AdamW, early_stop=False, is_packed=False, lr=1e-3, clip_val=1.0, save='mosi_mult_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
+train(encoders, fusion, head, traindata, validdata, 2, task="regression", optimtype=torch.optim.AdamW, early_stop=False, is_packed=False, lr=1e-3, clip_val=1.0, save='results/models/mosi_mult_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")
-model = torch.load('mosi_mult_best.pt', weights_only=False).to(device)
+model = torch.load('results/models/mosi_mult_best.pt', weights_only=False).to(device)
 
 test(model=model, test_dataloaders_all=test_robust, dataset='mosi', is_packed=False,
      criterion=torch.nn.L1Loss(), task='posneg-classification', no_robust=True)

@@ -108,7 +108,7 @@ def train(
         weight_decay: float = 0.0,
         objective: nn.Module = nn.CrossEntropyLoss(),
         auprc: bool = False,
-        save: str = 'best.pt',
+        save: str = 'results/models/best.pt',
         validtime: bool = False,
         objective_args_dict: Optional[Dict] = None,
         input_to_float: bool = True,
@@ -421,8 +421,8 @@ def test(
                 robustness_key = '{} {}'.format(robustness_key, measure)
             print("effective robustness ({}, {}): {}".format(noisy_modality, measure, str(
                 effective_robustness(robustness_result, robustness_key))))
-            fig_name = '{}-{}-{}-{}'.format(method_name,
-                                            robustness_key, noisy_modality, measure)
+            fig_name = 'results/images/{}-{}-{}-{}'.format(method_name,
+                                                           robustness_key, noisy_modality, measure)
             single_plot(robustness_result, robustness_key, xlabel='Noise level',
                         ylabel=measure, fig_name=fig_name, method=method_name)
             print("Plot saved as "+fig_name)

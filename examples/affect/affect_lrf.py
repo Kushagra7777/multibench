@@ -35,10 +35,10 @@ head = MLP(128, 512, 1).to(device)
 fusion = LowRankTensorFusion([32, 32, 128], 128, 32).to(device)
 
 train(encoders, fusion, head, traindata, validdata, 2, task="regression", optimtype=torch.optim.AdamW,
-      early_stop=False, is_packed=False, lr=1e-3, save='mosi_lf_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
+      early_stop=False, is_packed=False, lr=1e-3, save='results/models/mosi_lf_best.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 print("Testing:")
-model = torch.load('mosi_lf_best.pt', weights_only=False).to(device)
+model = torch.load('results/models/mosi_lf_best.pt', weights_only=False).to(device)
 
 test(model=model, test_dataloaders_all=test_robust, dataset='mosi', is_packed=False,
      criterion=torch.nn.L1Loss(), task='posneg-classification', no_robust=True)

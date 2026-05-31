@@ -297,8 +297,8 @@ def test(model, test_dataloaders_all, dataset, method_name='My method', auprc=Fa
                 robustness_key = '{} {}'.format(robustness_key, measure)
             print("effective robustness ({}, {}): {}".format(noisy_modality, measure, str(
                 effective_robustness(robustness_result, robustness_key))))
-            fig_name = '{}-{}-{}-{}'.format(method_name,
-                                            robustness_key, noisy_modality, measure)
+            fig_name = 'results/images/{}-{}-{}-{}'.format(method_name,
+                                                           robustness_key, noisy_modality, measure)
             single_plot(robustness_result, robustness_key, xlabel='Noise level',
                         ylabel=measure, fig_name=fig_name, method=method_name)
             print("Plot saved as "+fig_name)

@@ -30,9 +30,9 @@ head = Linear(96, 10, xavier_init=True).to(device)
 fusion = Concat().to(device)
 
 train(encoders, fusion, head, traindata, validdata, 2,
-      save="best_cca.pt", optimtype=torch.optim.AdamW, lr=1e-2, objective=CCA_objective(48), objective_args_dict={})
+      save="results/models/best_cca.pt", optimtype=torch.optim.AdamW, lr=1e-2, objective=CCA_objective(48), objective_args_dict={})
 # ,weight_decay=0.01)
 
 print("Testing:")
-model = torch.load('best_cca.pt', weights_only=False).to(device)
+model = torch.load('results/models/best_cca.pt', weights_only=False).to(device)
 test(model, testdata, no_robust=True)

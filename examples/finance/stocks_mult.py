@@ -51,8 +51,8 @@ def trainprocess():
 
 trainprocess()
 
-encoder = torch.load('encoder.pt', weights_only=False).to(device)
-head = torch.load('head.pt', weights_only=False).to(device)
+encoder = torch.load('results/models/encoder.pt', weights_only=False).to(device)
+head = torch.load('results/models/head.pt', weights_only=False).to(device)
 # dataset = 'finance F&B', finance tech', finance health'
 test(encoder, head, test_loader, dataset='finance F&B',
      task='regression', criterion=nn.MSELoss(), no_robust=True)

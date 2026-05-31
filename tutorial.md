@@ -105,9 +105,9 @@ import torch
 from training_structures.Supervised_Learning import train
 train(encoders,fusion,head,traindata,validdata,30,optimtype=torch.optim.SGD,lr=0.1,weight_decay=0.0001)
 ```
-The training structure will automatically save the model at the epoch with the best validation performance in a file called ``best.pt``. So to test the performance of our saved model, we need to load it and use the test function provided in the same training structure:
+The training structure will automatically save the model at the epoch with the best validation performance in a file called ``results/models/best.pt``. So to test the performance of our saved model, we need to load it and use the test function provided in the same training structure:
 ```
-model=torch.load('best.pt', weights_only=False).to(device)
+model=torch.load('results/models/best.pt', weights_only=False).to(device)
 from training_structures.Supervised_Learning import test
 test(model,testdata)
 ```
@@ -167,7 +167,7 @@ from training_structures.Supervised_Learning import train,test
 train(encoders,fuse,head,traindata,validdata,25,additional_optimizing_modules=decoders+intermediates,objective=objective,objective_args_dict={'decoders':decoders,'intermediates':intermediates})
 
 #testing
-model=torch.load('best.pt', weights_only=False).to(device)
+model=torch.load('results/models/best.pt', weights_only=False).to(device)
 test(model,testdata)
 ```
 

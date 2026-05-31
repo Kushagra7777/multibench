@@ -50,10 +50,10 @@ objective = MFM_objective(2.0, [torch.nn.MSELoss(
 ), torch.nn.MSELoss(), torch.nn.MSELoss()], [1.0, 1.0, 1.0])
 
 train(encoders, fuse, head, traindata, validdata, 2, additional_modules,
-      objective=objective, objective_args_dict=argsdict, save='mosi_mfm_best.pt')
+      objective=objective, objective_args_dict=argsdict, save='results/models/mosi_mfm_best.pt')
 
 print("Testing:")
-model = torch.load('mosi_mfm_best.pt', weights_only=False).to(device)
+model = torch.load('results/models/mosi_mfm_best.pt', weights_only=False).to(device)
 
 test(model=model, test_dataloaders_all=test_robust,
      dataset='mosi', is_packed=False, no_robust=True)

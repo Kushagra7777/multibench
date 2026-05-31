@@ -22,6 +22,6 @@ train(encoder, head, traindata, validdata, 20, optimtype=torch.optim.SGD,
       lr=0.01, weight_decay=0.0001, modalnum=modalnum)
 
 print("Testing:")
-encoder = torch.load('encoder.pt', weights_only=False).to(device)
-head = torch.load('head.pt', weights_only=False)
+encoder = torch.load('results/models/encoder.pt', weights_only=False).to(device)
+head = torch.load('results/models/head.pt', weights_only=False)
 test(encoder, head, testdata, modalnum=modalnum)

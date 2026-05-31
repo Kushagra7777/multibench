@@ -29,7 +29,7 @@ train(encoder, head, traindata, validdata, 2, task="regression", optimtype=torch
       weight_decay=0.01, criterion=torch.nn.L1Loss(), save_encoder='affect_uni_encoder.pt', save_head='affect_uni_head.pt', modalnum=modality_num)
 
 print("Testing:")
-encoder = torch.load('affect_uni_encoder.pt', weights_only=False).to(device)
-head = torch.load('affect_uni_head.pt', weights_only=False)
+encoder = torch.load('results/models/affect_uni_encoder.pt', weights_only=False).to(device)
+head = torch.load('results/models/affect_uni_head.pt', weights_only=False)
 test(encoder, head, testdata, 'affect', criterion=torch.nn.L1Loss(),
      task="posneg-classification", modalnum=modality_num, no_robust=True)

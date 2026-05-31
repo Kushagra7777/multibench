@@ -39,7 +39,7 @@ def train(
         mu_t0=0.01, mu_c=0.01, mu_t1=0.01,
         dropout_p=0.1, early_stop=False, patience_num=15,
         lr=1e-4, weight_decay=0.01, op_type=torch.optim.AdamW,
-        epoch=100, model_save='best_mctn.pt',
+        epoch=100, model_save='results/models/best_mctn.pt',
         testdata=None):
     """Train a 2-level MCTN Instance
 

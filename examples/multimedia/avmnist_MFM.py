@@ -36,6 +36,6 @@ objective = MFM_objective(2.0, [sigmloss1dcentercrop(
     28, 34), sigmloss1dcentercrop(112, 130)], [1.0, 1.0])
 train(encoders, fuse, head, traindata, validdata, 2, decoders+intermediates,
       objective=objective, objective_args_dict={'decoders': decoders, 'intermediates': intermediates},
-      save='avmnist_mfm_best.pt')
-model = torch.load('avmnist_mfm_best.pt', weights_only=False)
+      save='results/models/avmnist_mfm_best.pt')
+model = torch.load('results/models/avmnist_mfm_best.pt', weights_only=False)
 test(model, testdata, no_robust=True)

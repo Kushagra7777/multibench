@@ -35,6 +35,6 @@ all_in_one_train(trainprocess, allmodules)
 
 # test
 print("Testing: ")
-model = torch.load('best.pt', weights_only=False).to(device)
+model = torch.load('results/models/best.pt', weights_only=False).to(device)
 # dataset = 'mimic mortality', 'mimic 1', 'mimic 7'
 test(model, testdata, dataset='mimic 7', auprc=True)

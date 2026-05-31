@@ -44,10 +44,10 @@ fusion = Concat().to(device)
 # training_structures.gradient_blend.criterion = nn.L1Loss()
 
 train(encoders, head, unimodal_heads, fusion, traindata, validdata, 2, gb_epoch=1, lr=1e-3, AUPRC=False,
-      classification=True, optimtype=torch.optim.AdamW, savedir='mosi_best_gb.pt', weight_decay=0.1)
+      classification=True, optimtype=torch.optim.AdamW, savedir='results/models/mosi_best_gb.pt', weight_decay=0.1)
 
 print("Testing:")
-model = torch.load('mosi_best_gb.pt', weights_only=False).to(device)
+model = torch.load('results/models/mosi_best_gb.pt', weights_only=False).to(device)
 
 test(model, test_robust, dataset='mosi', auprc=False, no_robust=True)
 

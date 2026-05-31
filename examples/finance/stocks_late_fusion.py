@@ -44,12 +44,12 @@ allmodules = [*encoders, fusion, head]
 def trainprocess():
     train(encoders, fusion, head, train_loader, val_loader, total_epochs=4,
           task='regression', optimtype=torch.optim.Adam, objective=nn.MSELoss(),
-          save='stocks_lf_best.pt')
+          save='results/models/stocks_lf_best.pt')
 
 
 all_in_one_train(trainprocess, allmodules)
 
-model = torch.load('stocks_lf_best.pt', weights_only=False).to(device)
+model = torch.load('results/models/stocks_lf_best.pt', weights_only=False).to(device)
 # dataset = 'finance F&B', finance tech', finance health'
 test(model, test_loader, dataset='finance F&B',
      task='regression', criterion=nn.MSELoss(), no_robust=True)

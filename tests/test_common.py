@@ -169,7 +169,7 @@ def test_integration():
     fusion = ConcatEarly()
 
     train(encoders, fusion, head, traindata, validdata, 1, task="regression", optimtype=torch.optim.AdamW,
-        is_packed=False, lr=1e-3, save='mosi_ef_r0.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
+        is_packed=False, lr=1e-3, save='results/models/mosi_ef_r0.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
     head = Sequential(Transformer(409, 300).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu")), MLP(300, 128, 1)).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
@@ -177,7 +177,7 @@ def test_integration():
     fusion = ConcatEarly().to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
     train(encoders, fusion, head, traindata, validdata, 1, task="regression", optimtype=torch.optim.AdamW,
-        is_packed=False, lr=1e-3, save='mosi_ef_r0.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
+        is_packed=False, lr=1e-3, save='results/models/mosi_ef_r0.pt', weight_decay=0.01, objective=torch.nn.L1Loss())
 
 
 def test_integration2():
@@ -222,7 +222,7 @@ def test_integration2():
             mu_t0=0.01, mu_c=0.01, mu_t1=0.01,
             dropout_p=0.15, early_stop=False, patience_num=15,
             lr=1e-4, weight_decay=0.01, op_type=torch.optim.AdamW,
-            epoch=1, model_save='best_mctn.pt')
+            epoch=1, model_save='results/models/best_mctn.pt')
 
 
     all_in_one_train(trainprocess, allmodules)
@@ -263,9 +263,9 @@ def test_integration2():
   # training_structures.gradient_blend.criterion = nn.L1Loss()
 
   train(encoders, head, unimodal_heads, fusion, traindata, validdata, num_epoch=1, gb_epoch=1, lr=1e-3, AUPRC=True,
-        classification=True, optimtype=torch.optim.AdamW, savedir='mosi_best_gb.pt', weight_decay=0.1, finetune_epoch=1)
+        classification=True, optimtype=torch.optim.AdamW, savedir='results/models/mosi_best_gb.pt', weight_decay=0.1, finetune_epoch=1)
 
   print("Testing:")
-  #model = torch.load('mosi_besf_gb.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+  #model = torch.load('results/models/mosi_besf_gb.pt').to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
    """

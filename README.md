@@ -113,10 +113,10 @@ head = Sequential(
 train(encoders, fusion, head, traindata, validdata,
       total_epochs=10, task="regression",
       optimtype=torch.optim.AdamW, lr=1e-3,
-      save='mosi_ef_r0.pt', objective=torch.nn.L1Loss())
+      save='results/models/mosi_ef_r0.pt', objective=torch.nn.L1Loss())
 
 # Test
-model = torch.load('mosi_ef_r0.pt', weights_only=False).to(device)
+model = torch.load('results/models/mosi_ef_r0.pt', weights_only=False).to(device)
 test(model, testdata, dataset='affect', is_packed=False,
      criterion=torch.nn.L1Loss(), task="posneg-classification", no_robust=True)
 ```
@@ -149,6 +149,34 @@ python examples/hci/enrico_simple_late_fusion.py
 python examples/multimedia/avmnist_simple_late_fusion.py
 python examples/multimedia/mmimdb_simple_late_fusion.py
 ```
+
+### Quickest experiments to get started
+
+If you just want to confirm your install works and see the full
+data → train → evaluate pipeline run end to end, these are the fastest
+entry points. All run on **CPU** in well under a minute with the default
+2-epoch example settings.
+
+| Experiment | Script | Data | Approx. CPU runtime | Model params |
+| ---------- | ------ | ---- | ------------------- | ------------ |
+| Stock prediction | `examples/finance/stocks_late_fusion.py` | Auto-downloads (e.g. `AAPL MSFT`) | ~15 s | ~2.5 K |
+| AV-MNIST (late fusion) | `examples/multimedia/avmnist_simple_late_fusion.py` | 2,000-sample subset (of 60 K) | ~1 min | ~261 K |
+| Gentle Push (unimodal) | `examples/gentle_push/unimodal_image.py` | 10-trajectory eval set | ~1 min | varies |
+
+**Smallest / fastest overall:** Stock prediction needs no manual download
+(data is fetched on first run via `yfinance`) and finishes in seconds,
+making it the best choice for a first smoke test or for quickly iterating
+on model architecture. AV-MNIST is the simplest *multimodal* starting point —
+its example already subsets to 2,000 training samples and 2 epochs
+(`examples/multimedia/avmnist_simple_late_fusion.py`).
+
+> [!NOTE]
+> Runtimes above were measured on CPU as a quick smoke test of the pipeline.
+> Only the stock-prediction run used real data; the AV-MNIST and Gentle Push
+> timings were taken against small synthetic placeholder arrays (the real
+> datasets had not been downloaded), so they reflect *pipeline speed*, not
+> model accuracy. For real benchmark numbers, download the datasets via the
+> links below and train for the full epoch counts.
 
 ## Dataset access
 
@@ -228,10 +256,20 @@ multibench/
 ├── robustness/            # Modality-specific noise implementations
 ├── examples/              # Runnable scripts and Colab notebooks
 ├── pretrained/            # Pre-trained model weights
+├── results/               # Experiment outputs (gitignored, kept tidy here)
+│   ├── models/            # Trained model checkpoints (*.pt) saved by examples
+│   └── images/            # Robustness / accuracy plots (*.png)
 └── utils/
     ├── device.py          # get_device(): selects CUDA → MPS → CPU automatically
     └── verify.py          # validate_shapes(): dry-runs pipeline to catch dim mismatches
 ```
+
+> [!NOTE]
+> Example scripts and the training structures save checkpoints to
+> `results/models/` and robustness plots to `results/images/` by default.
+> These output files are gitignored (only the folders are kept via
+> `.gitkeep`), so your experiment artifacts stay in one place instead of
+> scattering across the repo root.
 
 ## Adding new datasets or algorithms
 

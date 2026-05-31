@@ -59,11 +59,11 @@ def trainprocess():
     train(unimodal_models,  multimodal_head,
           unimodal_heads, fuse, train_dataloader=train_loader, valid_dataloader=val_loader,
           classification=False, gb_epoch=2, num_epoch=4, lr=0.001, optimtype=torch.optim.Adam,
-          savedir='best_gb.pt')
+          savedir='results/models/best_gb.pt')
 
 
 trainprocess()
 
-model = torch.load('best_gb.pt', weights_only=False).to(device)
+model = torch.load('results/models/best_gb.pt', weights_only=False).to(device)
 # dataset = 'finance F&B', finance tech', finance health'
 test(model, test_loader, dataset='finance F&B', classification=False, no_robust=True)

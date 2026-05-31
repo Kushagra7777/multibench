@@ -25,8 +25,8 @@ fusion = Concat().to(device)
 
 train(encoders, fusion, head, traindata, validdata, 2, [
       refiner], optimtype=torch.optim.SGD, lr=0.005, objective=RefNet_objective(0.1), objective_args_dict={'refiner': refiner},
-      save='avmnist_refnet_best.pt')
+      save='results/models/avmnist_refnet_best.pt')
 
 print("Testing:")
-model = torch.load('avmnist_refnet_best.pt', weights_only=False).to(device)
+model = torch.load('results/models/avmnist_refnet_best.pt', weights_only=False).to(device)
 test(model, testdata, no_robust=True)

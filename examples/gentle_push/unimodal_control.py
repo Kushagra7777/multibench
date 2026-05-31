@@ -49,9 +49,9 @@ train(encoders, fusion, head,
       optimtype=optimtype,
       objective=loss_state,
       lr=0.00001,
-      save='gentle_push_uctrl_best.pt')
+      save='results/models/gentle_push_uctrl_best.pt')
 
-model = torch.load('gentle_push_uctrl_best.pt', weights_only=False).to(device)
+model = torch.load('results/models/gentle_push_uctrl_best.pt', weights_only=False).to(device)
 clean_test_loader = test_loader[list(test_loader.keys())[0]][0]
 test(model, clean_test_loader, dataset='gentle push',
      task='regression', criterion=loss_state, no_robust=True)
