@@ -18,6 +18,7 @@ innovations in (1) data preprocessing, (2) fusion paradigms, (3) optimization ob
    :caption: Getting Started
 
    start/installation
+   start/quickstart
    start/datadownload
    start/generalguide
 
