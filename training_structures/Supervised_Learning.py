@@ -426,6 +426,7 @@ def test(
                 effective_robustness(robustness_result, robustness_key))))
             fig_name = 'results/images/{}-{}-{}-{}'.format(method_name,
                                                            robustness_key, noisy_modality, measure)
+            os.makedirs('results/images', exist_ok=True)
             single_plot(robustness_result, robustness_key, xlabel='Noise level',
                         ylabel=measure, fig_name=fig_name, method=method_name)
             print("Plot saved as "+fig_name)

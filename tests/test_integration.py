@@ -76,7 +76,7 @@ def test_sl3():
 
 
   train(encoder, head, dl, dl, 1, task="regression", optimtype=torch.optim.AdamW, lr=2e-3,
-        weight_decay=0.01, criterion=torch.nn.L1Loss(), save_encoder='encoder.pt', save_head='head.pt', modalnum=modality_num)
+        weight_decay=0.01, criterion=torch.nn.L1Loss(), save_encoder='results/models/encoder.pt', save_head='results/models/head.pt', modalnum=modality_num)
 
   print("Testing:")
   encoder = torch.load('results/models/encoder.pt', weights_only=False).to(get_device())
