@@ -70,6 +70,8 @@ def train(
         model_save (str, optional): Path to save best model. Defaults to 'best_mctn.pt'.
         testdata (torch.utils.data.DataLoader, optional): Data Loader for test data. Defaults to None.
     """
+    if save_dir := os.path.dirname(model_save):
+        os.makedirs(save_dir, exist_ok=True)
     seq2seq0 = Seq2Seq(encoder0, decoder0).to(get_device())
     seq2seq1 = Seq2Seq(encoder1, decoder1).to(get_device())
     model = L2_MCTN(seq2seq0, seq2seq1, reg_encoder, head, p=dropout_p).to(get_device())

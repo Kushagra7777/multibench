@@ -1,6 +1,7 @@
 """Implements training pipeline for unimodal comparison."""
 from typing import Callable, Dict, List, Optional, Union
 
+import os
 from sklearn.metrics import accuracy_score, f1_score
 import torch
 from torch import nn
@@ -52,6 +53,9 @@ def train(
         track_complexity (bool, optional): Whether to track the model's complexity or not. Defaults to True.
     """
     def _trainprocess():
+        for p in (save_encoder, save_head):
+            if d := os.path.dirname(p):
+                os.makedirs(d, exist_ok=True)
         device = get_device()
         model = nn.Sequential(encoder, head)
         op = optimtype(model.parameters(), lr=lr, weight_decay=weight_decay)

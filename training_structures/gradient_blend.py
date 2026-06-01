@@ -331,6 +331,8 @@ def train(unimodal_models,  multimodal_classification_head,
 
     def _trainprocess():
         nonlocal train_dataloader
+        if save_dir := os.path.dirname(savedir):
+            os.makedirs(save_dir, exist_ok=True)
         device = get_device()
         params = []
         for model in unimodal_models:

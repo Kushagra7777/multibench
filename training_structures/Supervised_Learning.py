@@ -2,6 +2,7 @@
 """Implements supervised learning training procedures."""
 from typing import Callable, Dict, List, Optional, Sequence, Union
 
+import os
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -143,6 +144,8 @@ def train(
         m.to(device)
 
     def _trainprocess():
+        if save_dir := os.path.dirname(save):
+            os.makedirs(save_dir, exist_ok=True)
         additional_params = []
         for m in additional_optimizing_modules:
             additional_params.extend(
