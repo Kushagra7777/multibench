@@ -20,9 +20,11 @@ encoder = LeNet(1, channels, 3).to(device)
 head = MLP(channels*8, 100, 10).to(device)
 
 
+os.makedirs('results/models', exist_ok=True)
 train(encoder, head, traindata, validdata, 2, optimtype=torch.optim.SGD,
       lr=0.01, weight_decay=0.0001, modalnum=modalnum,
-      save_encoder='avmnist_u0_encoder.pt', save_head='avmnist_u0_head.pt')
+      save_encoder='results/models/avmnist_u0_encoder.pt',
+      save_head='results/models/avmnist_u0_head.pt')
 
 print("Testing:")
 encoder = torch.load('results/models/avmnist_u0_encoder.pt', weights_only=False).to(device)

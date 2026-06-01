@@ -40,7 +40,8 @@ def get_dataloader(stocks, input_stocks, output_stocks, batch_size=16, train_shu
         import yfinance as yf
         ticker = yf.Ticker(symbol)
         df = ticker.history(start=start.strftime('%Y-%m-%d'), end=end.strftime('%Y-%m-%d'))
-        df.index = df.index.tz_localize(None)
+        if isinstance(df.index, pd.DatetimeIndex) and df.index.tz is not None:
+            df.index = df.index.tz_localize(None)
         return df
 
     data = []

@@ -10,6 +10,8 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
+    "torch",
+    "torchvision",
     "memory-profiler",
     "scikit-learn",
     "scipy<1.17",
@@ -33,3 +35,15 @@ pythonpath = ["."]
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["fusions*", "unimodals*", "training_structures*", "datasets*", "robustness*", "objective_functions*", "eval_scripts*", "utils*"]
+
+# Pull CPU-only torch/torchvision wheels so `uv sync` does not download the
+# multi-GB CUDA builds. The index is `explicit`, so it is used only for the
+# packages mapped to it below; everything else still resolves from PyPI.
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+torchvision = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
