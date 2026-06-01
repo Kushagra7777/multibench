@@ -1,11 +1,12 @@
 """Implements dataloaders for Gentle Push tasks.
 
-Sourced from https://github.com/brentyi/multimodalfilter/blob/master/crossmodal/tasks/_push.py 
+Sourced from https://github.com/brentyi/multimodalfilter/blob/master/crossmodal/tasks/_push.py
 """
 
 
 import argparse
 import sys
+from itertools import islice
 from typing import Any, Dict, List, NamedTuple, Tuple
 
 from PIL.Image import NONE
@@ -61,6 +62,10 @@ class PushTask():
         parser.add_argument("--image_blackout_ratio", type=float, default=0.0)
         parser.add_argument("--sequential_image_rate", type=int, default=1)
         parser.add_argument("--kloss_dataset", action="store_true")
+        parser.add_argument("--train-trajectories", type=int, default=None)
+        parser.add_argument("--eval-trajectories", type=int, default=None)
+        parser.add_argument("--test-trajectories", type=int, default=None)
+        parser.add_argument("--test-noise-levels", type=int, default=2)
 
     @classmethod
     def get_dataset_args(cls, args: argparse.Namespace) -> Dict[str, Any]:
@@ -76,6 +81,10 @@ class PushTask():
             "image_blackout_ratio": args.image_blackout_ratio,
             "sequential_image_rate": args.sequential_image_rate,
             "kloss_dataset": args.kloss_dataset,
+            "train_trajectories": args.train_trajectories,
+            "eval_trajectories": args.eval_trajectories,
+            "test_trajectories": args.test_trajectories,
+            "test_noise_levels": args.test_noise_levels,
         }
         return dataset_args
 
@@ -94,11 +103,19 @@ class PushTask():
         Returns:
             tuple: Tuple of training dataloader, validation dataloader, and test dataloader
         """
+        dataset_args = dict(dataset_args)
+        train_trajectories = dataset_args.pop("train_trajectories", None)
+        eval_trajectories = dataset_args.pop("eval_trajectories", None)
+        test_trajectories = dataset_args.pop("test_trajectories", None)
+        test_noise_levels = dataset_args.pop("test_noise_levels", 2)
         # Load trajectories into memory
-        train_trajectories = cls.get_train_trajectories(**dataset_args)
-        val_trajectories = cls.get_eval_trajectories(**dataset_args)
+        train_trajectories = cls.get_train_trajectories(
+            max_trajectory_count=train_trajectories, **dataset_args)
+        val_trajectories = cls.get_eval_trajectories(
+            max_trajectory_count=eval_trajectories, **dataset_args)
         test_trajectories = cls.get_test_trajectories(
-            modalities, **dataset_args)
+            modalities, noise_levels=test_noise_levels,
+            max_trajectory_count=test_trajectories, **dataset_args)
         train_loader = DataLoader(
             SubsequenceDataset(train_trajectories,
                                subsequence_length, modalities),
@@ -126,7 +143,7 @@ class PushTask():
 
     @classmethod
     def get_train_trajectories(
-        cls, **dataset_args
+        cls, max_trajectory_count=None, **dataset_args
     ) -> List[TrajectoryNumpy]:
         """Get training trajectories."""
         kloss_dataset = (
@@ -134,33 +151,38 @@ class PushTask():
         )
         if kloss_dataset:
             return _load_trajectories(
-                "kloss_train0.hdf5",
-                "kloss_train1.hdf5",
-                "kloss_train2.hdf5",
-                "kloss_train3.hdf5",
-                "kloss_train4.hdf5",
-                "kloss_train5.hdf5",
+                _limit_trajectories("kloss_train0.hdf5", max_trajectory_count),
+                _limit_trajectories("kloss_train1.hdf5", max_trajectory_count),
+                _limit_trajectories("kloss_train2.hdf5", max_trajectory_count),
+                _limit_trajectories("kloss_train3.hdf5", max_trajectory_count),
+                _limit_trajectories("kloss_train4.hdf5", max_trajectory_count),
+                _limit_trajectories("kloss_train5.hdf5", max_trajectory_count),
                 **dataset_args,
             )
         else:
-            return _load_trajectories("gentle_push_1000.hdf5", **dataset_args)
+            return _load_trajectories(
+                _limit_trajectories("gentle_push_1000.hdf5", max_trajectory_count),
+                **dataset_args)
 
     @classmethod
     def get_eval_trajectories(
-        cls, **dataset_args
+        cls, max_trajectory_count=None, **dataset_args
     ) -> List[TrajectoryNumpy]:
         """Get evaluation trajectories."""
         kloss_dataset = (
             dataset_args["kloss_dataset"] if "kloss_dataset" in dataset_args else False
         )
         if kloss_dataset:
-            return _load_trajectories(("kloss_val.hdf5", 50), **dataset_args)
+            count = 50 if max_trajectory_count is None else max_trajectory_count
+            return _load_trajectories(("kloss_val.hdf5", count), **dataset_args)
         else:
-            return _load_trajectories("gentle_push_10.hdf5", **dataset_args)
+            return _load_trajectories(
+                _limit_trajectories("gentle_push_10.hdf5", max_trajectory_count),
+                **dataset_args)
 
     @classmethod
     def get_test_trajectories(
-        cls, modalities, noise_levels=2, **dataset_args
+        cls, modalities, noise_levels=2, max_trajectory_count=None, **dataset_args
     ):
         """Get test trajectories."""
         kloss_dataset = (
@@ -175,28 +197,39 @@ class PushTask():
                 trajectories['image'] = []
                 for i in noise_range:
                     trajectories['image'].append(_load_trajectories(
-                        "gentle_push_300.hdf5", visual_noise=i/10, **dataset_args))
+                        _limit_trajectories("gentle_push_300.hdf5", max_trajectory_count),
+                        visual_noise=i/10, **dataset_args))
             if modalities == None or 'gripper_pos' in modalities:
                 trajectories['proprio'] = []
                 for i in noise_range:
                     trajectories['proprio'].append(_load_trajectories(
-                        "gentle_push_300.hdf5", prop_noise=i/10, **dataset_args))
+                        _limit_trajectories("gentle_push_300.hdf5", max_trajectory_count),
+                        prop_noise=i/10, **dataset_args))
             if modalities == None or 'gripper_sensors' in modalities:
                 trajectories['haptics'] = []
                 for i in noise_range:
                     trajectories['haptics'].append(_load_trajectories(
-                        "gentle_push_300.hdf5", haptics_noise=i/10, **dataset_args))
+                        _limit_trajectories("gentle_push_300.hdf5", max_trajectory_count),
+                        haptics_noise=i/10, **dataset_args))
             if modalities == None or 'control' in modalities:
                 trajectories['control'] = []
                 for i in noise_range:
                     trajectories['control'].append(_load_trajectories(
-                        "gentle_push_300.hdf5", controls_noise=i/10, **dataset_args))
+                        _limit_trajectories("gentle_push_300.hdf5", max_trajectory_count),
+                        controls_noise=i/10, **dataset_args))
             if modalities == None:
                 trajectories['multimodal'] = []
                 for i in noise_range:
                     trajectories['multimodal'].append(_load_trajectories(
-                        "gentle_push_300.hdf5", multimodal_noise=i/10, **dataset_args))
+                        _limit_trajectories("gentle_push_300.hdf5", max_trajectory_count),
+                        multimodal_noise=i/10, **dataset_args))
             return trajectories
+
+
+def _limit_trajectories(name, max_trajectory_count):
+    if max_trajectory_count is None:
+        return name
+    return (name, max_trajectory_count)
 
 
 def _load_trajectories(
@@ -256,17 +289,15 @@ def _load_trajectories(
             name, max_trajectory_count = name
         assert type(max_trajectory_count) == int
 
-        # Load trajectories file into memory, all at once
+        # Load at most the requested number of trajectories instead of
+        # materializing the full source file before truncating.
         with fannypack.data.TrajectoriesFile(
             fannypack.data.cached_drive_file(name, dataset_urls[name])
         ) as f:
-            raw_trajectories = list(f)
+            raw_trajectories = list(islice(f, max_trajectory_count))
 
         # Iterate over each trajectory
         for raw_trajectory_index, raw_trajectory in enumerate(raw_trajectories):
-            if raw_trajectory_index >= max_trajectory_count:
-                break
-
             if kloss_dataset:
                 timesteps = len(raw_trajectory["pos"])
             else:
@@ -541,12 +572,11 @@ def _load_trajectories(
                 )
             )
 
-            # Reduce memory usage
             raw_trajectories[raw_trajectory_index] = None
             del raw_trajectory
 
     # Uncomment this line to generate the lines required to normalize data
-    
+
 
     return trajectories
 
@@ -628,7 +658,7 @@ def split_trajectories(
                 else:
                     mods = []
                     for m in modalities:
-                        if m == 'gripper_pos': 
+                        if m == 'gripper_pos':
                             mods.append(o['gripper_pos'])
                         elif m == 'gripper_sensors':
                             mods.append(o['gripper_sensors'])
@@ -644,7 +674,7 @@ def split_trajectories(
 class SubsequenceDataset(Dataset):
     """A data preprocessor for producing training subsequences from
     a list of trajectories. Thin wrapper around `torchfilter.data.split_trajectories()`.
-    
+
     Args:
         trajectories (list): list of trajectories, where each is a tuple of
             `(states, observations, controls)`. Each tuple member should be

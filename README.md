@@ -74,6 +74,12 @@ uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cp
 uv pip install memory-profiler scikit-learn scipy matplotlib h5py tqdm
 ```
 
+The quickstart examples below also use a few dataset-specific packages:
+
+```bash
+uv pip install gdown yfinance pandas pmdarima fannypack "numpy<2"
+```
+
 ### Quick example
 
 This example trains a simple early fusion model on the [CMU-MOSI](https://drive.google.com/drive/folders/1uEK737LXB9jAlf9kyqRs6B9N6cDncodq?usp=sharing) sentiment dataset.
@@ -154,14 +160,14 @@ python examples/multimedia/mmimdb_simple_late_fusion.py
 
 If you just want to confirm your install works and see the full
 data → train → evaluate pipeline run end to end, these are the fastest
-entry points. All run on **CPU** in well under a minute with the default
-2-epoch example settings.
+entry points. All run on **CPU** with real data and the default 2-epoch
+example settings, except the MOSI code block above, which uses 10 epochs.
 
 | Experiment | Script | Data | Approx. CPU runtime | Model params |
 | ---------- | ------ | ---- | ------------------- | ------------ |
-| Stock prediction | `examples/finance/stocks_late_fusion.py` | Auto-downloads (e.g. `AAPL MSFT`) | ~15 s | ~2.5 K |
-| AV-MNIST (late fusion) | `examples/multimedia/avmnist_simple_late_fusion.py` | 2,000-sample subset (of 60 K) | ~1 min | ~261 K |
-| Gentle Push (unimodal) | `examples/gentle_push/unimodal_image.py` | 10-trajectory eval set | ~1 min | varies |
+| Stock prediction | `examples/finance/stocks_late_fusion.py` | Auto-downloads via `yfinance` | ~20 s | 7.4 K |
+| AV-MNIST (late fusion) | `examples/multimedia/avmnist_simple_late_fusion.py` | 2,000 real training examples | ~26 s | 260.9 K |
+| Gentle Push (unimodal) | `examples/gentle_push/unimodal_image.py --quick` | 10 real train / val / test trajectories | ~36 s | 3.9 M |
 
 **Smallest / fastest overall:** Stock prediction needs no manual download
 (data is fetched on first run via `yfinance`) and finishes in seconds,
@@ -170,13 +176,22 @@ on model architecture. AV-MNIST is the simplest *multimodal* starting point —
 its example already subsets to 2,000 training samples and 2 epochs
 (`examples/multimedia/avmnist_simple_late_fusion.py`).
 
-> [!NOTE]
-> Runtimes above were measured on CPU as a quick smoke test of the pipeline.
-> Only the stock-prediction run used real data; the AV-MNIST and Gentle Push
-> timings were taken against small synthetic placeholder arrays (the real
-> datasets had not been downloaded), so they reflect *pipeline speed*, not
-> model accuracy. For real benchmark numbers, download the datasets via the
-> links below and train for the full epoch counts.
+The Gentle Push script without `--quick` trains on the full
+`gentle_push_1000.hdf5` training file and is CPU-compatible, but it is not a
+quick smoke test on typical CPU-only machines.
+
+Measured real-data CPU smoke-test results on this PC:
+
+| Metric | Stock | AV-MNIST | Gentle Push `--quick` |
+| ------ | ----- | -------- | --------------------- |
+| Total runtime | 19.8 s | 25.8 s | 35.8 s |
+| Training time | 8.4 s | 12.1 s | 27.5 s |
+| Inference time | 0.27 s | 6.15 s | 2.84 s |
+| Model parameters | 7,393 | 260,922 | 3,879,898 |
+| Smoke-test metric | MSE 1.2406 | Accuracy 0.5499 | MSE 0.3309 |
+
+These are quick pipeline checks, not benchmark-quality accuracy numbers.
+Random initialization, data-fetch latency, and CPU model can move the results.
 
 ## Dataset access
 

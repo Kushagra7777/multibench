@@ -58,6 +58,12 @@ requirements:
    uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
    uv pip install memory-profiler scikit-learn scipy matplotlib h5py tqdm
 
+The quickstart examples also use a few dataset-specific packages:
+
+.. code-block:: bash
+
+   uv pip install gdown yfinance pandas pmdarima fannypack "numpy<2"
+
 **Conda (alternative).** An ``environment.yml`` is also provided:
 
 .. code-block:: bash

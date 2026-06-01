@@ -11,8 +11,13 @@ from training_structures.Supervised_Learning import train, test
 from torch.utils.data import DataLoader, Subset
 
 
-traindata, validdata, testdata = get_dataloader(
-    'data/avmnist', num_workers=0)
+data_dir = 'data/avmnist'
+if not os.path.exists(os.path.join(data_dir, 'image', 'train_data.npy')):
+    nested_data_dir = os.path.join(data_dir, 'avmnist')
+    if os.path.exists(os.path.join(nested_data_dir, 'image', 'train_data.npy')):
+        data_dir = nested_data_dir
+
+traindata, validdata, testdata = get_dataloader(data_dir, num_workers=0)
 traindata = DataLoader(Subset(traindata.dataset, range(2000)), batch_size=40, shuffle=True, num_workers=0)
 channels = 6
 encoders = [LeNet(1, channels, 3).to(device), LeNet(1, channels, 5).to(device)]

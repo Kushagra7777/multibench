@@ -131,7 +131,7 @@ Then, you can follow this code block as an example to get the dataloaders:
     fannypack.data.set_cache_path('datasets/gentle_push/cache')
 
     train_loader, val_loader, test_loader = Task.get_dataloader(
-        16, modalities, batch_size=32, drop_last=True)
+        16, modalities, batch_size=32, drop_last=True, **dataset_args)
 
 -----
 

@@ -1,21 +1,21 @@
 # From https://github.com/brentyi/multimodalfilter/blob/master/scripts/push_task/train_push.py
-import torch
-import unimodals.gentle_push.layers as layers
-import torch.optim as optim
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-import torch.nn as nn
-import fannypack
-import datetime
 import argparse
 import sys
 import os
 
 sys.path.insert(0, os.getcwd())
 
+import torch
+import unimodals.gentle_push.layers as layers
+import torch.optim as optim
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+import torch.nn as nn
+import fannypack
+
 from training_structures.Supervised_Learning import train, test # noqa
 from fusions.common_fusions import ConcatWithLinear # noqa
 from unimodals.gentle_push.head import Head # noqa
-from unimodals.common_models import Sequential, Transpose, Reshape, MLP  # noqa
+from unimodals.common_models import Sequential, Transpose, Reshape  # noqa
 from datasets.gentle_push.data_loader import PushTask # noqa
 
 
@@ -26,13 +26,25 @@ modalities = ['image']
 # Parse args
 parser = argparse.ArgumentParser()
 Task.add_dataset_arguments(parser)
+parser.add_argument(
+    "--quick",
+    action="store_true",
+    help="Use a 10-trajectory real-data subset for a CPU smoke test.",
+)
 args = parser.parse_args()
 dataset_args = Task.get_dataset_args(args)
+if args.quick:
+    dataset_args.update({
+        "train_trajectories": 10,
+        "eval_trajectories": 10,
+        "test_trajectories": 10,
+        "test_noise_levels": 1,
+    })
 
 fannypack.data.set_cache_path('datasets/gentle_push/cache')
 
 train_loader, val_loader, test_loader = Task.get_dataloader(
-    16, modalities, batch_size=32, drop_last=True)
+    16, modalities, batch_size=32, drop_last=True, **dataset_args)
 
 encoders = [
     Sequential(Transpose(0, 1), Reshape(
