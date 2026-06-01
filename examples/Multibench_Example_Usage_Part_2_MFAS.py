@@ -1,21 +1,57 @@
 """
-MultiBench Example Usage - Part 2: AVMNIST (MFAS / Architecture Search)
+MultiBench Example - Part 2: AVMNIST with MFAS (Fusion Architecture SEARCH)
+==========================================================================
 
-Demonstrates MultiBench's MultiModal Fusion Architecture Search (MFAS) system
-on the AVMNIST dataset (audio + visual MNIST digits).
+WHAT YOU WILL LEARN
+-------------------
+In Part 1 we hand-designed the fusion (a simple early concatenation). Here we let
+an algorithm DESIGN THE FUSION FOR US. By the end you should be able to explain:
+  1. Why choosing *how* and *where* to fuse modalities is itself a hard problem.
+  2. The core idea of MFAS: search over fusion architectures instead of guessing.
+  3. The role of the "surrogate" model in making that search affordable.
+
+THE TASK
+--------
+AVMNIST is a simple two-modality dataset built for teaching:
+    - image  modality: a normal MNIST handwritten digit
+    - audio  modality: a spectrogram of the spoken digit
+Goal: classify the digit (10 classes) using both modalities.
+
+MFAS: Multimodal Fusion Architecture Search (the concept this example teaches)
+------------------------------------------------------------------------------
+Given two pretrained unimodal encoders, there are MANY ways to fuse them: which
+layer of the image encoder do you combine with which layer of the audio encoder,
+and with what operation? Trying every combination by training each from scratch
+is far too expensive.
+
+MFAS (Pérez-Rúa et al., CVPR 2019) treats fusion design as a SEARCH problem:
+    1. A "configuration" describes one candidate fusion architecture.
+    2. A small, cheap-to-evaluate SURROGATE model learns to predict a
+       configuration's accuracy without fully training it.
+    3. The search uses the surrogate to propose promising configurations,
+       trains those for real, and feeds the results back to improve the
+       surrogate — progressively zeroing in on good fusion architectures.
+The unimodal encoders are PRETRAINED and reused; only the fusion is searched.
+
+DATA / WEIGHTS SETUP
+--------------------
+Expects the AVMNIST data under  data/avmnist/  and the two pretrained encoders
+under  pretrained/avmnist/  (image_encoder.pt, audio_encoder.pt).
+
+This is the Python-script version of Multibench_Example_Usage_Jupyter_Part_2_MFAS.ipynb.
 """
 
 import sys
 import os
 
-# Add the MultiBench root directory to the path so imports resolve correctly
+# --- Make MultiBench importable (see Part 1 for the full explanation) ------
 repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 
 print(f"Using MultiBench from: {repo_root}")
 
-# Verify data directory
+# --- Sanity-check the data directory --------------------------------------
 data_path = os.path.join(repo_root, 'data', 'avmnist')
 print(f"Data path: {data_path}")
 print(f"Data directory exists: {os.path.isdir(data_path)}")
@@ -23,28 +59,36 @@ print(f"Data directory exists: {os.path.isdir(data_path)}")
 import torch
 from torch import nn
 
+# Use a GPU if available; the search trains many candidate models, so a GPU
+# helps a lot here. It still runs on CPU, just slowly.
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"Using device: {device}")
 
-import utils.surrogate as surr  # This imports a learned cost model from configurations to accuracies.
-from datasets.avmnist.get_data import get_dataloader  # This imports the AVMNIST dataloader
+# `surrogate` is the learned cost model that predicts a fusion configuration's
+# accuracy — the component that makes the architecture search affordable.
+import utils.surrogate as surr  # noqa
+from datasets.avmnist.get_data import get_dataloader  # noqa  -> AVMNIST data
 
+# AVMNIST batches are [image, audio, label].
 traindata, validdata, testdata = get_dataloader(data_path, batch_size=32)
 
-# To train the MFAS model, you don't need to feed in a fusion layer nor a classification
-# head, as both of those are looked after through MFAS. Instead, just provide the pretrained
-# encoder files for each modality encoder and the associated hyperparameters.
-from training_structures.architecture_search import train  # This imports the MFAS training method.
+# For MFAS you do NOT supply a fusion layer or a classification head: the search
+# discovers both. You only provide the PRETRAINED unimodal encoders and the
+# hyperparameters that define the search space.
+from training_structures.architecture_search import train  # noqa  -> MFAS search
 
 s_data = train(
+    # Pretrained unimodal encoders to fuse (image first, then audio):
     [os.path.join(repo_root, 'pretrained', 'avmnist', 'image_encoder.pt'),
      os.path.join(repo_root, 'pretrained', 'avmnist', 'audio_encoder.pt')],
-    16,              # Size of encoder output
-    10,              # Number of classes
-    [(6, 12, 24), (6, 12, 24, 48, 96)],  # Output of each layer within the unimodal encoders
-    traindata,       # Training data loader
-    validdata,       # Validation data loader
-    surr.SimpleRecurrentSurrogate().to(device),  # Surrogate instance
-    (3, 5, 2),       # Search space of the fusion layer
-    epochs=6         # Number of epochs
+    16,              # rep_size: width of each encoder's output representation
+    10,              # num classes (digits 0-9)
+    [(6, 12, 24), (6, 12, 24, 48, 96)],  # per-layer output channels of each encoder
+                                         # (image encoder, then audio encoder) — these
+                                         # define which intermediate features can be fused
+    traindata,       # training data loader
+    validdata,       # validation data loader (used to score candidate fusions)
+    surr.SimpleRecurrentSurrogate().to(device),  # surrogate accuracy predictor
+    (3, 5, 2),       # search space of the fusion layer (depth / #ops / etc.)
+    epochs=6         # epochs used to (partially) train each candidate during search
 )

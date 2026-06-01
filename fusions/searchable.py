@@ -3,6 +3,7 @@ Implements fusion network structure for MFAS.
 
 See https://github.com/slyviacassell/_MFAS/tree/master/models for hyperparameter details.
 """
+import os
 import torch
 import copy
 import torch.optim as op
@@ -178,7 +179,8 @@ def train_track_acc(model, criteria, optimizer, scheduler, dataloaders, dataset_
 
     model.load_state_dict(best_model_sd)
     model.train(False)
-    torch.save(model, 'tests/best'+str(best_acc)+'.pt')
+    os.makedirs('results', exist_ok=True)
+    torch.save(model, os.path.join('results', 'best'+str(best_acc)+'.pt'))
 
     return best_acc
 
