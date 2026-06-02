@@ -315,7 +315,7 @@ def single_test(
                 out = model([[_processinput(i).to(device)
                             for i in j[0]], j[1]])
             else:
-                out = model([_processinput(i).float().to(device)
+                out = model([_processinput(i).to(device)
                             for i in j[:-1]])
             if isinstance(criterion, (torch.nn.modules.loss.BCEWithLogitsLoss, torch.nn.MSELoss)):
                 loss = criterion(out, j[-1].float().to(device))

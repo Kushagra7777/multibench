@@ -2,7 +2,7 @@ from fusions.common_fusions import Concat, ConcatWithLinear
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
-from training_structures.Supervised_Learning import train
+from training_structures.Supervised_Learning import single_test, train
 
 class UnimodalDataset(Dataset):
     def __init__(self, x, y):
@@ -27,6 +27,20 @@ class MultimodalDataset(Dataset):
 
     def __len__(self):
         return len(self.y)
+
+
+class DtypeCheckingModel(nn.Module):
+    def __init__(self, expected_dtype):
+        super().__init__()
+        self.expected_dtype = expected_dtype
+        self.dummy = nn.Parameter(torch.zeros(()))
+
+    def forward(self, inputs):
+        assert inputs[0].dtype == self.expected_dtype
+        batch_size = inputs[0].shape[0]
+        logits = torch.zeros(batch_size, 2, device=inputs[0].device)
+        logits[:, 0] = 1
+        return logits
 
 def test_Supervised_Learning_unimodal_classification():
     model = nn.Sequential(
@@ -129,3 +143,14 @@ def test_Supervised_Learning_multimodal_regression():
             output.append(encoders[j](i[j][None]))
         output = fusion(output)
         assert torch.allclose(output, o[None].to(device), atol=0.1)
+
+
+def test_single_test_respects_input_to_float_false():
+    x = torch.tensor([[1, 2], [3, 4]], dtype=torch.long)
+    y = torch.tensor([0, 0], dtype=torch.long)
+    test_loader = DataLoader(UnimodalDataset(x, y), batch_size=2)
+    model = DtypeCheckingModel(torch.long)
+
+    result = single_test(model, test_loader, input_to_float=False)
+
+    assert result["Accuracy"] == 1.0
