@@ -2,7 +2,7 @@ from fusions.common_fusions import Concat, ConcatWithLinear
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
-from training_structures.Supervised_Learning import train
+from training_structures.Supervised_Learning import single_test, train
 
 class UnimodalDataset(Dataset):
     def __init__(self, x, y):
@@ -129,3 +129,21 @@ def test_Supervised_Learning_multimodal_regression():
             output.append(encoders[j](i[j][None]))
         output = fusion(output)
         assert torch.allclose(output, o[None].to(device), atol=0.1)
+
+
+def test_single_test_respects_input_to_float_false():
+    class DtypeCheckingModel(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.param = nn.Parameter(torch.zeros(()))
+
+        def forward(self, inputs):
+            x = inputs[0]
+            assert x.dtype == torch.long
+            return nn.functional.one_hot(x, num_classes=2).float() * 10 + self.param
+
+    x = torch.tensor([0, 1], dtype=torch.long)
+    y = torch.tensor([0, 1], dtype=torch.long)
+    loader = DataLoader(UnimodalDataset(x, y), batch_size=2)
+
+    assert single_test(DtypeCheckingModel(), loader, input_to_float=False) == {'Accuracy': 1.0}

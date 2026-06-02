@@ -85,8 +85,12 @@ def sample_k_configurations(configurations, accuracies_, k, temperature):
     Returns:
         list: List of sampled configurations.
     """
-    accuracies = np.array(accuracies_)
-    p = accuracies / accuracies.sum()
+    accuracies = np.clip(np.asarray(accuracies_, dtype=float), a_min=0.0, a_max=None)
+    total_accuracy = accuracies.sum()
+    if total_accuracy <= 0 or not np.isfinite(total_accuracy):
+        p = np.full(len(configurations), 1.0 / len(configurations))
+    else:
+        p = accuracies / total_accuracy
     powered = pow(p, 1.0 / temperature)
     p = powered / powered.sum()
 
