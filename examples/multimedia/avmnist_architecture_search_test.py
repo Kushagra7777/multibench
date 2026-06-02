@@ -12,11 +12,9 @@ sys.path.append(os.getcwd())
 
 traindata, validdata, testdata = get_dataloader(
     'data/avmnist', batch_size=32)
-import glob
-best_files = sorted(glob.glob('tests/best*.pt'))
-if not best_files:
-    raise FileNotFoundError("No model files found in tests/best*.pt")
-best_file = best_files[-1]
+best_file = 'results/models/best.pt'
+if not os.path.exists(best_file):
+    raise FileNotFoundError(f"No model file found at {best_file}")
 print(f"Loading best model: {best_file}")
 model = torch.load(best_file, weights_only=False).to(device)
 test(model, testdata, dataset='avmnist', no_robust=True)
