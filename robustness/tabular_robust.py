@@ -47,6 +47,7 @@ def swap_entry(data, p):
     for i in range(len(data)):
         for j in range(1, len(data[i])):
             if np.random.random_sample() < p:
+                tmp = np.copy(data[i][j])
                 data[i][j] = data[i][j-1]
-                data[i][j-1] = data[i][j]
+                data[i][j-1] = tmp
     return data

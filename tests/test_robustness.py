@@ -34,6 +34,11 @@ def test_tabular(set_seeds):
     test = torch.rand((4,2,20))
     idf = add_tabular_noise(test, noise_level=0)
     assert np.isclose(idf, test).all()
+
+def test_tabular_swap_preserves_entries(set_seeds):
+    """Swap should exchange adjacent entries instead of duplicating values."""
+    test = np.array([[1, 2, 3]])
+    assert swap_entry(test.copy(), 1.0).tolist() == [[2, 3, 1]]
     
 def test_visual(set_seeds):
     """Test vision module."""
