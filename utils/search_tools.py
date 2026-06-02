@@ -91,8 +91,12 @@ def sample_k_configurations(configurations, accuracies_, k, temperature):
         p = np.full(len(configurations), 1.0 / len(configurations))
     else:
         p = accuracies / total_accuracy
-    powered = pow(p, 1.0 / temperature)
-    p = powered / powered.sum()
+    powered = np.power(p, 1.0 / temperature)
+    powered_sum = powered.sum()
+    if powered_sum <= 0 or not np.isfinite(powered_sum) or np.count_nonzero(powered) < k:
+        p = np.full(len(configurations), 1.0 / len(configurations))
+    else:
+        p = powered / powered_sum
 
     indices = np.random.choice(len(configurations), k, replace=False, p=p)
     samples = [configurations[i] for i in indices]
