@@ -179,8 +179,8 @@ def train_track_acc(model, criteria, optimizer, scheduler, dataloaders, dataset_
 
     model.load_state_dict(best_model_sd)
     model.train(False)
-    os.makedirs('results', exist_ok=True)
-    torch.save(model, os.path.join('results', 'best'+str(best_acc)+'.pt'))
+    os.makedirs(os.path.join('results', 'models'), exist_ok=True)
+    torch.save(model, os.path.join('results', 'models', 'best.pt'))
 
     return best_acc
 

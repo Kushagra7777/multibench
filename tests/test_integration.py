@@ -146,7 +146,7 @@ def test_sl5():
   dl_faked = torch.utils.data.DataLoader(my_dataset, batch_size=32)
   s_data = train(['pretrained/avmnist/image_encoder.pt', 'pretrained/avmnist/audio_encoder.pt'], 16, 10, [(6, 12, 24), (6, 12, 24, 48, 96)],
                   dl_faked, dl_faked, surr.SimpleRecurrentSurrogate(), (3, 5, 2), epochs=1, search_iter=1, epoch_surrogate=1, num_samples=1, max_progression_levels=1)
-  model = torch.load('tests/best0.pt', weights_only=False).to(get_device())
+  model = torch.load('results/models/best.pt', weights_only=False).to(get_device())
   
   test(model, dl_faked, 'test', no_robust=True)
 

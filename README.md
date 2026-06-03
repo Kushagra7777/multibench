@@ -2,8 +2,7 @@
 
 **Standardized toolkit for multimodal deep learning research**
 
-[![Documentation Status](https://readthedocs.org/projects/multibench/badge/?version=latest)](https://multibench.readthedocs.io/en/latest/?badge=latest)
-
+[Documentation](https://human-ai-lab.github.io/multibench/)   
 ![Overview](images/overview.png)
 
 MultiBench is a systematic, unified large-scale benchmark spanning **15 datasets**, **10 modalities**, **20 prediction tasks**, and **6 research areas**. It provides an automated end-to-end ML pipeline that simplifies data loading, experimental setup, and model evaluation.
@@ -13,8 +12,6 @@ Paired with **MultiZoo**, a modular collection of 20 core multimodal learning ap
 1. **Performance** across domains and modalities
 2. **Complexity** during training and inference
 3. **Robustness** to noisy and missing modalities
-
- [Documentation](https://human-ai-lab.github.io/multibench/) · 
 
 ## Supported datasets
 
@@ -321,6 +318,10 @@ If you use MultiBench in your research, please cite:
   year={2021}
 }
 ```
+
+## Course adoption
+MultiBench is used in the curriculum of the following courses: 
+- [Human AI Interaction](https://bagustris.github.io/multisensory)
 
 ## Contributors
 
