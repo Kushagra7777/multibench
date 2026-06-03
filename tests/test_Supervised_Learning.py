@@ -4,6 +4,7 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset
 from training_structures.Supervised_Learning import single_test, train
 
+
 class UnimodalDataset(Dataset):
     def __init__(self, x, y):
         super().__init__()
@@ -16,6 +17,7 @@ class UnimodalDataset(Dataset):
     def __len__(self):
         return len(self.y)
 
+
 class MultimodalDataset(Dataset):
     def __init__(self, xs, y):
         super().__init__()
@@ -27,6 +29,7 @@ class MultimodalDataset(Dataset):
 
     def __len__(self):
         return len(self.y)
+
 
 def test_Supervised_Learning_unimodal_classification():
     model = nn.Sequential(
@@ -48,16 +51,23 @@ def test_Supervised_Learning_unimodal_classification():
 
     device = next(model.parameters()).device
     for i, o in zip(x, y):
-        assert torch.allclose(torch.argmax(model(i[None].to(device)), dim=-1), o[None].to(device))
+        assert torch.allclose(
+            torch.argmax(model(i[None].to(device)), dim=-1),
+            o[None].to(device),
+        )
+
 
 def test_Supervised_Learning_multimodal_classification():
-    encoders = [nn.Sequential(
-        nn.Linear(2, 32),
-        nn.ReLU(),
-        nn.Linear(32, 32),
-        nn.ReLU(),
-        nn.Linear(32, 4),
-    ) for _ in range(2)]
+    encoders = [
+        nn.Sequential(
+            nn.Linear(2, 32),
+            nn.ReLU(),
+            nn.Linear(32, 32),
+            nn.ReLU(),
+            nn.Linear(32, 4),
+        )
+        for _ in range(2)
+    ]
     fusion = ConcatWithLinear(8, 2)
 
     x1 = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float)
@@ -79,6 +89,7 @@ def test_Supervised_Learning_multimodal_classification():
         output = fusion(output)
         assert torch.allclose(torch.argmax(output, dim=-1), o[None].to(device))
 
+
 def test_Supervised_Learning_unimodal_regression():
     model = nn.Sequential(
         nn.Linear(2, 32),
@@ -95,20 +106,33 @@ def test_Supervised_Learning_unimodal_regression():
     train_ds = UnimodalDataset(x, y)
     train_loader = DataLoader(train_ds)
 
-    train([model], Concat(), nn.Identity(), train_loader, train_loader, 160, task='regression', objective=nn.MSELoss())
+    train(
+        [model],
+        Concat(),
+        nn.Identity(),
+        train_loader,
+        train_loader,
+        160,
+        task="regression",
+        objective=nn.MSELoss(),
+    )
 
     device = next(model.parameters()).device
     for i, o in zip(x, y):
         assert torch.allclose(model(i.to(device)), o.to(device), atol=0.1)
 
+
 def test_Supervised_Learning_multimodal_regression():
-    encoders = [nn.Sequential(
-        nn.Linear(2, 32),
-        nn.ReLU(),
-        nn.Linear(32, 32),
-        nn.ReLU(),
-        nn.Linear(32, 4),
-    ) for _ in range(2)]
+    encoders = [
+        nn.Sequential(
+            nn.Linear(2, 32),
+            nn.ReLU(),
+            nn.Linear(32, 32),
+            nn.ReLU(),
+            nn.Linear(32, 4),
+        )
+        for _ in range(2)
+    ]
     fusion = ConcatWithLinear(8, 1)
 
     x1 = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float)
@@ -119,7 +143,16 @@ def test_Supervised_Learning_multimodal_regression():
     train_ds = MultimodalDataset([x1, x2], y)
     train_loader = DataLoader(train_ds)
 
-    train(encoders, fusion, nn.Identity(), train_loader, train_loader, 80, task='regression', objective=nn.MSELoss())
+    train(
+        encoders,
+        fusion,
+        nn.Identity(),
+        train_loader,
+        train_loader,
+        80,
+        task="regression",
+        objective=nn.MSELoss(),
+    )
 
     device = next(encoders[0].parameters()).device
     for i1, i2, o in zip(x1, x2, y):
@@ -146,4 +179,6 @@ def test_single_test_respects_input_to_float_false():
     y = torch.tensor([0, 1], dtype=torch.long)
     loader = DataLoader(UnimodalDataset(x, y), batch_size=2)
 
-    assert single_test(DtypeCheckingModel(), loader, input_to_float=False) == {'Accuracy': 1.0}
+    assert single_test(DtypeCheckingModel(), loader, input_to_float=False) == {
+        "Accuracy": 1.0
+    }
