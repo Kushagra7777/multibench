@@ -71,6 +71,20 @@ def test_GRU():
     lin.last_only = True
     assert lin(test).shape == (3,2)
 
+def test_GRU_respects_batch_first_false():
+    """GRU should honor batch_first=False on the underlying nn.GRU."""
+    model = GRU(4, 2, batch_first=False)
+    test = torch.zeros((5, 3, 4))  # (seq_len, batch, feature)
+    out = model(test)
+    assert out.shape == (5, 3, 2)
+    assert model.gru.batch_first is False
+
+def test_GRU_batch_first_false_last_only_returns_batch_hidden():
+    """With last_only the hidden state stays (batch, hidden) regardless of layout."""
+    model = GRU(4, 2, batch_first=False, last_only=True)
+    test = torch.zeros((5, 3, 4))  # (seq_len, batch, feature)
+    assert model(test).shape == (3, 2)
+
 def test_Constant():
     """Test constant module."""
     cons = Constant(1)
