@@ -1,21 +1,30 @@
-"""Device detection utilities for MultiBench."""
+# utils/device.py
+import os
 import torch
 
 
-def get_device() -> torch.device:
-    """Return the best available device: CUDA → MPS → CPU.
+def get_device():
+    if os.getenv("MULTIBENCH_FORCE_CPU", "0") == "1":
+        return torch.device("cpu")
 
-    Priority order:
-    1. CUDA (NVIDIA GPU)
-    2. MPS (Apple Silicon GPU via Metal Performance Shaders, PyTorch ≥ 1.12)
-    3. CPU (fallback)
-
-    Returns:
-        torch.device: The best available device.
-    """
     if torch.cuda.is_available():
         return torch.device("cuda:0")
-    mps_backend = getattr(torch.backends, "mps", None)
-    if mps_backend is not None and mps_backend.is_available():
+
+    if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
         return torch.device("mps")
+
     return torch.device("cpu")
+
+# ### Apple Silicon / MPS note
+
+# Some models may raise tensor device mismatch errors on Apple Silicon when MPS is selected automatically. To force CPU execution, run:
+
+# ```bash
+
+# MULTIBENCH_FORCE_CPU=1 python examples/finance/stocks_mult.py \
+
+#   --input-stocks "AAPL MSFT GOOG" \
+
+#   --target-stock AAPL
+  
+# ###
