@@ -191,7 +191,7 @@ class GRU(torch.nn.Module):
             batch_first (bool, optional): Whether to batch before applying or not. Defaults to True.
         """
         super(GRU, self).__init__()
-        self.gru = nn.GRU(indim, hiddim, batch_first=True)
+        self.gru = nn.GRU(indim, hiddim, batch_first=batch_first)
         self.dropout = dropout
         self.dropout_layer = torch.nn.Dropout(dropoutp)
         self.flatten = flatten
