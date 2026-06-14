@@ -74,14 +74,9 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}\n")
 
 # ==============================================================================
-# SECTION 4: DATA LOADING (SHARED ACROSS ALL METHODS)
+# SECTION 4: VERIFY DATA FILE EXISTS
 # ==============================================================================
 
-print("="*80)
-print("STEP 1: LOADING MOSI DATASET")
-print("="*80)
-
-# Verify data file exists
 data_path = os.path.join(repo_root, "data", "affect", "mosi_raw.pkl")
 if not os.path.exists(data_path):
     raise FileNotFoundError(
@@ -90,22 +85,7 @@ if not os.path.exists(data_path):
         f"And place at: {data_path}"
     )
 
-print(f"Data file found: {data_path}")
-
-# Load data once and reuse across all fusion methods
-# max_pad=True: Pad all sequences to length 50 for consistent tensor shapes
-# data_type='mosi': Use MOSI-specific preprocessing (3 modalities, 3-scaled sentiment)
-# num_workers=0: Avoid multiprocessing for stability
-traindata, validdata, testdata = get_dataloader(
-    data_path,
-    robust_test=False,
-    max_pad=True,
-    data_type="mosi",
-    max_seq_len=50,
-    num_workers=0
-)
-
-print(f"✓ Data loaded: train={len(traindata.dataset)}, valid={len(validdata.dataset)}, test={len(testdata.dataset)}")
+print(f"Data file found: {data_path}\n")
 
 # ==============================================================================
 # SECTION 5: CONFIGURATION DICTIONARIES FOR EACH METHOD
@@ -129,12 +109,16 @@ configs = {
             "gru_dropout": True,
             "mlp_output": 1
         },
+        "data_loading": {
+            "max_pad": True,
+            "data_type": "mosi",
+            "max_seq_len": 50
+        },
         "training_config": {
             "is_packed": False,  # Inputs are padded, not packed sequences
-            "max_pad": True,     # Sequences padded to max_seq_len=50
             "epochs": 5
         },
-        "save_path": "results/models/mosi_ef.pt",
+        "save_path": "results/models/mosi_ef_r0.pt",
         "description": "Concatenate raw features, single GRU encoder over fused sequence"
     },
     
@@ -152,12 +136,17 @@ configs = {
             "mlp_hidden": 870,
             "mlp_output": 1
         },
+        "data_loading": {
+            # EXACT strategy from affect_late_fusion.py: NO max_pad, NO data_type, NO max_seq_len
+            "max_pad": False,  # Variable length sequences for packing
+            "data_type": "mosi",
+            "max_seq_len": None
+        },
         "training_config": {
             "is_packed": True,   # Use packed sequences for variable-length handling
-            "max_pad": False,    # Don't pad; let GRU handle variable lengths
             "epochs": 5
         },
-        "save_path": "results/models/mosi_lf.pt",
+        "save_path": "results/models/mosi_lf_best.pt",
         "description": "Per-modality GRU encoders, concatenate predictions"
     },
     
@@ -170,18 +159,22 @@ configs = {
             "dropout": True
         },
         "head_config": {
-            # TensorFusion output: outer product of encoder outputs
-            # 4 * 19 * 79 = 6,004; with bias: ~8,000
-            "mlp_input": 4 * 19 * 79,  # Outer product dimension
+            # EXACT from affect_tf.py: MLP(8000, 512, 1)
+            # Do NOT calculate 4*19*79; use repository example dimension
+            "mlp_input": 8000,
             "mlp_hidden": 512,
             "mlp_output": 1
         },
+        "data_loading": {
+            "max_pad": True,
+            "data_type": None,  # EXACT from affect_tf.py: NOT specified
+            "max_seq_len": None
+        },
         "training_config": {
             "is_packed": False,  # Tensor fusion requires fixed-size vectors
-            "max_pad": True,     # Pad to max_seq_len=50
             "epochs": 5
         },
-        "save_path": "results/models/mosi_tf.pt",
+        "save_path": "results/models/mosi_tf_best.pt",
         "description": "Bilinear fusion via outer product of encoder vectors"
     }
 }
@@ -193,6 +186,52 @@ configs = {
 def count_parameters(model: torch.nn.Module) -> int:
     """Count total trainable parameters in a model."""
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+def load_data_for_method(
+    method_name: str,
+    data_path: str,
+    config: Dict[str, Any]
+) -> Tuple[any, any, any]:
+    """
+    Load data with method-specific configuration.
+    
+    CRITICAL: Late Fusion must use different data loading strategy than Early/Tensor Fusion.
+    - Late Fusion: max_pad=False (variable length, packed sequences)
+    - Early/Tensor: max_pad=True (padded to fixed length)
+    
+    Args:
+        method_name: Name of fusion method
+        data_path: Path to MOSI data file
+        config: Method configuration dictionary
+    
+    Returns:
+        Tuple of (traindata, validdata, testdata)
+    """
+    data_cfg = config["data_loading"]
+    
+    print(f"\n  Loading data for {method_name}...")
+    
+    # Build get_dataloader arguments from config
+    loader_kwargs = {
+        "robust_test": False,
+        "num_workers": 0
+    }
+    
+    # Add optional parameters if specified
+    if data_cfg.get("max_pad") is not None:
+        loader_kwargs["max_pad"] = data_cfg["max_pad"]
+    if data_cfg.get("data_type") is not None:
+        loader_kwargs["data_type"] = data_cfg["data_type"]
+    if data_cfg.get("max_seq_len") is not None:
+        loader_kwargs["max_seq_len"] = data_cfg["max_seq_len"]
+    
+    traindata, validdata, testdata = get_dataloader(data_path, **loader_kwargs)
+    
+    print(f"    ✓ Data loaded: train={len(traindata.dataset)}, valid={len(validdata.dataset)}, test={len(testdata.dataset)}")
+    print(f"    ✓ Config: {loader_kwargs}")
+    
+    return traindata, validdata, testdata
 
 
 def build_model(
@@ -299,55 +338,62 @@ for method_name, config in configs.items():
     print(f"Description: {config['description']}")
     
     # ========================================================================
-    # STEP A: Build Model
+    # STEP A: Load Data (Method-Specific)
     # ========================================================================
-    print("\nStep A: Building model...")
+    print("\nStep A: Loading data...")
+    traindata, validdata, testdata = load_data_for_method(method_name, data_path, config)
+    
+    # ========================================================================
+    # STEP B: Build Model
+    # ========================================================================
+    print("\nStep B: Building model...")
     encoders, fusion, head = build_model(method_name, config, device)
     param_count = sum(count_parameters(e) for e in encoders) + \
                   count_parameters(fusion) + count_parameters(head)
     print(f"  Total trainable parameters: {param_count:,}")
     
     # ========================================================================
-    # STEP B: Train Model
+    # STEP C: Train Model
     # ========================================================================
-    print("\nStep B: Training model...")
+    print("\nStep C: Training model...")
     train_config = config["training_config"]
     
     # Record training time
     train_start = time.time()
     
-    # Call train() with configuration from examples
+    # EXACT train() call from repository examples
+    # Match affect_early_fusion.py, affect_late_fusion.py, affect_tf.py exactly
     train(
-        encoders=encoders,
-        fusion=fusion,
-        head=head,
-        train_dataloader=traindata,
-        valid_dataloader=validdata,
-        total_epochs=train_config["epochs"],
-        task="regression",  # MOSI sentiment is continuous [-3, +3]
+        encoders,
+        fusion,
+        head,
+        traindata,
+        validdata,
+        5,  # EXACT: 5 epochs (same as examples, but for assignment runtime)
+        task="regression",
         optimtype=torch.optim.AdamW,
         is_packed=train_config["is_packed"],
         lr=1e-3,
         save=config["save_path"],
         weight_decay=0.01,
-        objective=torch.nn.L1Loss(),  # Mean absolute error for regression
-        track_complexity=False  # Disable complexity tracking for faster execution
+        objective=torch.nn.L1Loss(),
+        track_complexity=False  # Disable for faster execution
     )
     
     train_time = time.time() - train_start
     print(f"  Training time: {train_time:.2f}s")
     
     # ========================================================================
-    # STEP C: Evaluate Model
+    # STEP D: Evaluate Model
     # ========================================================================
-    print("\nStep C: Evaluating model...")
+    print("\nStep D: Evaluating model...")
     eval_start = time.time()
     
-    # Load best checkpoint
-    model = torch.load(config["save_path"], map_location=device, weights_only=False).to(device)
+    # EXACT checkpoint loading from repository examples
+    model = torch.load(config["save_path"], weights_only=False).to(device)
     
-    # Run test() with posneg-classification task
-    # This thresholds the regression output at 0 to compute binary accuracy
+    # EXACT test() call from repository examples
+    # Match affect_early_fusion.py, affect_late_fusion.py, affect_tf.py exactly
     print("  Testing on held-out test set:")
     test(
         model=model,
@@ -355,15 +401,15 @@ for method_name, config in configs.items():
         dataset="affect",
         is_packed=train_config["is_packed"],
         criterion=torch.nn.L1Loss(),
-        task="posneg-classification",  # Threshold regression at 0 for polarity
-        no_robust=True  # Skip robustness testing for speed
+        task="posneg-classification",
+        no_robust=True
     )
     
     eval_time = time.time() - eval_start
     print(f"  Evaluation time: {eval_time:.2f}s")
     
     # ========================================================================
-    # STEP D: Store Results
+    # STEP E: Store Results
     # ========================================================================
     results[method_name] = {
         "fusion_class": config["fusion_class"].__name__,
@@ -389,21 +435,22 @@ print("\nRe-evaluating all models for comparison table...\n")
 test_accuracies = {}
 for method_name, config in configs.items():
     print(f"  Evaluating {method_name}...")
-    model = torch.load(config["save_path"], map_location=device, weights_only=False).to(device)
+    model = torch.load(config["save_path"], weights_only=False).to(device)
+    
+    # Reload data for this method
+    _, _, testdata = load_data_for_method(method_name, data_path, config)
     
     # Capture accuracy from test
-    test_config = config["training_config"]
+    train_config = config["training_config"]
     test(
         model=model,
         test_dataloaders_all=testdata,
         dataset="affect",
-        is_packed=test_config["is_packed"],
+        is_packed=train_config["is_packed"],
         criterion=torch.nn.L1Loss(),
         task="posneg-classification",
         no_robust=True
     )
-    # Note: test() prints accuracy directly; we extract it from console
-    # For production, we'd modify test() to return metrics as dict
     print()
 
 # ==============================================================================
