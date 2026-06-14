@@ -1,0 +1,4 @@
+Method,Fusion Class,Parameters,Training Time (s),Model Path
+Early Fusion,ConcatEarly,"1,680,897",11.63,results/models/mosi_ef_r0.pt
+Late Fusion,Concat,"2,570,311",13.42,results/models/mosi_lf_best.pt
+Tensor Fusion,TensorFusion,"4,193,229",12.81,results/models/mosi_tf_best.pt
