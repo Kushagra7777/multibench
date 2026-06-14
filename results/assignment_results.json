@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-06-14 22:52:32",
+  "dataset": "CMU-MOSI",
+  "task": "Sentiment Analysis (Regression \u2192 Polarity Classification)",
+  "methods": {
+    "Early Fusion": {
+      "fusion_class": "ConcatEarly",
+      "parameters": 1680897,
+      "training_time": 11.627693176269531,
+      "model_path": "results/models/mosi_ef_r0.pt",
+      "description": "Concatenate raw features, single GRU encoder over fused sequence"
+    },
+    "Late Fusion": {
+      "fusion_class": "Concat",
+      "parameters": 2570311,
+      "training_time": 13.419371128082275,
+      "model_path": "results/models/mosi_lf_best.pt",
+      "description": "Per-modality GRU encoders, concatenate predictions"
+    },
+    "Tensor Fusion": {
+      "fusion_class": "TensorFusion",
+      "parameters": 4193229,
+      "training_time": 12.809521198272705,
+      "model_path": "results/models/mosi_tf_best.pt",
+      "description": "Bilinear fusion via outer product of encoder vectors"
+    }
+  }
+}
