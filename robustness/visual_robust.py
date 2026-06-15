@@ -6,7 +6,7 @@ import colorsys
 
 ##############################################################################
 # Visual
-def add_visual_noise(tests, noise_level=0.3, gray=True, contrast=True, inv=True, temp=True, color=True, s_and_p=True, gaus=True, rot=True, flip=True, crop=True):
+def add_visual_noise(tests, noise_level=0.3, gray=True, contrast=True, inv=True, temp=True, color=True, s_and_p=True, gaus=True, rot=True, flip=True, crop=True, flip_v=True):
     """
     Add various types of noise to visual data.
 
@@ -19,8 +19,9 @@ def add_visual_noise(tests, noise_level=0.3, gray=True, contrast=True, inv=True,
     :param s_and_p: Boolean flag denoting if applying salt and pepper noise should be applied as a noise type. 
     :param gaus: Boolean flag denoting if applying Gaussian noise should be applied as a noise type. 
     :param rot: Boolean flag denoting if randomly rotating the image should be applied as a noise type. 
-    :param flip: Boolean flag denoting if randomly flipping the image should be applied as a noise type. 
+    :param flip: Boolean flag denoting if randomly flipping the image horizontally should be applied as a noise type.
     :param crop: Boolean flag denoting if randomly cropping the image should be applied as a noise type. 
+    :param flip_v: Boolean flag denoting if randomly flipping the image vertically should be applied as a noise type.
     """
     noises = []
     if gray:
@@ -41,6 +42,8 @@ def add_visual_noise(tests, noise_level=0.3, gray=True, contrast=True, inv=True,
         noises.append(rotate)
     if flip:
         noises.append(horizontal_flip)
+    if flip_v:
+        noises.append(vertical_flip)
     if crop:
         noises.append(random_crop)
     robustness_tests = []
@@ -178,6 +181,14 @@ def horizontal_flip(img, p):
     """Randomly flip the image horizontally."""
     if np.random.sample() <= p:
         return img.transpose(Image.FLIP_LEFT_RIGHT)
+    else:
+        return img
+
+
+def vertical_flip(img, p):
+    """Randomly flip the image vertically."""
+    if np.random.sample() <= p:
+        return img.transpose(Image.FLIP_TOP_BOTTOM)
     else:
         return img
 
